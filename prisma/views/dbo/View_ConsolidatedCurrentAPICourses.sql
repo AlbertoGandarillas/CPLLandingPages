@@ -1,0 +1,100 @@
+SELECT
+  [EntityCollegeCode],
+  [EntityCollegeTitle],
+  [EntityID],
+  [EntityTitle],
+  [EntityLastUpdated],
+  [EntityStatus],
+  [EntityCourseTitle],
+  [EntityCourseShortTitle],
+  [EntityCourseNumber],
+  [EntityCourseDescription],
+  [EntityCourseShortDescription],
+  [EntityImplementationDate],
+  [EntitySubject],
+  [EntityActionType],
+  [Semester],
+  [MinUnits],
+  [MaxUnits],
+  [RecommendedTOPSCodeValue],
+  [RecommendedTOPSCodeDisplay],
+  [UpdatedDate]
+FROM
+  [dbo].[Course_API]
+WHERE
+  (UpdatedDate > '2020-04-01')
+UNION
+ALL
+SELECT
+  [EntityCollegeCode],
+  [EntityCollegeTitle],
+  [EntityID],
+  [EntityTitle],
+  [EntityLastUpdated],
+  [EntityStatus],
+  [EntityCourseTitle],
+  [EntityCourseShortTitle],
+  [EntityCourseNumber],
+  [EntityCourseDescription],
+  [EntityCourseShortDescription],
+  [EntityImplementationDate],
+  [EntitySubject],
+  [EntityActionType],
+  [Semester],
+  [MinUnits],
+  [MaxUnits],
+  [RecommendedTOPSCodeValue],
+  [RecommendedTOPSCodeDisplay],
+  '01-01-2018' AS [UpdatedDate]
+FROM
+  [dbo].[Course_API_Local]
+UNION
+ALL
+SELECT
+  [EntityCollegeCode],
+  [EntityCollegeTitle],
+  [EntityID],
+  [EntityTitle],
+  [EntityLastUpdated],
+  [EntityStatus],
+  [EntityCourseTitle],
+  [EntityCourseShortTitle],
+  [EntityCourseNumber],
+  [EntityCourseDescription],
+  [EntityCourseShortDescription],
+  [EntityImplementationDate],
+  [EntitySubject],
+  [EntityActionType],
+  [Semester],
+  [MinUnits],
+  [MaxUnits],
+  [RecommendedTOPSCodeValue],
+  [RecommendedTOPSCodeDisplay],
+  '01-01-2018' AS [UpdatedDate]
+FROM
+  [dbo].[Course_API_043020bak]
+UNION
+ALL
+SELECT
+  [EntityCollegeCode],
+  [EntityCollegeTitle],
+  [EntityID],
+  [EntityTitle],
+  [EntityLastUpdated],
+  [EntityStatus],
+  [EntityCourseTitle],
+  [EntityCourseShortTitle],
+  [EntityCourseNumber],
+  [EntityCourseDescription],
+  [EntityCourseShortDescription],
+  [EntityImplementationDate],
+  [EntitySubject],
+  [EntityActionType],
+  [Semester],
+  [MinUnits],
+  [MaxUnits],
+  [RecommendedTOPSCodeValue],
+  [RecommendedTOPSCodeDisplay],
+  '01-01-2018' AS [UpdatedDate]
+FROM
+  [dbo].[Course_API_Original];

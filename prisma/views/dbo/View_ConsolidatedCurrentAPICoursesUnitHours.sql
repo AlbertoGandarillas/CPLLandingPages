@@ -1,0 +1,34 @@
+SELECT
+  [EntityID],
+  [EntityTitle],
+  [FieldName],
+  [FieldValue]
+FROM
+  [dbo].[Course_API_UnitsHours_Local]
+UNION
+ALL
+SELECT
+  [EntityID],
+  [EntityTitle],
+  [FieldName],
+  [FieldValue]
+FROM
+  [dbo].[Course_API_UnitsHours_021220]
+UNION
+ALL
+SELECT
+  [EntityID],
+  [EntityTitle],
+  [FieldName],
+  [FieldValue]
+FROM
+  [dbo].[Course_API_UnitsHours_043020bak]
+UNION
+ALL
+SELECT
+  [EntityID],
+  [EntityTitle],
+  [FieldName],
+  [FieldValue]
+FROM
+  [dbo].[Course_API_UnitsHours];

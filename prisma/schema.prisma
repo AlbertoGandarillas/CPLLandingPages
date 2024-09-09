@@ -1,0 +1,533 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+
+model CPLEvidenceCompetency {
+  ID                Int       @id(map: "PK__CPLEvide__3214EC270F082113") @default(autoincrement())
+  ExhibitID         Int
+  ExhibitEvidenceID Int
+  CollegeID         Int
+  CreatedBy         Int?
+  CreatedOn         DateTime  @default(now(), map: "DF__CPLEviden__Creat__62307D25") @db.DateTime
+  UpdatedBy         Int?
+  UpdatedOn         DateTime? @db.DateTime
+  Notes             String?   @db.VarChar(Max)
+  EvidenceType      Int?
+  ActiveCurrent     Boolean?  @default(false, map: "DF_CPLEvidenceCompetency_ActiveCurrent")
+  CompetencyType    CPLExhibitEvidence? @relation(fields: [ExhibitEvidenceID], references: [ID])
+  Exhibit           ACEExhibit @relation(fields: [ExhibitID], references: [ID])
+  @@index([ExhibitID], map: "IX_CPLEvidenceCompetency")
+  @@index([CollegeID], map: "IX_CPLEvidenceCompetency_1")
+}
+
+model CPLExhibitDocuments {
+  id              Int       @id(map: "PK__CPLExhib__3213E83F0C806BFC") @default(autoincrement())
+  FileName        String?   @db.VarChar(Max)
+  CreatedBy       Int
+  CreatedOn       DateTime? @default(now(), map: "DF__CPLExhibi__Creat__650CE9D0") @db.DateTime
+  BinaryData      Bytes?
+  FileDescription String?   @db.VarChar(Max)
+  CPLExhibitID    Int
+  UpdatedBy       Int?
+  UpdatedOn       DateTime? @db.DateTime
+  Exhibit         ACEExhibit @relation(fields: [CPLExhibitID], references: [ID])
+}
+model CPLRubric {
+  ID         Int       @id(map: "PK__CPLRubri__3214EC27AC57F732") @default(autoincrement())
+  ExhibitID  Int
+  CollegeID  Int
+  Rubric     String?   @db.VarChar(Max)
+  ScoreRange Float?
+  MinScore   Float?
+  CreatedBy  Int?
+  CreatedOn  DateTime  @default(now(), map: "DF__CPLRubric__Creat__6BB9E75F") @db.DateTime
+  UpdatedBy  Int?
+  UpdatedOn  DateTime? @db.DateTime
+  Exhibit    ACEExhibit @relation(fields: [ExhibitID], references: [ID])
+}
+model CPLExhibitEvidence {
+  ID          Int       @id(map: "PK__CPLExhib__3214EC273D78E2ED") @default(autoincrement())
+  Description String?   @db.VarChar(200)
+  CreatedBy   Int?
+  CreatedOn   DateTime  @default(now(), map: "DF__CPLExhibi__Creat__66010E09") @db.DateTime
+  UpdatedBy   Int?
+  UpdatedOn   DateTime? @db.DateTime
+  Active      Boolean?  @default(false, map: "DF_CPLExhibitEvidence_Active")
+  SortOrder   Int?
+  EvidenceCompetency CPLEvidenceCompetency[]
+}
+
+model LookupColleges {
+  CollegeID                            Int       @id(map: "PK_LookupColleges") @default(autoincrement())
+  College                              String    @db.VarChar(100)
+  CollegeAbbreviation                  String    @db.VarChar(8)
+  CollegeLogo                          String    @db.VarChar(50)
+  StyleSheet                           String?   @db.VarChar(50)
+  PendingDataIntake                    Boolean?  @default(false, map: "DF__LookupCol__Pendi__188C8DD6")
+  DistrictID                           Int?
+  CheckExistOtherColleges              Boolean?  @default(false, map: "DF__LookupCol__Check__1980B20F")
+  StateCode                            String?   @db.VarChar(10)
+  County                               String?   @db.VarChar(50)
+  City                                 String?   @db.VarChar(50)
+  ZipCode                              String?   @db.VarChar(10)
+  ExcludeDenniedArticulationsInProcess Boolean?  @default(false, map: "DF__LookupCol__Exclu__1A74D648")
+  ByPassOnDeny                         Boolean?  @default(false, map: "DF__LookupCol__ByPas__1B68FA81")
+  ByPassOnDenyToStage                  Int?      @default(0, map: "DF__LookupCol__ByPas__1C5D1EBA")
+  LogoUrl                              String?   @db.VarChar(500)
+  CollegeWebsite                       String?   @db.VarChar(500)
+  VeteranServices                      String?   @db.VarChar(500)
+  ExcludeKMLFile                       Boolean?  @default(false, map: "DF__LookupCol__Exclu__0F03239C")
+  Coordinates                          String?   @db.VarChar(500)
+  UpdatedBy                            Int?
+  UpdatedOn                            DateTime? @db.DateTime
+  AutoApproveByMajority                Boolean?
+  AutoPublish                          Boolean?
+  SharedCurriculum                     Boolean?
+  AutoAdoptArticulations               Boolean?  @default(false, map: "DF__LookupCol__AutoA__0D1ADB2A")
+  AllowFacultyNotifications            Boolean?  @default(false, map: "DF__LookupCol__Allow__0E0EFF63")
+  Initials                             String?   @default("", map: "DF__LookupCol__Initi__0C26B6F1") @db.Char(10)
+  AllowEmailFacultyNotification        Boolean?  @default(false, map: "DF_LookupColleges_AllowEmailFacultyNotification")
+  AllowEmailNotificationTrigger        Boolean?
+
+  CollegeUIConfig CollegeUIConfig[]
+}
+
+model ROLES {
+  RoleID                Int      @id(map: "PK_ROLES") @default(autoincrement())
+  RoleName              String?  @db.NVarChar(50)
+  DefaultUrl            String?  @db.VarChar(300)
+  SendArticulations     Boolean?
+  ReviewArticulations   Boolean?
+  ReviewArticulationUrl String?  @db.VarChar(300)
+  isAdministrator       Boolean? @default(false, map: "DF__ROLES__isAdminis__24F264BB")
+  iconClass             String?  @db.VarChar(100)
+  CollegeID             Int?
+  ApplicationID         Int?
+  isArticulationOfficer Boolean?
+  AssessmentsBySubject  Boolean?
+  SyllabusBySubject     Boolean?
+  RoleDescription       String?  @db.VarChar(300)
+  VRCStaff              Boolean? @default(false, map: "DF__ROLES__VRCStaff__23FE4082")
+  Stage                 Stages[]
+}
+
+model Stages {
+  Id                         Int      @id(map: "PK__Stages__3214EC0741D76143") @default(autoincrement())
+  RoleId                     Int
+  Order                      Int?
+  Required                   Boolean? @default(false, map: "DF__Stages__Required__33408412")
+  UserId                     Int?     @default(0, map: "DF__Stages__UserId__2E7BCEF5")
+  CollegeId                  Int      @default(0, map: "DF__Stages__CollegeI__324C5FD9")
+  BypassStage                Boolean? @default(false, map: "DF__Stages__BypassSt__2D87AABC")
+  Notification               Boolean? @default(false, map: "DF__Stages__Notifica__31583BA0")
+  NotificationDays           Int?     @default(0, map: "DF__Stages__Notifica__29B719D8")
+  EnforceApproval            Boolean? @default(false, map: "DF__Stages__EnforceA__2C938683")
+  ViewAllArticulations       Boolean? @default(false, map: "DF__Stages__ViewAllA__2F6FF32E")
+  EnforceFacultyReview       Boolean? @default(false, map: "DF__Stages__EnforceF__2B9F624A")
+  EnforceFacultyReviewUserID Int?     @default(0, map: "DF__Stages__EnforceF__30641767")
+  EnforceFacultyReviewURL    String?  @db.VarChar(300)
+  ByPassNotification         Boolean? @default(false, map: "DF__Stages__ByPassNo__2AAB3E11")
+  AutoApprovalNumberOfDays   Int?
+  Articulation               Articulation[]
+  Role ROLES @relation(fields: [RoleId], references: [RoleID])
+}
+
+
+
+model CPL_Articulations {
+  id                   Int      @id(map: "PK_CPL_Articulations")
+  CPLTypeDescription   String?  @db.NVarChar(255)
+  College              String?  @db.NVarChar(255)
+  subject              String?  @db.NVarChar(50)
+  course_number        String?  @db.NVarChar(50)
+  course_title         String?  @db.NVarChar(255)
+  MinUnits             String?  @db.NVarChar(255)
+  CIDSubject           String?  @db.NVarChar(50)
+  CIDCourseNumber      String?  @db.NVarChar(50)
+  CIDTitle             String?  @db.NVarChar(255)
+  CIDUnits             String?  @db.NVarChar(255)
+  Branch               String?  @db.NVarChar(50)
+  CIDNumber            String?  @db.NVarChar(50)
+  CIDDescriptor        String?  @db.NVarChar(255)
+  Title                String?  @db.NVarChar(255)
+  AceID                String?  @db.NVarChar(30)
+  CreditRecommendation String?  @db.NVarChar(255)
+  TopCode              String?  @db.NVarChar(255)
+  Students             Int?
+  CRUnits              Decimal? @db.Decimal(10, 2)
+  ExhibitID            Int?
+  CollegeID            Int?
+  Program_Title        String?  @db.NChar(255)
+  LearningMode         String?  @db.NChar(200)
+  LearningModeID       Int?
+  // CriteriaID           Int?
+  // outline_id           Int?
+  // SourceID             Int?
+  // VersionNumber        String?  @db.NVarChar(10)
+  @@index([CIDNumber], map: "Index_CPL_Articulations_1")
+  @@index([id], map: "IX_CPL_Articulations")
+  @@index([CollegeID], map: "IX_CPL_Articulations_1")
+  @@index([CreditRecommendation], map: "IX_CPL_Articulations_2")
+  @@index([TopCode], map: "IX_CPL_Articulations_3")
+  @@index([Title], map: "IX_CPL_Articulations_4")
+  @@index([ExhibitID], map: "IX_CPL_Articulations_5")
+  @@index([id], map: "IX_CPL_Articulations_6")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model CPL_CommonCIDs {
+  C_ID            String @map("C-ID") @db.NVarChar(50)
+  C_ID_Descriptor String @map("C-ID_Descriptor")
+  Count           Int
+  Colleges        String  @db.NVarChar(Max)
+
+  @@id([C_ID])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model CPL_CommonCreditRecommendations {
+  Criteria String @db.VarChar(1000)
+  Count    Int?
+
+  @@index([Criteria], map: "IX_CPL_CommonCreditRecommendations")
+  @@id([Criteria])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model CPL_CommonIndustryCertifications {
+  Title                 String @db.NVarChar(255)
+  CPLType               String? @db.NVarChar(50)
+  StudentsCount         Int?
+  ArticulationsCount    Int?
+  Colleges              String? @db.NVarChar(Max)
+  CreditRecommendations String? @db.NVarChar(Max)
+  SortOrder             Int?
+
+  @@index([Title], map: "IX_CPL_CommonIndustryCertifications")
+  @@index([CPLType], map: "IX_CPL_CommonIndustryCertifications_1")
+  @@id([Title])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model CPL_CommonTopCodes {
+  TopCode       String @db.NVarChar(50)
+  Program_Title String @db.NVarChar(255)
+  Count         Int?
+
+  @@index([TopCode], map: "IX_CPL_CommonTopCodes")
+  @@id([TopCode])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model CPL_Exhibits {
+  CollegeID     Int?
+  College       String? @db.NVarChar(255)
+  Criteria      String? @db.NVarChar(255)
+  VersionNumber String? @db.NVarChar(50)
+  Revision      String? @db.NVarChar(50)
+  ID            Int
+  AceID         String? @db.NVarChar(50)
+  Description   String? @db.NVarChar(Max)
+
+  @@index([CollegeID], map: "IX_CPL_Exhibits")
+  @@index([Criteria], map: "IX_CPL_Exhibits_1")
+  @@index([ID], map: "IX_CPL_Exhibits_2")
+  @@index([AceID], map: "IX_CPL_Exhibits_3")
+  @@id([ID])
+}
+model CPL_Savings {
+  Id           Int     @id(map: "PK__CPL_Savi__3214EC07D5C476C3") @default(autoincrement())
+  Sorder       Int?
+  College      String? @db.VarChar(500)
+  CollegeID    Int?
+  WorkingAdult Float?
+  Military     Float?
+  Total        Float?
+  Students     Int?
+  Units        Float?
+  AverageUnits Float?
+}
+
+model CPLCrsArticulations {
+  Id                   Int     @id(map: "PK__CPLCrsAr__3214EC07ACA4EE10") @default(autoincrement())
+  CRType               String? @db.VarChar(150)
+  Course               String? @db.VarChar(150)
+  CreditRecommendation String? @db.VarChar(1000)
+  Notes                String? @db.NVarChar(Max)
+  CatalogDescription   String? @db.NVarChar(Max)
+  ExhibitID            Int?
+  CollegeID            Int?
+  Exhibit              ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
+}
+
+model Course_IssuedForm {
+  outline_id                  Int       @id(map: "PK_Course_IssuedForm") @default(autoincrement())
+  status                      Int       @db.TinyInt
+  archive_info                String?   @db.VarChar(150)
+  approv_date                 DateTime? @db.SmallDateTime
+  subject_id                  Int?
+  division_id                 Int?
+  department_id               Int?
+  course_number               String?   @db.VarChar(15)
+  course_title                String?   @db.VarChar(170)
+  unit_id                     Int?
+  applicability_id            Int?
+  repeatability_id            Int?
+  grading_id                  Int?
+  Vunit_id                    Int?
+  IssuedFormID                Int
+  semester                    String?   @db.VarChar(20)
+  comments                    String?   @db.VarChar(4000)
+  implementation_date         DateTime? @db.SmallDateTime
+  college_id                  Int
+  CatID                       String?   @db.VarChar(9)
+  CrsPrefix                   String?   @db.VarChar(4)
+  CrsSuffix                   String?   @db.VarChar(7)
+  taxon_program_id            Int?
+  effective_start_date        DateTime? @db.SmallDateTime
+  effective_end_date          DateTime? @db.SmallDateTime
+  author_user_id              Int?
+  division_user_id            Int?
+  department_user_id          Int?
+  Deactivate                  Boolean?
+  RevisionDueDate             DateTime? @db.SmallDateTime
+  Articulate                  Boolean?  @default(false, map: "DF__Course_Is__Artic__51300E55")
+  ArticulationStatus          Int?      @default(0, map: "DF__Course_Is__Artic__0697FACD")
+  PublishedBy                 Int?
+  PublishedOn                 DateTime? @db.DateTime
+  StageId                     Int?
+  Rejection                   String?   @db.VarChar(2000)
+  PublishedCode               String?   @db.VarChar(100)
+  isBasicMilitaryTraining     Boolean?  @default(false, map: "DF__Course_Is__isBas__42CCE065")
+  UpdatedBy                   Int?      @default(0, map: "DF__Course_Is__Updat__43C1049E")
+  DisableArticulate           Boolean?  @default(false, map: "DF__Course_Is__Disab__39987BE6")
+  DisableArticulateRationale  String?   @db.VarChar(Max)
+  ExistInOtherColleges        Boolean?  @default(false, map: "DF__Course_Is__Exist__54376389")
+  HasArticulations            Boolean?  @default(false, map: "DF__Course_Is__HasAr__552B87C2")
+  HasPublishedArticulations   Boolean?  @default(false, map: "DF__Course_Is__HasPu__561FABFB")
+  HasImplementedArticulations Boolean?  @default(false, map: "DF__Course_Is__HasIm__5713D034")
+  CatalogDescription          String?   @db.VarChar(Max)
+  CIDNumber                   String?   @db.VarChar(20)
+  TopCode                     Int?
+  CourseType                  Int?      @default(1, map: "DF_Course_IssuedForm_CourseType")
+}
+
+model Articulation {
+  id                       Int       @id(map: "PK_Articulation") @default(autoincrement())
+  ArticulationID           Int
+  outline_id               Int
+  AceID                    String    @db.VarChar(30)
+  Title                    String    @db.VarChar(300)
+  TeamRevd                 DateTime? @db.DateTime
+  Notes                    String?   @db.VarChar(Max)
+  CreatedBy                Int?
+  CreatedOn                DateTime? @default(now(), map: "DF__Articulat__Creat__2EB0D91F") @db.DateTime
+  ModifiedBy               Int?
+  ModifiedOn               DateTime? @db.DateTime
+  CollegeID                Int?
+  ArticulationType         Int?
+  Recommendation           String?   @db.VarChar(400)
+  ArticulationStatus       Int?
+  ArticulationStage        Int?
+  Rejection                String?   @db.VarChar(2000)
+  RequestType              Int?
+  PublishedBy              Int?
+  PublishedOn              DateTime? @db.DateTime
+  Justification            String?   @db.VarChar(Max)
+  Articulate               Boolean?  @default(true, map: "DF__Articulat__Artic__30992191")
+  ForAssociateOnly         Boolean?  @default(false, map: "DF__Articulat__ForAs__318D45CA")
+  ForTransfer              Boolean?  @default(false, map: "DF__Articulat__ForTr__32816A03")
+  ArticulationOfficerNotes String?   @db.VarChar(Max)
+  haveAdditionalCriteria   Boolean?  @default(false, map: "DF__Articulat__haveA__2FA4FD58")
+  Notified                 Boolean?  @default(false, map: "DF__Articulat__Notif__3651FAE7")
+  LastSubmittedBy          Int?
+  LastSubmittedOn          DateTime? @db.DateTime
+  PendingApproval          Boolean?  @default(false, map: "DF__Articulat__Pendi__33758E3C")
+  SourceID                 Int?
+  AmbassadorDataLoad       Boolean?
+  ExhibitID                Int       @default(0, map: "DF__Articulat__Exhib__383A4359")
+  CriteriaID               Int?
+  Originator               Boolean?  @default(false, map: "DF__Articulat__Origi__355DD6AE")
+  AutoCreated              Boolean?  @default(false, map: "DF__Articulat__AutoC__392E6792")
+  AutomaticApproval        Boolean?  @default(false, map: "DF__Articulat__Autom__37461F20")
+  Active                   Boolean?  @default(true, map: "DF__Articulat__Activ__3469B275")
+  Action                   Int?      @default(0, map: "DF__Articulat__Actio__2DBCB4E6")
+  Combined                 Int?
+  Signature                String?   @db.VarChar(50)
+  Exhibit                  ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
+  Stage                    Stages? @relation(fields: [ArticulationStage], references: [Id])
+  @@index([AceID, TeamRevd], map: "articulation_aceid_teamrevd")
+  @@index([ArticulationID, ArticulationType], map: "articulation_id_type")
+  @@index([outline_id], map: "articulation_outline")
+  @@index([ArticulationStage], map: "IX_Articulation")
+  @@index([ExhibitID], map: "IX_Articulation_1")
+}
+
+model ACEExhibit {
+  ID                    Int       @id(map: "PK_ACEExhibit") @default(autoincrement())
+  AceType               Int?
+  AceID                 String?   @db.VarChar(30)
+  StartDate             DateTime? @db.DateTime
+  EndDate               DateTime? @db.DateTime
+  TeamRevd              DateTime? @db.DateTime
+  Title                 String?   @db.VarChar(200)
+  ExhibitDisplay        String?   @db.VarChar(Max)
+  Recommendations       String?   @db.VarChar(Max)
+  LearningOutcomes      String?   @db.VarChar(Max)
+  ImportedOn            DateTime? @db.DateTime
+  Location              String?   @db.VarChar(Max)
+  Criteria              String?   @db.VarChar(Max)
+  Exhibit               String?   @default("", map: "DF__ACEExhibi__Exhib__1E7A7156") @db.Char(3)
+  Occupation            String?   @default("", map: "DF__ACEExhibi__Occup__1F6E958F") @db.Char(10)
+  OccupationServiceCode String?   @default("", map: "DF__ACEExhibi__Occup__2062B9C8") @db.Char(3)
+  ServiceID             Int?
+  VersionNumber         String?   @default("", map: "DF__ACEExhibi__Versi__224B023A") @db.Char(3)
+  UpdatedOn             DateTime? @db.DateTime
+  SourceID              Int?      @default(1, map: "DF__ACEExhibi__Sourc__2156DE01")
+  CollegeID             Int?
+  CPLType               Int?
+  Revision              String?   @db.VarChar(3)
+  EstimatedUnits        Float?
+  Notes                 String?   @default("", map: "DEFAULT_ACEExhibit_Notes") @db.NVarChar(Max)
+  ModelOfLearning       Int?
+  CreatedBy             Int?
+  CreatedOn             DateTime? @default(now(), map: "DEFAULT_ACEExhibit_CreatedOn") @db.DateTime
+  UpdatedBy             Int?
+  CCFacultyWorkgroup    Boolean?  @default(false, map: "DEFAULT_ACEExhibit_CCFacultyWorkgroup")
+  CollaborativeNotes    String?   @db.VarChar(Max)
+  RevisedBy             String?   @db.VarChar(Max)
+  Status                Int?      @default(1, map: "DF__ACEExhibi__Statu__22E0CA6E")
+  IsPrivate             Boolean?  @default(false, map: "DF__ACEExhibi__IsPri__61B15A38")
+  Rubrics               CPLRubric[]
+  Evidence              CPLEvidenceCompetency[]
+  CPLDocuments          CPLExhibitDocuments[]
+  CPLCrsArticulations   CPLCrsArticulations[]
+  Articulation          Articulation[]
+  @@index([Title], map: "idx_Title")
+  @@index([AceType], map: "IX_ACEExhibit")
+  @@index([Exhibit], map: "IX_ACEExhibit_1")
+  @@index([VersionNumber], map: "IX_ACEExhibit_2")
+  @@index([SourceID], map: "IX_ACEExhibit_3")
+  @@index([CollegeID], map: "IX_ACEExhibit_4")
+  @@index([CPLType], map: "IX_ACEExhibit_5")
+  @@index([ID], map: "NonClusteredIndex-20230130-063111")
+}
+
+model ACEExhibitCriteria {
+  CriteriaID          Int       @id(map: "PK_ACEExhibitCriteria") @default(autoincrement())
+  AceID               String?   @db.VarChar(30)
+  AceType             Int?
+  StartDate           DateTime? @db.DateTime
+  EndDate             DateTime? @db.DateTime
+  TeamRevd            DateTime? @db.DateTime
+  Criteria            String?   @db.VarChar(Max)
+  ImportedOn          DateTime? @db.DateTime
+  CriteriaDescription String?   @db.VarChar(2000)
+  CriteriaCategory    String?   @db.VarChar(2000)
+  Units               String?   @db.VarChar(8)
+  SourceID            Int?      @default(1, map: "DF__ACEExhibi__Sourc__2803DB90")
+  SkillLevel          String?   @default("", map: "DF_ACEExhibitCriteria_SkillLevel") @db.VarChar(50)
+  VersionNum          Int?
+  CollegeID           Int?
+  Notes               String?   @default("", map: "DF_ACEExhibitCriteria_Notes") @db.VarChar(Max)
+  OutlineID           Int?
+  CreatedBy           Int?
+  CreatedOn           DateTime? @default(now(), map: "DF__ACEExhibi__Creat__270FB757") @db.DateTime
+  ExhibitID           Int?
+
+  @@index([SourceID], map: "idx_SourceID")
+  @@index([CriteriaID], map: "Index_ACEExhibitCriteria_1")
+  @@index([ExhibitID], map: "Index_ACEExhibitCriteria_2")
+  @@index([CollegeID], map: "Index_ACEExhibitCriteria_3")
+  @@index([OutlineID], map: "Index_ACEExhibitCriteria_4")
+  @@index([AceID, TeamRevd], map: "IX_ACEExhibitCriteria")
+}
+
+model CollegeUIConfig {
+  Id                         Int      @id(map: "PK__CollegeU__3214EC07FFB72B28") @default(autoincrement())
+  CollegeID                  Int      @unique
+  LogoUrl                    String?  @db.VarChar(Max)
+  Email                      String?  @db.VarChar(Max)
+  PhoneNumber                String?  @db.VarChar(Max)
+  Website                    String?  @db.VarChar(Max)
+  HeaderBackgroundColor      String?  @default("#C1C1C1", map: "DF__CollegeUI__Heade__4A4ED1F3") @db.VarChar(7)
+  HeaderFontColor            String?  @default("#000000", map: "DF__CollegeUI__Heade__4B42F62C") @db.VarChar(7)
+  CompBackgroundColor        String?  @default("#C1C1C1", map: "DF__CollegeUI__CompB__4C371A65") @db.VarChar(7)
+  CompFontColor              String?  @default("#000000", map: "DF__CollegeUI__CompF__4D2B3E9E") @db.VarChar(7)
+  PanelBackgroundColor       String?  @default("#C1C1C1", map: "DF__CollegeUI__Panel__4E1F62D7") @db.VarChar(7)
+  PanelFontColor             String?  @default("#000000", map: "DF__CollegeUI__Panel__4F138710") @db.VarChar(7)
+  CompHoverFontColor         String?  @default("#000000", map: "DF__CollegeUI__CompH__5007AB49") @db.VarChar(7)
+  TableRowFontColor          String?  @default("#000000", map: "DF__CollegeUI__Table__50FBCF82") @db.VarChar(7)
+  TableRowBackgroundColor    String?  @default("#FFFFFF", map: "DF__CollegeUI__Table__51EFF3BB") @db.VarChar(7)
+  CompHoverBackgroundColor   String?  @db.VarChar(7)
+  TableHeaderBackgroundColor String?  @default("#C1C1C1", map: "DF__CollegeUI__Table__52E417F4") @db.VarChar(7)
+  TableHeaderFontColor       String?  @default("#000000", map: "DF__CollegeUI__Table__53D83C2D") @db.VarChar(7)
+  LinkColor                  String?  @default("#000000", map: "DF__CollegeUI__LinkC__54CC6066") @db.VarChar(7)
+  LinkHoverColor             String?  @db.VarChar(7)
+  BodyBackground             String?  @default("#FFFFFF", map: "DF__CollegeUI__BodyB__55C0849F") @db.VarChar(7)
+  BodyFontColor              String?  @default("#000000", map: "DF__CollegeUI__BodyF__56B4A8D8") @db.VarChar(7)
+  HideCollegeName            Boolean? @default(false, map: "DF__CollegeUI__HideC__57A8CD11")
+  Slug                       String?  @db.VarChar(Max)
+  WebsiteText                String?  @db.VarChar(Max)
+  College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
+  Links                      CollegeUILinks[]
+  Contacts                   ViewCPLContacts[]
+}
+
+model ViewCPLCourses {
+    OutlineID                Int @id
+    College                  String? @db.VarChar(100)
+    Subject                  String? @db.VarChar(50)
+    CourseNumber             String? @db.VarChar(15)
+    CourseTitle              String? @db.VarChar(170)
+    Units                    String? @db.VarChar(8)
+    CollegeID Int
+    Course                   String?  @db.VarChar(Max)    
+    Evidence                 ViewCPLEvidenceCompetency[]
+    IndustryCertifications   ViewCPLIndustryCertifications[]
+}
+
+model ViewCPLEvidenceCompetency {
+    OutlineID                Int @id
+    EvidenCompetency         String? @db.VarChar(100)
+    CPLCourse                ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
+}
+
+model ViewCPLIndustryCertifications {
+    OutlineID                Int @id
+    IndustryCertification    String? @db.VarChar(100)
+    CPLCourse                ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
+}
+
+model ViewCPLCommonQualifications {
+    CollegeID                Int 
+    IndustryCertification    String @db.VarChar(500)
+    UnitsTotal               String? @db.VarChar(100)
+    CPLCode                  String? @db.VarChar(100)
+    CPLDescription           String? @db.VarChar(500)
+    @@id([CollegeID, IndustryCertification])
+}
+
+model CollegeUILinks {
+    Id                Int @id
+    CollegeID         Int
+    LinkText          String @db.VarChar(300)
+    LinkURL           String? @db.VarChar(500)
+    LinkTarget        String? @db.VarChar(100)
+    CollegeUI         CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
+}
+
+model ViewCPLContacts {
+    CollegeID                       Int @id
+    ContactType                     String? @db.VarChar(100)
+    Name                            String? @db.VarChar(100)
+    Email                           String? @db.VarChar(100)
+
+    CollegeUI                       CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
+}
