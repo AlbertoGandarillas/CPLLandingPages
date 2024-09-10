@@ -101,22 +101,22 @@ export default function ArticulationsTable({
                   filteredItems.map((articulation) => (
                     <Card key={articulation.OutlineID}>
                       <CardHeader className="bg-gray-100">
-                        <CardTitle className="text-lg h-11 flex align-bottom">
+                        <CardTitle className="text-md h-auto flex align-bottom">
                           {articulation.Subject} {articulation.CourseNumber} :{" "}
                           {articulation.CourseTitle}
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="grid">
-                        <h3 className="text-base font-bold pt-4">
+                        <h4 className="text-sm font-bold pt-4">
                           Credits : {articulation.Units}
-                        </h3>
+                        </h4>
                         <div>
                           {articulation.IndustryCertifications &&
                             articulation.IndustryCertifications.length > 0 && (
                               <>
-                                <h3 className="text-base font-bold">
+                                <h4 className="text-sm font-bold">
                                   CPL Eligible Qualifications{" "}
-                                </h3>
+                                </h4>
                                 {articulation.IndustryCertifications?.map(
                                   (cert, index) => (
                                     <p className="text-sm" key={index}>
@@ -129,7 +129,7 @@ export default function ArticulationsTable({
                           {articulation.Evidence &&
                             articulation.Evidence.length > 0 && (
                               <>
-                                <h3 className="text-base font-bold">
+                                <h3 className="text-sm font-bold">
                                   Required Evidence:
                                 </h3>
                                 {articulation.Evidence?.map(

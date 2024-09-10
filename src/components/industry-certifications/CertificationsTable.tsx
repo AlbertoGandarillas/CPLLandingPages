@@ -25,8 +25,6 @@ export default function CertificationsTable({data, onRowClick, loading, error}: 
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead># of Credits</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -41,13 +39,6 @@ export default function CertificationsTable({data, onRowClick, loading, error}: 
                   >
                     {ic.IndustryCertification}
                   </TableCell>
-                  <TableCell>
-                    <a
-                      href="#"
-                      title={ic.CPLDescription ? ic.CPLDescription : ""}
-                    >{ic.CPLCode}</a>
-                  </TableCell>
-                  <TableCell>{ic.UnitsTotal}</TableCell>
                 </TableRow>
               ))}
           </TableBody>

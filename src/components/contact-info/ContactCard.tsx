@@ -18,7 +18,7 @@ export default function ContactCard({ settings }: ContactCardProps) {
   return (
     <Card className="bg-transparent border-none">
       <CardContent className="grid gap-4 pt-4">
-        <div className="flex items-center space-x-4 pb-4">
+        <div className="flex items-center space-x-4 pb-3">
           <Globe />
           <div className="flex-1 space-y-1">
             <p className="text-sm font-medium leading-none">
@@ -26,19 +26,11 @@ export default function ContactCard({ settings }: ContactCardProps) {
             </p>
           </div>
         </div>
-        <div className="flex items-center space-x-4 pb-4">
+        <div className="flex items-center space-x-4 pb-3">
           <Mail />
           <div className="flex-1 space-y-1">
             <p className="text-sm font-medium leading-none">
               <Link href={`mailto:${settings.Email}`}>{settings.Email}</Link>
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-4 pb-4">
-          <Phone />
-          <div className="flex-1 space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {settings.PhoneNumber}
             </p>
           </div>
         </div>

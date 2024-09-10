@@ -6,12 +6,13 @@ interface LogoProps {
     Website: string;
     HideCollegeName: boolean;
     HeaderFontColor: string;
+    HideLogo: boolean;
   };
 }
 export function Logo({ logoUrl, college, settings }: LogoProps) {
   return (
     <div className="w-full text-center mb-4">
-      {settings.HideCollegeName ? (
+      {!settings.HideLogo && (
         <Image
           src={logoUrl}
           alt={college}
@@ -22,9 +23,10 @@ export function Logo({ logoUrl, college, settings }: LogoProps) {
           className="max-w-[250px] m-auto"
           style={{ maxHeight: "100%" }}
         />
-      ) : (
+      ) }
+       {!settings.HideCollegeName &&  (
         <h1
-          className="text-4xl font-bold ml-4"
+          className="text-xl font-bold ml-4 mt-4"
           style={{
             color: settings.HeaderFontColor,
           }}

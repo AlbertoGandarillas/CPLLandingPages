@@ -35,10 +35,7 @@ export default function Contacts({ settings, className }: ContactsProps) {
 
   return (
     <Card className={`w-full ${className}`}>
-      <CardHeader>
-        <CardTitle>CPL Contacts</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="py-4">
         <ul className="space-y-4">
           {validContacts.map((contact) => (
             <li

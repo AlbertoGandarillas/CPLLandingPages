@@ -475,6 +475,7 @@ model CollegeUIConfig {
   HideCollegeName            Boolean? @default(false, map: "DF__CollegeUI__HideC__57A8CD11")
   Slug                       String?  @db.VarChar(Max)
   WebsiteText                String?  @db.VarChar(Max)
+  HideLogo                   Boolean? @default(false)
   College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
   Links                      CollegeUILinks[]
   Contacts                   ViewCPLContacts[]

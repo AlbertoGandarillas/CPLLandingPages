@@ -19,7 +19,7 @@ import {
 import Contacts from "@/components/contact-info/Contact";
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [open, setOpen] = useState("item-1");
+  const [open, setOpen] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<string | undefined>(
     undefined
   );
@@ -87,7 +87,7 @@ export default function Home({ params }: any) {
           color: settingsObject.BodyFontColor,
         }}
       >
-        <aside className="w-auto p-4 flex flex-col justify-start">
+        <aside className="w-[390px] p-4 flex flex-col justify-start">
           <Logo
             logoUrl={logoUrl}
             college={settingsObject.College.College}
@@ -95,6 +95,15 @@ export default function Home({ params }: any) {
           />
           <ContactCard settings={settingsObject} />
           <SidebarButtons settings={settingsObject} />
+          <MainCard
+            title="Most Common Approved Opportunities"
+            className="w-full mt-4"
+          >
+            <IndustryCertificationsTable
+              onIndustryCertificationSelect={handleIndustryCertificationSelect}
+              collegeId={settingsObject.CollegeID}
+            />
+          </MainCard>
           <Contacts settings={settingsObject} className="mt-4" />
         </aside>
 
@@ -111,26 +120,16 @@ export default function Home({ params }: any) {
                 <h1>{appName}</h1>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="grid gap-4 grid-cols-2 pt-4">
-                  <Card>
-                    <CardHeader className="bg-white"></CardHeader>
-                    <CardContent className="max-h-[350px] overflow-y-auto">
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: settingsObject.WebsiteText,
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                  <MainCard title="Most Common Qualifications">
-                    <IndustryCertificationsTable
-                      onIndustryCertificationSelect={
-                        handleIndustryCertificationSelect
-                      }
-                      collegeId={settingsObject.CollegeID}
+                <Card>
+                  <CardHeader className="bg-white"></CardHeader>
+                  <CardContent className="max-h-[350px] text-center overflow-y-auto">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: settingsObject.WebsiteText,
+                      }}
                     />
-                  </MainCard>
-                </div>
+                  </CardContent>
+                </Card>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -138,7 +137,7 @@ export default function Home({ params }: any) {
             <Card>
               <CardHeader className="bg-gray-100">
                 <CardTitle className="grid grid-cols-2">
-                  <div>Eligible Courses</div>
+                  <div className="text-xl">Eligible Courses</div>
                   <SearchBar onSearch={setSearchTerm} />
                 </CardTitle>
               </CardHeader>

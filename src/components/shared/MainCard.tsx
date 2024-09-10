@@ -11,19 +11,21 @@ interface MainCardProps {
   title: string;
   tooltipContent?: string;
   children: React.ReactNode;
+  className?: string;
 }
 export default function MainCard({
   title,
   tooltipContent,
   children,
+  className,
 }: MainCardProps) {
   return (
-    <Card className="w-full">
+    <Card className={`${className}`}>
       <CardHeader
         className="bg-gray-100
       "
       >
-        <CardTitle className="flex items-center gap-1">
+        <CardTitle className="flex text-lg items-center gap-1">
           {tooltipContent && (
             <TooltipProvider>
               <Tooltip>
