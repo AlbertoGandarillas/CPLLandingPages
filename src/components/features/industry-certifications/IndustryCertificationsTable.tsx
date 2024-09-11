@@ -3,9 +3,8 @@ import CertificationsTable from "./CertificationsTable";
 import { useCallback, useEffect, useState } from "react";
 import FilterInput from "../../shared/FilterInput";
 import CriteriaBadge from "../../shared/FilterBadge";
-import { ViewCPLCommonQualifications } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
+import { useIndustryCertifications } from "@/hooks/useIndustryCertifications";
 interface IndustryCertificationsTableProps {
   onIndustryCertificationSelect: (industryCertifiction: string) => void;
   collegeId: string;
@@ -14,17 +13,8 @@ export default function IndustryCertificationsTable({
   onIndustryCertificationSelect,
   collegeId,
 }: IndustryCertificationsTableProps) {
-  const {
-    data: industryCertifications,
-    error,
-    isLoading,
-  } = useQuery<ViewCPLCommonQualifications[]>({
-    queryKey: ["industryCertifications", collegeId], // Include collegeId in queryKey for correct caching
-    queryFn: () =>
-      fetch(`/api/industry-certifications?collegeId=${collegeId}`).then((res) =>
-        res.json()
-      ),
-  });
+  const { data: industryCertifications, isLoading, error } =
+    useIndustryCertifications(collegeId);
   const [filterText, setFilterText] = useState("");
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
@@ -52,7 +42,7 @@ export default function IndustryCertificationsTable({
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
           autoFocus
-          className="custom-input-class"
+          className="custom-input-class m-2"
           type="text"
         />
       </div>

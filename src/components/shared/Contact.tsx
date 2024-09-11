@@ -60,12 +60,11 @@ function ContactItem({ contact }: { contact: Contact }) {
             <User className="h-5 w-5" />
           </AvatarFallback>
         </Avatar>
-        <div className="px-3">
+        <div className="px-3 flex flex-col">
           <p className="text-sm font-bold leading-none">
             {contact.ContactType}
           </p>
-          <p className="text-sm font-medium leading-none">{contact.Name}</p>
-          <p className="text-sm text-muted-foreground">{contact.Email}</p>
+          <p className="text-sm font-medium leading-none pt-1">{contact.Name}</p>
         </div>
       </div>
     </li>

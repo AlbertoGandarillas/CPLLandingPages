@@ -3,8 +3,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { ViewCPLCommonQualifications } from "@prisma/client";
@@ -27,11 +25,6 @@ export default function CertificationsTable({
       {error && <p>Error: {error.message}</p>}
       <SkeletonWrapper isLoading={loading} fullWidth={true} variant="table">
         <Table className="w-full">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-            </TableRow>
-          </TableHeader>
           <TableBody>
             {!loading &&
               !error &&
