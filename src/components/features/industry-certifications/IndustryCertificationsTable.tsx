@@ -1,18 +1,18 @@
 "use client";
 import CertificationsTable from "./CertificationsTable";
 import { useCallback, useEffect, useState } from "react";
-import FilterInput from "../shared/FilterInput";
-import CriteriaBadge from "../shared/FilterBadge";
+import FilterInput from "../../shared/FilterInput";
+import CriteriaBadge from "../../shared/FilterBadge";
 import { ViewCPLCommonQualifications } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
 interface IndustryCertificationsTableProps {
   onIndustryCertificationSelect: (industryCertifiction: string) => void;
-  collegeId: string ;
+  collegeId: string;
 }
 export default function IndustryCertificationsTable({
   onIndustryCertificationSelect,
-  collegeId
+  collegeId,
 }: IndustryCertificationsTableProps) {
   const {
     data: industryCertifications,
@@ -37,13 +37,13 @@ export default function IndustryCertificationsTable({
     setFilterText("");
     onIndustryCertificationSelect("");
   };
-   const debouncedSetFilterText = useCallback(debounce(setFilterText, 300), []);
-    useEffect(() => {
-      debouncedSetFilterText(filterText);
-      return () => {
-        debouncedSetFilterText.cancel();
-      };
-    }, [filterText, debouncedSetFilterText]);
+  const debouncedSetFilterText = useCallback(debounce(setFilterText, 300), []);
+  useEffect(() => {
+    debouncedSetFilterText(filterText);
+    return () => {
+      debouncedSetFilterText.cancel();
+    };
+  }, [filterText, debouncedSetFilterText]);
   return (
     <div className="h-[350px] overflow-auto">
       <div className="p-2">
@@ -65,7 +65,9 @@ export default function IndustryCertificationsTable({
       <CertificationsTable
         data={
           industryCertifications?.filter((ic) =>
-            ic.IndustryCertification.toLowerCase().includes(filterText.toLowerCase())
+            ic.IndustryCertification.toLowerCase().includes(
+              filterText.toLowerCase()
+            )
           ) ?? []
         }
         onRowClick={handleCertificationClick}

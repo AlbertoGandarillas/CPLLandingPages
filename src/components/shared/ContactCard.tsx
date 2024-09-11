@@ -22,7 +22,7 @@ export default function ContactCard({ settings }: ContactCardProps) {
           <Globe />
           <div className="flex-1 space-y-1">
             <p className="text-sm font-medium leading-none">
-              <Link href={settings.Website}>{settings.Website}</Link>
+              <Link target="_blank" href={settings.Website}>{settings.Website}</Link>
             </p>
           </div>
         </div>

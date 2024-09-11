@@ -1,14 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import IndustryCertificationsTable from "@/components/industry-certifications/IndustryCertificationsTable";
-import MainCard from "@/components/shared/MainCard";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryString } from "@/lib/createQueryString";
-import ArticulationsTable from "@/components/cpl-courses/ArticulationsTable";
-import { Logo } from "@/components/shared/Logo";
-import ContactCard from "@/components/contact-info/ContactCard";
+import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
 import SearchBar from "@/components/shared/SearchBar";
-import SidebarButtons from "@/components/shared/SidebarButtons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Accordion,
@@ -16,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Contacts from "@/components/contact-info/Contact";
+import Sidebar from "@/components/layout/Sidebar";
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState("");
@@ -87,25 +82,10 @@ export default function Home({ params }: any) {
           color: settingsObject.BodyFontColor,
         }}
       >
-        <aside className="w-[390px] p-4 flex flex-col justify-start">
-          <Logo
-            logoUrl={logoUrl}
-            college={settingsObject.College.College}
-            settings={settingsObject}
-          />
-          <ContactCard settings={settingsObject} />
-          <SidebarButtons settings={settingsObject} />
-          <MainCard
-            title="Most Common Approved Opportunities"
-            className="w-full mt-4"
-          >
-            <IndustryCertificationsTable
-              onIndustryCertificationSelect={handleIndustryCertificationSelect}
-              collegeId={settingsObject.CollegeID}
-            />
-          </MainCard>
-          <Contacts settings={settingsObject} className="mt-4" />
-        </aside>
+        <Sidebar
+          settingsObject={settingsObject}
+          onIndustryCertificationSelect={handleIndustryCertificationSelect}
+        />
 
         <main className="flex-1 p-4">
           <Accordion

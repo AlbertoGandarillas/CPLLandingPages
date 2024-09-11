@@ -4,26 +4,25 @@ import { CircleX } from "lucide-react";
 interface FilterInputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onClear?: () => void;
 }
-export default function FilterInput({
-  value,
-  onChange,
-  ...rest
-}: FilterInputProps) {
+export default function FilterInput({ value, onChange, onClear, ...rest }: FilterInputProps) {
   const handleClear = () => {
-    const event: ChangeEvent<HTMLInputElement> = {
-      target: {
-        value: "", 
-      },
-    } as ChangeEvent<HTMLInputElement>; 
-    onChange(event); 
+    if (onClear) {
+      onClear();
+    } else {
+      const event: ChangeEvent<HTMLInputElement> = {
+        target: { value: "" },
+      } as ChangeEvent<HTMLInputElement>;
+      onChange(event);
+    }
   };
   return (
-    <div className="p-2 flex items-center">
+    <div className="relative flex items-center">
       <Input value={value} onChange={onChange} {...rest} />
       {value && (
         <CircleX
-          className="ml-2 text-slate-200 cursor-pointer"
+          className="absolute right-3 text-gray-400 cursor-pointer"
           onClick={handleClear}
         />
       )}

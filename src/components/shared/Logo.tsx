@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 interface LogoProps {
   logoUrl: string;
   college: string;
@@ -9,6 +10,7 @@ interface LogoProps {
     HideLogo: boolean;
   };
 }
+
 export function Logo({ logoUrl, college, settings }: LogoProps) {
   return (
     <div className="w-full text-center mb-4">
@@ -18,13 +20,13 @@ export function Logo({ logoUrl, college, settings }: LogoProps) {
           alt={college}
           width={250}
           height={90}
-          layout="responsive" // Makes the image scale with the width of its container
-          objectFit="contain" // Ensures the image is scaled correctly within its element bounds
+          layout="responsive"
+          objectFit="contain"
           className="max-w-[250px] m-auto"
           style={{ maxHeight: "100%" }}
         />
-      ) }
-       {!settings.HideCollegeName &&  (
+      )}
+      {!settings.HideCollegeName && (
         <h1
           className="text-xl font-bold ml-4 mt-4"
           style={{

@@ -26,22 +26,29 @@ export default function MainCard({
       "
       >
         <CardTitle className="flex text-lg items-center gap-1">
-          {tooltipContent && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info size={16} strokeWidth={2.5} />
-                </TooltipTrigger>
-                <TooltipContent className="absolute text-xs w-[400px]">
-                  {tooltipContent}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {tooltipContent && <InfoTooltip content={tooltipContent} />}
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
+  );
+}
+interface InfoTooltipProps {
+  content: string;
+}
+
+function InfoTooltip({ content }: InfoTooltipProps) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Info size={16} strokeWidth={2.5} />
+        </TooltipTrigger>
+        <TooltipContent className="absolute text-xs w-[400px]">
+          {content}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

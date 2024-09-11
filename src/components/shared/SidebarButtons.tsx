@@ -15,13 +15,14 @@ interface SidebarButtonsProps {
 export default function SidebarButtons({ settings }: SidebarButtonsProps) {
     const cplCounselor = `mailto:${settings.Email}`;
   return (
-    <div className="grid gap-4 pt-4 pl-4">
+    <div className="grid gap-4 pt-4">
       <LinkButton
         href={cplCounselor}
         style={{
           backgroundColor: settings.CompBackgroundColor,
           color: settings.CompFontColor,
         }}
+        target="_blank"
         variant="default"
         className="w-full"
       >

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   Table,
   TableBody,
@@ -7,16 +7,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ViewCPLCommonQualifications } from '@prisma/client';
-import SkeletonWrapper from '../shared/SkeletonWrapper';
+import { ViewCPLCommonQualifications } from "@prisma/client";
+import SkeletonWrapper from "../../shared/SkeletonWrapper";
 interface IndustryCertificationsTableProps {
-    data: ViewCPLCommonQualifications[];
-    onRowClick: (industryCertification: string) => void;
-    loading: boolean;
-    error: Error | null;
-    }
+  data: ViewCPLCommonQualifications[];
+  onRowClick: (industryCertification: string) => void;
+  loading: boolean;
+  error: Error | null;
+}
 
-export default function CertificationsTable({data, onRowClick, loading, error}: IndustryCertificationsTableProps) {
+export default function CertificationsTable({
+  data,
+  onRowClick,
+  loading,
+  error,
+}: IndustryCertificationsTableProps) {
   return (
     <>
       {error && <p>Error: {error.message}</p>}
