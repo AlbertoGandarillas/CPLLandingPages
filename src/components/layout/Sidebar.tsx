@@ -59,26 +59,24 @@ export default function Sidebar({
       <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block /* other classes */`}
+        } lg:block w-72 p-4 flex flex-col justify-start`}
       >
         {
           <>
-            <aside className="w-[390px] p-4 flex flex-col justify-start">
-              <Logo
-                logoUrl={logoUrl}
-                college={settingsObject.College.College}
-                settings={settingsObject}
+            <Logo
+              logoUrl={logoUrl}
+              college={settingsObject.College.College}
+              settings={settingsObject}
+            />
+            <ContactCard settings={settingsObject} />
+            <SidebarButtons settings={settingsObject} />
+            <MainCard title="Approved Opportunities" className="w-full mt-4">
+              <IndustryCertificationsTable
+                onIndustryCertificationSelect={onIndustryCertificationSelect}
+                collegeId={settingsObject.CollegeID}
               />
-              <ContactCard settings={settingsObject} />
-              <SidebarButtons settings={settingsObject} />
-              <MainCard title="Approved Opportunities" className="w-full mt-4">
-                <IndustryCertificationsTable
-                  onIndustryCertificationSelect={onIndustryCertificationSelect}
-                  collegeId={settingsObject.CollegeID}
-                />
-              </MainCard>
-              <Contacts settings={settingsObject} className="mt-4" />
-            </aside>
+            </MainCard>
+            <Contacts settings={settingsObject} className="mt-4" />
           </>
         }
       </aside>
