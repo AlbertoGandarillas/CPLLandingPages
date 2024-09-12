@@ -20,10 +20,9 @@ export function Logo({ logoUrl, college, settings }: LogoProps) {
           alt={college}
           width={250}
           height={90}
-          layout="responsive"
-          objectFit="contain"
+          priority
           className="max-w-[250px] m-auto"
-          style={{ maxHeight: "100%" }}
+          style={{ maxWidth: "100%", height: "auto", width: "auto" }}
         />
       )}
       {!settings.HideCollegeName && (

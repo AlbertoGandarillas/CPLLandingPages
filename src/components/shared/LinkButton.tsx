@@ -15,10 +15,10 @@ export default function LinkButton({
   ...props
 }: LinkButtonProps) {
   return (
-    <Link className="w-full" target={target} href={href} passHref>
-      <Button asChild variant={variant} size={size} {...props}>
-        <a>{children}</a>
-      </Button>
-    </Link>
+    <Button asChild variant={variant} size={size} className="w-full" {...props}>
+      <Link href={href} target={target}>
+        {children}
+      </Link>
+    </Button>
   );
 }

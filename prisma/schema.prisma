@@ -139,57 +139,6 @@ model Stages {
 }
 
 
-
-model CPL_Articulations {
-  id                   Int      @id(map: "PK_CPL_Articulations")
-  CPLTypeDescription   String?  @db.NVarChar(255)
-  College              String?  @db.NVarChar(255)
-  subject              String?  @db.NVarChar(50)
-  course_number        String?  @db.NVarChar(50)
-  course_title         String?  @db.NVarChar(255)
-  MinUnits             String?  @db.NVarChar(255)
-  CIDSubject           String?  @db.NVarChar(50)
-  CIDCourseNumber      String?  @db.NVarChar(50)
-  CIDTitle             String?  @db.NVarChar(255)
-  CIDUnits             String?  @db.NVarChar(255)
-  Branch               String?  @db.NVarChar(50)
-  CIDNumber            String?  @db.NVarChar(50)
-  CIDDescriptor        String?  @db.NVarChar(255)
-  Title                String?  @db.NVarChar(255)
-  AceID                String?  @db.NVarChar(30)
-  CreditRecommendation String?  @db.NVarChar(255)
-  TopCode              String?  @db.NVarChar(255)
-  Students             Int?
-  CRUnits              Decimal? @db.Decimal(10, 2)
-  ExhibitID            Int?
-  CollegeID            Int?
-  Program_Title        String?  @db.NChar(255)
-  LearningMode         String?  @db.NChar(200)
-  LearningModeID       Int?
-  // CriteriaID           Int?
-  // outline_id           Int?
-  // SourceID             Int?
-  // VersionNumber        String?  @db.NVarChar(10)
-  @@index([CIDNumber], map: "Index_CPL_Articulations_1")
-  @@index([id], map: "IX_CPL_Articulations")
-  @@index([CollegeID], map: "IX_CPL_Articulations_1")
-  @@index([CreditRecommendation], map: "IX_CPL_Articulations_2")
-  @@index([TopCode], map: "IX_CPL_Articulations_3")
-  @@index([Title], map: "IX_CPL_Articulations_4")
-  @@index([ExhibitID], map: "IX_CPL_Articulations_5")
-  @@index([id], map: "IX_CPL_Articulations_6")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model CPL_CommonCIDs {
-  C_ID            String @map("C-ID") @db.NVarChar(50)
-  C_ID_Descriptor String @map("C-ID_Descriptor")
-  Count           Int
-  Colleges        String  @db.NVarChar(Max)
-
-  @@id([C_ID])
-}
-
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model CPL_CommonCreditRecommendations {
   Criteria String @db.VarChar(1000)

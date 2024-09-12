@@ -15,9 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen font-sans">
-        <Toaster richColors position="bottom-right" />
-        <RootProviders>{children}</RootProviders>
+      <body>
+        <RootProviders>
+          <div className="flex flex-col min-h-screen font-sans">{children}</div>
+          <Toaster richColors position="bottom-right" />
+        </RootProviders>
       </body>
     </html>
   );

@@ -26,8 +26,11 @@ export default function Contacts({ settings, className }: ContactsProps) {
     <Card className={`w-full ${className}`}>
       <CardContent className="py-4">
         <ul className="space-y-4">
-          {validContacts.map((contact) => (
-            <ContactItem key={contact.Email} contact={contact} />
+          {validContacts.map((contact, index) => (
+            <ContactItem
+              key={`${contact.ContactType}-${contact.Name}-${contact.Email}-${index}`}
+              contact={contact}
+            />
           ))}
         </ul>
       </CardContent>
