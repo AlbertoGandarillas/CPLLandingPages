@@ -1,10 +1,6 @@
 export interface QueryParams {
   college?: string | null;
-  creditRecommendation?: string | null;
-  topCode?: string | null;
   industryCertification?: string | null;
-  cidNumber?: string | null;
-  learningMode?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Sidebar from "@/components/layout/Sidebar";
+
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState("");
@@ -69,7 +70,6 @@ export default function Home({ params }: any) {
   if (!settingsObject) {
     return <div>No settings available</div>;
   }
-  const logoUrl = `${process.env.NEXT_PUBLIC_LOGO_BASE_URL}${settingsObject.LogoUrl}`;
   const appName = `${process.env.NEXT_PUBLIC_APP_NAME}`;
   const appCopyright = `${process.env.NEXT_PUBLIC_APP_COPYRIGHT}`;
 
@@ -86,7 +86,6 @@ export default function Home({ params }: any) {
           settingsObject={settingsObject}
           onIndustryCertificationSelect={handleIndustryCertificationSelect}
         />
-
         <main className="flex-1 p-4">
           <Accordion
             type="single"

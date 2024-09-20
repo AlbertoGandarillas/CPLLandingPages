@@ -1,5 +1,5 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Globe, Mail, Phone } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Globe, Mail } from "lucide-react";
 import Link from "next/link";
 
 interface ContactCardProps {
@@ -13,8 +13,6 @@ interface ContactCardProps {
 }
 
 export default function ContactCard({ settings }: ContactCardProps) {
-
-
   return (
     <Card className="bg-transparent border-none">
       <CardContent className="grid gap-4 pt-4">

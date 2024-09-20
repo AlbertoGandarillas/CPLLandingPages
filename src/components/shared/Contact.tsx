@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
 
 interface Contact {
@@ -41,9 +41,6 @@ export default function Contacts({ settings, className }: ContactsProps) {
 function EmptyContactsCard({ className }: { className?: string }) {
   return (
     <Card className={`w-full ${className}`}>
-      <CardHeader>
-        <CardTitle>CPL Contacts</CardTitle>
-      </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground">
           No contact information available.
