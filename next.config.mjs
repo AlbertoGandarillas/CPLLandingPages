@@ -3,7 +3,7 @@ const nextConfig = {
   images: {
     domains: [
       "localhost", // Allow images from localhost
-      "example.com", // Example external domain
+      "hwsrv-1132312.hostwindsdns.com", // Example external domain
       // Add any other domains you need here
     ],
   },
