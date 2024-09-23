@@ -13,7 +13,7 @@ interface SidebarButtonsProps {
   };
 }
 export default function SidebarButtons({ settings }: SidebarButtonsProps) {
-    const cplCounselor = `mailto:${settings.Email}`;
+  const cplCounselor = `mailto:${settings.Email}`;
   return (
     <div className="grid gap-4 pt-4">
       <LinkButton
@@ -26,7 +26,7 @@ export default function SidebarButtons({ settings }: SidebarButtonsProps) {
         variant="default"
         className="w-full"
       >
-        Contact a CPL Counselor
+        Contact a CPL Assistant
       </LinkButton>
       {settings.Links.map((link, index) => (
         <LinkButton

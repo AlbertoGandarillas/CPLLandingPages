@@ -126,6 +126,7 @@ export default function Home({ params }: any) {
                   loading={isLoading}
                   error={error}
                   searchTerm={searchTerm}
+                  CPLAssistantEmail={settingsObject.Email}
                 />
               </CardContent>
             </Card>

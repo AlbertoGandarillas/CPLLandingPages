@@ -29,12 +29,14 @@ interface ArticulationsTableProps {
   loading: boolean;
   error?: Error | null;
   searchTerm: string;
+  CPLAssistantEmail?: string;
 }
 export default function ArticulationsTable({
   articulations,
   loading,
   error,
   searchTerm,
+  CPLAssistantEmail
 }: ArticulationsTableProps) {
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
@@ -91,8 +93,16 @@ export default function ArticulationsTable({
           <p className="text-center text-xl p-4 sm:p-10 w-full sm:w-1/2 m-auto">
             If you have prior learning experience that you feel would qualify
             for CPL, but you don&apos;t see the discipline or course in our
-            list, please email 
-            <a href="mailto:cpl@norcocollege.edu">cpl@norcocollege.edu</a>
+            list,
+            {CPLAssistantEmail ? (
+              <>
+                please email{" "}
+                <a href={`mailto:${CPLAssistantEmail}`}>{CPLAssistantEmail}</a>
+              </>
+            ) : (
+              <>please contact us.</>
+            )}
+             
           </p>
         ) : (
           <SkeletonWrapper isLoading={loading} fullWidth={true} variant="table">
