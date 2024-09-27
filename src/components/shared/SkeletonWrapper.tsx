@@ -2,7 +2,7 @@ import React from "react";
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
 interface SkeletonWrapperProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isLoading: boolean;
   fullWidth?: boolean;
   variant?: "default" | "table" | "card";

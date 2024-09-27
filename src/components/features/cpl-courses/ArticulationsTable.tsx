@@ -20,9 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 interface ExtendedViewCPLCourses extends ViewCPLCourses {
-  Evidence?: ViewCPLEvidenceCompetency[];
-  IndustryCertifications?: ViewCPLIndustryCertifications[];
+  IndustryCertifications?: (ViewCPLIndustryCertifications & {
+    Evidences?: ViewCPLEvidenceCompetency[];
+  })[];
 }
 interface ArticulationsTableProps {
   articulations: ExtendedViewCPLCourses[];
@@ -30,13 +36,17 @@ interface ArticulationsTableProps {
   error?: Error | null;
   searchTerm: string;
   CPLAssistantEmail?: string;
+  showCollegeName?: boolean;
+  children?: React.ReactNode;
 }
 export default function ArticulationsTable({
   articulations,
   loading,
   error,
   searchTerm,
-  CPLAssistantEmail
+  CPLAssistantEmail,
+  showCollegeName,
+  children,
 }: ArticulationsTableProps) {
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
@@ -47,10 +57,13 @@ export default function ArticulationsTable({
           const searchContent = `
       ${articulation.Units} 
       ${articulation.Course} 
-      ${articulation.Evidence?.map((e) => e.EvidenCompetency).join(" ")}
-          ${articulation.IndustryCertifications?.map(
-            (ic) => ic.IndustryCertification
-          ).join(" ")}
+      ${articulation.College}
+      ${articulation.IndustryCertifications?.map(
+        (ic) => `
+              ${ic.IndustryCertification}
+              ${ic.Evidences?.map((e) => e.EvidenCompetency).join(" ")}
+            `
+      ).join(" ")}
     `.toLowerCase();
           return searchContent.includes(searchTerm.toLowerCase());
         })
@@ -62,6 +75,7 @@ export default function ArticulationsTable({
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0">
           <h3 className="text-xl font-semibold text-white">Results</h3>
           <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            {children}
             <ToggleGroup
               type="single"
               value={viewMode}
@@ -124,6 +138,9 @@ export default function ArticulationsTable({
                       <CardContent className="grid flex-grow">
                         <div className="">
                           <h4 className="text-sm font-bold pt-4">
+                            {showCollegeName && (
+                              <p>College : {articulation.College}</p>
+                            )}
                             Credits : {articulation.Units}
                           </h4>
                           <div className="overflow-y-auto max-h-48">
@@ -132,28 +149,36 @@ export default function ArticulationsTable({
                                 0 && (
                                 <>
                                   <h4 className="text-sm font-bold">
-                                    CPL Eligible Qualifications{" "}
+                                    CPL Eligible Qualifications
                                   </h4>
-                                  {articulation.IndustryCertifications?.map(
+                                  {articulation.IndustryCertifications.map(
                                     (cert, index) => (
-                                      <p className="text-sm" key={index}>
-                                        {cert.IndustryCertification}
-                                      </p>
-                                    )
-                                  )}
-                                </>
-                              )}
-                            {articulation.Evidence &&
-                              articulation.Evidence.length > 0 && (
-                                <>
-                                  <h3 className="text-sm font-bold">
-                                    Required Evidence:
-                                  </h3>
-                                  {articulation.Evidence?.map(
-                                    (evidence, index) => (
-                                      <p className="text-sm" key={index}>
-                                        {evidence.EvidenCompetency}
-                                      </p>
+                                      <div key={index}>
+                                        {cert.Evidences &&
+                                        cert.Evidences.length > 0 ? (
+                                          <>
+                                            <CertificationHoverCard
+                                              industryCertification={
+                                                cert.IndustryCertification ||
+                                                undefined
+                                              }
+                                              versionNumber={
+                                                cert.VersionNumber || undefined
+                                              }
+                                              evidences={cert.Evidences}
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <CertificationDisplay
+                                              industryCertification={
+                                                cert.IndustryCertification
+                                              }
+                                              versionNumber={cert.VersionNumber}
+                                            />
+                                          </>
+                                        )}
+                                      </div>
                                     )
                                   )}
                                 </>
@@ -168,6 +193,9 @@ export default function ArticulationsTable({
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-100 text-black ">
+                    {showCollegeName && (
+                      <TableHead className="font-bold">College</TableHead>
+                    )}
                     <TableHead className="font-bold">Subject</TableHead>
                     <TableHead className="text-center font-bold">
                       Course Number
@@ -187,6 +215,9 @@ export default function ArticulationsTable({
                 <TableBody>
                   {filteredItems.map((articulation) => (
                     <TableRow key={articulation.OutlineID}>
+                      {showCollegeName && (
+                        <TableCell>{articulation.College}</TableCell>
+                      )}
                       <TableCell className="text-center">
                         {articulation.Subject}
                       </TableCell>
@@ -207,11 +238,29 @@ export default function ArticulationsTable({
                         )}
                       </TableCell>
                       <TableCell>
-                        {articulation.Evidence?.map((evidence, index) => (
-                          <p className="text-sm" key={index}>
-                            {evidence.EvidenCompetency}
-                          </p>
-                        ))}
+                        {articulation.IndustryCertifications?.map(
+                          (cert, index) => (
+                            <div key={index}>
+                              <p className="text-sm font-semibold">
+                                {cert.IndustryCertification}
+                              </p>
+                              {cert.Evidences && cert.Evidences.length > 0 && (
+                                <ul className="list-disc list-inside ml-4">
+                                  {cert.Evidences.map(
+                                    (evidence, evidenceIndex) => (
+                                      <li
+                                        key={evidenceIndex}
+                                        className="text-xs"
+                                      >
+                                        {evidence.EvidenCompetency}
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              )}
+                            </div>
+                          )
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -236,17 +285,74 @@ const exportToExcel = (
         "Course Title": articulation.CourseTitle ?? "",
         Units: articulation.Units ?? "",
         "Industry Certifications": articulation.IndustryCertifications?.map(
-          (ic) => ic.IndustryCertification
+          (ic) => {
+            let certString = ic.IndustryCertification ?? "";
+            if (ic.Evidences && ic.Evidences.length > 0) {
+              certString += ` (Evidence: ${ic.Evidences.map(
+                (e) => e.EvidenCompetency
+              ).join(", ")})`;
+            }
+            return certString;
+          }
+        ).join("; "),
+        "Required Evidence": articulation.IndustryCertifications?.flatMap(
+          (ic) => ic.Evidences?.map((e) => e.EvidenCompetency) ?? []
         ).join(", "),
-        "Required Evidence": articulation.Evidence?.map(
-          (e) => e.EvidenCompetency
-        )
-          .join(", ")
-          .toString(),
       })
-    ) as any
+    )
   );
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Articulations");
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 };
+
+const CertificationDisplay: React.FC<{
+  industryCertification: string | null | undefined;
+  versionNumber?: string | null;
+  underline?: boolean;
+}> = ({ industryCertification, versionNumber, underline }) => (
+  <li className="flex items-start">
+    <span className="mr-[0.5em] flex-shrink-0">•</span>
+    <p
+      className={`text-sm font-semibold -mt-[0.1em] ${
+        underline ? "underline" : ""
+      }`}
+    >
+      {industryCertification || "N/A"}
+      {versionNumber &&
+        versionNumber.trim() !== "" &&
+        ` Version: ${versionNumber.trim()}`}
+    </p>
+  </li>
+);
+
+interface Evidence {
+  ExhibitID: number;
+  EvidenceID: number;
+  EvidenCompetency: string | null;
+}
+
+const CertificationHoverCard: React.FC<{
+  industryCertification: string | null | undefined;
+  versionNumber?: string | null;
+  evidences: Evidence[];
+}> = ({ industryCertification, versionNumber, evidences }) => (
+  <HoverCard>
+    <HoverCardTrigger className="cursor-pointer ">
+      <CertificationDisplay
+        industryCertification={industryCertification}
+        versionNumber={versionNumber} underline={true}
+      />
+    </HoverCardTrigger>
+    <HoverCardContent>
+      <h5 className="text-xs font-bold ml-2">Required Evidence:</h5>
+      <ul className="list-disc list-inside ml-4">
+        {evidences.map((evidence, evidenceIndex) => (
+          <li key={evidence.EvidenceID} className="text-xs">
+            {evidence.EvidenCompetency || "No competency specified"}
+          </li>
+        ))}
+      </ul>
+    </HoverCardContent>
+  </HoverCard>
+);

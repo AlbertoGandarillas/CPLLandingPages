@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Sidebar from "@/components/layout/Sidebar";
+import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
 
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ export default function Home({ params }: any) {
   );
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
-  const handleIndustryCertificationSelect = (industryCertification: string) => {
+  const handleIndustryCertificationSelect = (industryCertification: string | null) => {
     setSelectedIndustryCertification(industryCertification);
   };
   const {
@@ -75,74 +76,83 @@ export default function Home({ params }: any) {
 
   return (
     <>
-      <div
-        className="flex flex-1"
-        style={{
-          backgroundColor: settingsObject.BodyBackground,
-          color: settingsObject.BodyFontColor,
-        }}
-      >
-        <Sidebar
-          settingsObject={settingsObject}
-          onIndustryCertificationSelect={handleIndustryCertificationSelect}
-        />
-        <main className="flex-1 p-4">
-          <Accordion
-            type="single"
-            value={open}
-            onValueChange={setOpen}
-            collapsible
-          >
-            <AccordionItem value="item-1" className="border-r-4">
-              <AccordionTrigger className=" bg-gray-100 text-3xl text-black p-4 flex justify-">
-                <div></div>
-                <h1>{appName}</h1>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Card>
-                  <CardHeader className="bg-white"></CardHeader>
-                  <CardContent className="max-h-[350px] text-center overflow-y-auto">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: settingsObject.WebsiteText,
-                      }}
+      <div className="flex flex-col min-h-screen">
+        <div
+          className="flex flex-1"
+          style={{
+            backgroundColor: settingsObject.BodyBackground,
+            color: settingsObject.BodyFontColor,
+          }}
+        >
+          <Sidebar
+            settingsObject={settingsObject}
+            onIndustryCertificationSelect={handleIndustryCertificationSelect}
+          />
+          <main className="flex-1 p-4">
+            <Accordion
+              type="single"
+              value={open}
+              onValueChange={setOpen}
+              collapsible
+            >
+              <AccordionItem value="item-1" className="border-r-4">
+                <AccordionTrigger className=" bg-gray-100 text-3xl text-black p-4 flex justify-">
+                  <div></div>
+                  <h1>{appName}</h1>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Card>
+                    <CardHeader className="bg-white"></CardHeader>
+                    <CardContent className="max-h-[350px] text-center overflow-y-auto">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: settingsObject.WebsiteText,
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <div className="mt-4">
+              <Card>
+                <CardHeader className="bg-gray-100">
+                  <CardTitle className="grid grid-cols-2">
+                    <div className="text-xl">Eligible Courses</div>
+                    <SearchBar onSearch={setSearchTerm} />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ArticulationsTable
+                    articulations={articulations || []}
+                    loading={isLoading}
+                    error={error}
+                    searchTerm={searchTerm}
+                    CPLAssistantEmail={settingsObject.Email}
+                  >
+                    <DropdownIndustryCertifications
+                      onIndustryCertificationSelect={
+                        handleIndustryCertificationSelect
+                      }
+                      collegeId={selectedCollege}
                     />
-                  </CardContent>
-                </Card>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <div className="mt-4">
-            <Card>
-              <CardHeader className="bg-gray-100">
-                <CardTitle className="grid grid-cols-2">
-                  <div className="text-xl">Eligible Courses</div>
-                  <SearchBar onSearch={setSearchTerm} />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ArticulationsTable
-                  articulations={articulations || []}
-                  loading={isLoading}
-                  error={error}
-                  searchTerm={searchTerm}
-                  CPLAssistantEmail={settingsObject.Email}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-      </div>
+                  </ArticulationsTable>
+                </CardContent>
+              </Card>
+            </div>
+          </main>
+        </div>
 
-      <footer
-        className=" text-white text-center p-4"
-        style={{
-          backgroundColor: settingsObject.HeaderBackgroundColor,
-          color: settingsObject.HeaderFontColor,
-        }}
-      >
-        <p>{appCopyright}</p>
-      </footer>
+        <footer
+          className=" text-white text-center p-4 mt-auto"
+          style={{
+            backgroundColor: settingsObject.HeaderBackgroundColor,
+            color: settingsObject.HeaderFontColor,
+          }}
+        >
+          <p>{appCopyright}</p>
+        </footer>
+      </div>
     </>
   );
 }

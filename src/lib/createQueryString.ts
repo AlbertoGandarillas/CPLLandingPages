@@ -1,6 +1,8 @@
 export interface QueryParams {
   college?: string | null;
   industryCertification?: string | null;
+  cplType?: string | null;
+  learningMode?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

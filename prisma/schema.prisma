@@ -439,22 +439,48 @@ model ViewCPLCourses {
     Units                    String? @db.VarChar(8)
     CollegeID Int
     Course                   String?  @db.VarChar(Max)    
-    Evidence                 ViewCPLEvidenceCompetency[]
     IndustryCertifications   ViewCPLIndustryCertifications[]
 }
 
-model ViewCPLEvidenceCompetency {
-    OutlineID                Int @id
-    EvidenCompetency         String? @db.VarChar(100)
-    CPLCourse                ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
-}
-
 model ViewCPLIndustryCertifications {
-    OutlineID                Int @id
-    IndustryCertification    String? @db.VarChar(100)
-    CPLCourse                ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
+    OutlineID                     Int @id
+    ExhibitID                     Int @unique
+    IndustryCertification         String? @db.VarChar(100)
+    VersionNumber                 String? @db.VarChar(3)
+    CPLType                       Int?
+    ModelOfLearning               Int?
+    CPLTypeDescription            String?
+    CPLModeofLearningDescription  String?
+    Evidences                     ViewCPLEvidenceCompetency[]
+    CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
 }
 
+model ViewCPLEvidenceCompetency {
+    ExhibitID                Int @id
+    EvidenceID               Int
+    EvidenCompetency         String? @db.VarChar(100)
+    Exhibit                  ViewCPLIndustryCertifications? @relation(fields: [ExhibitID], references: [ExhibitID])
+}
+
+model CPLModeofLearning {
+  ID                           Int       @id(map: "PK__CPLModeo__3214EC277CC0DEAC") @default(autoincrement())
+  CPLModeofLearningDescription String?   @db.VarChar(200)
+  CreatedBy                    Int?
+  CreatedOn                    DateTime? @db.DateTime
+  Active                       Boolean?  @default(true, map: "DF_CPLModeofLearning_Active")
+  SortOrder                    Int?
+  ModeofLearningCode           String?   @default("", map: "DF_CPLModeofLearning_ModeofLearningCode") @db.VarChar(10)
+}
+
+model CPLType {
+  ID                 Int       @id(map: "PK__CPLType__3214EC27341A87A5") @default(autoincrement())
+  CPLTypeDescription String?   @db.VarChar(200)
+  CreatedBy          Int?
+  CreatedOn          DateTime? @db.DateTime
+  Active             Boolean?  @default(true, map: "DF_CPLType_Active")
+  SortOrder          Int?
+  CPLTypeCode        String?   @db.VarChar(10)
+}
 model ViewCPLCommonQualifications {
     CollegeID                Int 
     IndustryCertification    String @db.VarChar(500)
@@ -480,4 +506,23 @@ model ViewCPLContacts {
     Email                           String? @db.VarChar(100)
 
     CollegeUI                       CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
+}
+
+model PotentialCPLSavings {
+  Sorder       Int
+  CollegeID    Int
+  College      String
+  Savings      Float
+  YearImpact   Float
+  Students     Int
+  Units        Float
+  AverageUnits Float
+  Combined     Float
+   @@id([Sorder, CollegeID])
+  @@map("_PotentialCPLSavings")
+}
+
+model ViewCPLImplementedColleges {
+    CollegeID  Int @id
+    College    String? @db.VarChar(200)
 }

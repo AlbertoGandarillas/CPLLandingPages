@@ -6,6 +6,8 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   const college = url.searchParams.get("college");
   const industryCertification = url.searchParams.get("industryCertification");
+  const cplType = url.searchParams.get("cplType");
+  const learningMode = url.searchParams.get("learningMode");
   try {
     const where: Prisma.ViewCPLCoursesWhereInput = {};
 
@@ -21,11 +23,32 @@ export async function GET(request: NextRequest) {
         },
       };
     }
+    if (cplType) {
+      where.IndustryCertifications = {
+        some: {
+          CPLType: {
+            equals: parseInt(cplType),
+          },
+        },
+      };
+    }
+    if (learningMode) {
+      where.IndustryCertifications = {
+        some: {
+          ModelOfLearning: {
+            equals: parseInt(learningMode),
+          },
+        },
+      };
+    }
     const commonCourses = await db.viewCPLCourses.findMany({
       where,
       include: {
-        Evidence: true,
-        IndustryCertifications: true,
+        IndustryCertifications: {
+          include: {
+            Evidences: true,
+          },
+        },
       },
       orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
     });
@@ -36,7 +59,7 @@ export async function GET(request: NextRequest) {
         statusText: "No articulations found",
       });
     } else {
-      return NextResponse.json(commonCourses); 
+      return NextResponse.json(commonCourses);
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -49,4 +72,3 @@ export async function GET(request: NextRequest) {
     statusText: "Unexpected server error",
   });
 }
-

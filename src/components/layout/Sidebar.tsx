@@ -70,12 +70,12 @@ export default function Sidebar({
             />
             <ContactCard settings={settingsObject} />
             <SidebarButtons settings={settingsObject} />
-            <MainCard title="Approved Opportunities" className="w-full mt-4">
+            {/* <MainCard title="Approved Opportunities" className="w-full mt-4">
               <IndustryCertificationsTable
                 onIndustryCertificationSelect={onIndustryCertificationSelect}
                 collegeId={settingsObject.CollegeID}
               />
-            </MainCard>
+            </MainCard> */}
             <Contacts settings={settingsObject} className="mt-4" />
           </>
         }
