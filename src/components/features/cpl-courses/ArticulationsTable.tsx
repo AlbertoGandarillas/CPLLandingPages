@@ -6,12 +6,13 @@ import {
   ViewCPLCourses,
   ViewCPLEvidenceCompetency,
   ViewCPLIndustryCertifications,
+  ACEExhibitCriteria,
 } from "@prisma/client";
 import { FileSpreadsheet, Grid, List } from "lucide-react";
 import { ArticulationExport } from "@/app/types/ArticulationExport";
 import SkeletonWrapper from "../../shared/SkeletonWrapper";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../ui/card";
 import {
   Table,
   TableBody,
@@ -28,6 +29,7 @@ import {
 interface ExtendedViewCPLCourses extends ViewCPLCourses {
   IndustryCertifications?: (ViewCPLIndustryCertifications & {
     Evidences?: ViewCPLEvidenceCompetency[];
+    CreditRecommendations?: ACEExhibitCriteria[];
   })[];
 }
 interface ArticulationsTableProps {
@@ -62,6 +64,7 @@ export default function ArticulationsTable({
         (ic) => `
               ${ic.IndustryCertification}
               ${ic.Evidences?.map((e) => e.EvidenCompetency).join(" ")}
+              ${ic.CreditRecommendations?.map((cr) => cr.Criteria).join(" ")}
             `
       ).join(" ")}
     `.toLowerCase();
@@ -69,6 +72,11 @@ export default function ArticulationsTable({
         })
       : articulations;
   const isEmpty = filteredItems.length === 0 && !loading && !error;
+  const hasMilitaryCPLType = (articulation: ExtendedViewCPLCourses) => {
+    return articulation.IndustryCertifications?.some(
+      (cert) => cert.CPLTypeDescription === "Military"
+    );
+  };
   return (
     <>
       <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4">
@@ -149,35 +157,29 @@ export default function ArticulationsTable({
                                 0 && (
                                 <>
                                   <h4 className="text-sm font-bold">
-                                    CPL Eligible Qualifications
+                                    Possible Qualifications
                                   </h4>
                                   {articulation.IndustryCertifications.map(
                                     (cert, index) => (
                                       <div key={index}>
-                                        {cert.Evidences &&
-                                        cert.Evidences.length > 0 ? (
-                                          <>
-                                            <CertificationHoverCard
-                                              industryCertification={
-                                                cert.IndustryCertification ||
-                                                undefined
-                                              }
-                                              versionNumber={
-                                                cert.VersionNumber || undefined
-                                              }
-                                              evidences={cert.Evidences}
-                                            />
-                                          </>
-                                        ) : (
-                                          <>
-                                            <CertificationDisplay
-                                              industryCertification={
-                                                cert.IndustryCertification
-                                              }
-                                              versionNumber={cert.VersionNumber}
-                                            />
-                                          </>
-                                        )}
+                                        <CertificationHoverCard
+                                          industryCertification={
+                                            cert.IndustryCertification ||
+                                            undefined
+                                          }
+                                          cplType={
+                                            cert.CPLTypeDescription || null
+                                          }
+                                          learningMode={
+                                            cert.CPLModeofLearningDescription ||
+                                            null
+                                          }
+                                          versionNumber={
+                                            cert.VersionNumber || undefined
+                                          }
+                                          evidences={cert.Evidences || []}
+                                          crs={cert.CreditRecommendations || []}
+                                        />
                                       </div>
                                     )
                                   )}
@@ -186,6 +188,14 @@ export default function ArticulationsTable({
                           </div>
                         </div>
                       </CardContent>
+                      <CardFooter>
+                        {hasMilitaryCPLType(articulation) && (
+                          <p className="text-xs text-sky-950 mt-2 font-semibold">
+                            * This has military type possible qulification,
+                            upload your JST for personalized details.
+                          </p>
+                        )}
+                      </CardFooter>
                     </Card>
                   ))}
               </div>
@@ -205,7 +215,7 @@ export default function ArticulationsTable({
                       Credits
                     </TableHead>
                     <TableHead className="font-bold">
-                      CPL Eligible Qualifications
+                      Possible Qualifications
                     </TableHead>
                     <TableHead className="font-bold">
                       Required Evidence
@@ -306,26 +316,6 @@ const exportToExcel = (
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 };
 
-const CertificationDisplay: React.FC<{
-  industryCertification: string | null | undefined;
-  versionNumber?: string | null;
-  underline?: boolean;
-}> = ({ industryCertification, versionNumber, underline }) => (
-  <li className="flex items-start">
-    <span className="mr-[0.5em] flex-shrink-0">•</span>
-    <p
-      className={`text-sm font-semibold -mt-[0.1em] ${
-        underline ? "underline" : ""
-      }`}
-    >
-      {industryCertification || "N/A"}
-      {versionNumber &&
-        versionNumber.trim() !== "" &&
-        ` Version: ${versionNumber.trim()}`}
-    </p>
-  </li>
-);
-
 interface Evidence {
   ExhibitID: number;
   EvidenceID: number;
@@ -335,24 +325,67 @@ interface Evidence {
 const CertificationHoverCard: React.FC<{
   industryCertification: string | null | undefined;
   versionNumber?: string | null;
+  cplType?: string | null;
+  learningMode?: string | null;
   evidences: Evidence[];
-}> = ({ industryCertification, versionNumber, evidences }) => (
+  crs: ACEExhibitCriteria[];
+}> = ({
+  industryCertification,
+  versionNumber,
+  cplType,
+  learningMode,
+  evidences,
+  crs,
+}) => (
   <HoverCard>
     <HoverCardTrigger className="cursor-pointer ">
-      <CertificationDisplay
-        industryCertification={industryCertification}
-        versionNumber={versionNumber} underline={true}
-      />
+      <li className="flex items-start">
+        <span className="mr-[0.5em] flex-shrink-0">-</span>
+        <p className="text-sm font-semibold -mt-[0.1em] underline">
+          {industryCertification || "N/A"}
+          {versionNumber &&
+            versionNumber.trim() !== "" &&
+            ` Version: ${versionNumber.trim()}`}
+        </p>
+      </li>
     </HoverCardTrigger>
-    <HoverCardContent>
-      <h5 className="text-xs font-bold ml-2">Required Evidence:</h5>
-      <ul className="list-disc list-inside ml-4">
-        {evidences.map((evidence, evidenceIndex) => (
-          <li key={evidence.EvidenceID} className="text-xs">
-            {evidence.EvidenCompetency || "No competency specified"}
-          </li>
-        ))}
-      </ul>
+    <HoverCardContent className="w-[auto]">
+      <h3 className="font-bold mb-2">{industryCertification}</h3>
+      <p className="text-sm">
+        <span className="font-bold">CPL Type : </span>
+        {cplType}
+      </p>
+      <p className="text-sm">
+        <span className="font-bold">Learning Mode : </span>
+        {learningMode}
+      </p>
+      <div className={`grid gap-x-4 ${evidences.length > 0 && "grid-cols-2"} `}>
+        {crs && crs.length > 0 && (
+          <div>
+            <p className="font-bold text-sm my-2">Credit Recommendations:</p>
+            <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[350px]">
+              {crs.map((cr, crIndex) => (
+                <li key={cr.CriteriaID} className="text-sm">
+                  <span>{cr.Criteria}</span>{" "}
+                  {cr.SkillLevel ?? ` - ${cr.SkillLevel}`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {evidences && evidences.length > 0 && (
+          <div>
+            <p className="font-bold text-sm my-2">Possible Evidence:</p>
+            <ul className="list-disc list-inside ml-4">
+              {evidences.map((evidence, evidenceIndex) => (
+                <li key={evidence.EvidenceID} className="text-sm">
+                  {evidence.EvidenCompetency || "No competency specified"}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </HoverCardContent>
   </HoverCard>
 );

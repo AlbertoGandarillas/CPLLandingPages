@@ -389,7 +389,7 @@ model ACEExhibitCriteria {
   CreatedBy           Int?
   CreatedOn           DateTime? @default(now(), map: "DF__ACEExhibi__Creat__270FB757") @db.DateTime
   ExhibitID           Int?
-
+  CPLExhibit          ViewCPLIndustryCertifications? @relation(fields: [ExhibitID], references: [ExhibitID])
   @@index([SourceID], map: "idx_SourceID")
   @@index([CriteriaID], map: "Index_ACEExhibitCriteria_1")
   @@index([ExhibitID], map: "Index_ACEExhibitCriteria_2")
@@ -452,6 +452,7 @@ model ViewCPLIndustryCertifications {
     CPLTypeDescription            String?
     CPLModeofLearningDescription  String?
     Evidences                     ViewCPLEvidenceCompetency[]
+    CreditRecommendations         ACEExhibitCriteria[]
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
 }
 
