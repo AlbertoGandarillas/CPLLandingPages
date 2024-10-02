@@ -1,35 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import {} from "@prisma/client";
-import { Button } from "@/components/ui/button";
+import { Mails } from "lucide-react";
+import { ViewCPLCreditRecommendations } from "@prisma/client";
 import {
   ViewCPLCourses,
   ViewCPLEvidenceCompetency,
   ViewCPLIndustryCertifications,
-  ACEExhibitCriteria,
 } from "@prisma/client";
-import { FileSpreadsheet, Grid, List } from "lucide-react";
 import { ArticulationExport } from "@/app/types/ArticulationExport";
 import SkeletonWrapper from "../../shared/SkeletonWrapper";
-import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../ui/table";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import ArticulationHeader from "./ArticulationsHeader";
+import ArticulationCard from "./ArticulationCard";
+import ArticulationList from "./ArticulationList";
+import CPLRequestModal from "./CPLRequestModal";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
+
 interface ExtendedViewCPLCourses extends ViewCPLCourses {
   IndustryCertifications?: (ViewCPLIndustryCertifications & {
     Evidences?: ViewCPLEvidenceCompetency[];
-    CreditRecommendations?: ACEExhibitCriteria[];
+    CreditRecommendations?: ViewCPLCreditRecommendations[];
   })[];
 }
 interface ArticulationsTableProps {
@@ -53,6 +44,7 @@ export default function ArticulationsTable({
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
   const [viewMode, setViewMode] = React.useState("grid");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const filteredItems =
     searchTerm.length >= 3
       ? articulations.filter((articulation) => {
@@ -63,6 +55,8 @@ export default function ArticulationsTable({
       ${articulation.IndustryCertifications?.map(
         (ic) => `
               ${ic.IndustryCertification}
+              ${ic.CPLTypeDescription}
+              ${ic.CPLModeofLearningDescription}
               ${ic.Evidences?.map((e) => e.EvidenCompetency).join(" ")}
               ${ic.CreditRecommendations?.map((cr) => cr.Criteria).join(" ")}
             `
@@ -77,39 +71,75 @@ export default function ArticulationsTable({
       (cert) => cert.CPLTypeDescription === "Military"
     );
   };
+
+const { selectedCourses } = useSelectedCourses();
+
+  const handleCPLRequestSubmit = async (name: string, email: string) => {
+    try {
+      const response = await fetch("/api/send-cpl-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          selectedCourses: selectedCourses.map((id) => {
+            const course = articulations.find(
+              (a) => a.OutlineID.toString() === id
+            );
+            return course
+              ? `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`
+              : "";
+          }),
+          CPLAssistantEmail,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send email");
+      }
+
+      toast({
+        title: "Request Sent",
+        description: `Your CPL information request has been sent to ${CPLAssistantEmail}.`,
+      });
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to send your request. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0">
-          <h3 className="text-xl font-semibold text-white">Results</h3>
-          <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 sm:space-x-2">
-            {children}
-            <ToggleGroup
-              type="single"
-              value={viewMode}
-              onValueChange={(value) => value && setViewMode(value)}
-              className="mb-2 sm:mb-0"
-            >
-              <ToggleGroupItem value="grid" aria-label="Grid view">
-                <Grid className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="List view">
-                <List className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
+        <ArticulationHeader
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          onExport={() => exportToExcel(filteredItems, "Articulations_Export")}
+        >
+          <div className="flex justify-end">
             <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                exportToExcel(filteredItems, "Articulations_Export")
-              }
-              className="w-full sm:w-auto"
+              onClick={() => setIsModalOpen(true)}
+              disabled={selectedCourses.length === 0}
             >
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Export to Excel
+              <Mails className="mr-2" />
+              Request CPL Information ({selectedCourses.length})
             </Button>
           </div>
-        </div>
+          {children}
+        </ArticulationHeader>
         {error && <p>Error: {error.message}</p>}
         {isEmpty ? (
           <p className="text-center text-xl p-4 sm:p-10 w-full sm:w-1/2 m-auto">
@@ -129,156 +159,32 @@ export default function ArticulationsTable({
         ) : (
           <SkeletonWrapper isLoading={loading} fullWidth={true} variant="table">
             {viewMode === "grid" ? (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
                 {!loading &&
                   !error &&
                   filteredItems.map((articulation) => (
-                    <Card
+                    <ArticulationCard
                       key={articulation.OutlineID}
-                      className="flex flex-col"
-                    >
-                      <CardHeader className="bg-gray-100 flex-shrink-0">
-                        <CardTitle className="text-md h-auto flex align-bottom">
-                          {articulation.Subject} {articulation.CourseNumber} :{" "}
-                          {articulation.CourseTitle}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="grid flex-grow">
-                        <div className="">
-                          <h4 className="text-sm font-bold pt-4">
-                            {showCollegeName && (
-                              <p>College : {articulation.College}</p>
-                            )}
-                            Credits : {articulation.Units}
-                          </h4>
-                          <div className="overflow-y-auto max-h-48">
-                            {articulation.IndustryCertifications &&
-                              articulation.IndustryCertifications.length >
-                                0 && (
-                                <>
-                                  <h4 className="text-sm font-bold">
-                                    Possible Qualifications
-                                  </h4>
-                                  {articulation.IndustryCertifications.map(
-                                    (cert, index) => (
-                                      <div key={index}>
-                                        <CertificationHoverCard
-                                          industryCertification={
-                                            cert.IndustryCertification ||
-                                            undefined
-                                          }
-                                          cplType={
-                                            cert.CPLTypeDescription || null
-                                          }
-                                          learningMode={
-                                            cert.CPLModeofLearningDescription ||
-                                            null
-                                          }
-                                          versionNumber={
-                                            cert.VersionNumber || undefined
-                                          }
-                                          evidences={cert.Evidences || []}
-                                          crs={cert.CreditRecommendations || []}
-                                        />
-                                      </div>
-                                    )
-                                  )}
-                                </>
-                              )}
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter>
-                        {hasMilitaryCPLType(articulation) && (
-                          <p className="text-xs text-sky-950 mt-2 font-semibold">
-                            * This has military type possible qulification,
-                            upload your JST for personalized details.
-                          </p>
-                        )}
-                      </CardFooter>
-                    </Card>
+                      articulation={articulation}
+                      showCollegeName={showCollegeName}
+                    />
                   ))}
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-100 text-black ">
-                    {showCollegeName && (
-                      <TableHead className="font-bold">College</TableHead>
-                    )}
-                    <TableHead className="font-bold">Subject</TableHead>
-                    <TableHead className="text-center font-bold">
-                      Course Number
-                    </TableHead>
-                    <TableHead className="font-bold">Title</TableHead>
-                    <TableHead className="text-center font-bold">
-                      Credits
-                    </TableHead>
-                    <TableHead className="font-bold">
-                      Possible Qualifications
-                    </TableHead>
-                    <TableHead className="font-bold">
-                      Required Evidence
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredItems.map((articulation) => (
-                    <TableRow key={articulation.OutlineID}>
-                      {showCollegeName && (
-                        <TableCell>{articulation.College}</TableCell>
-                      )}
-                      <TableCell className="text-center">
-                        {articulation.Subject}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {articulation.CourseNumber}
-                      </TableCell>
-                      <TableCell>{articulation.CourseTitle}</TableCell>
-                      <TableCell className="text-center">
-                        {articulation.Units}
-                      </TableCell>
-                      <TableCell>
-                        {articulation.IndustryCertifications?.map(
-                          (cert, index) => (
-                            <p className="text-sm" key={index}>
-                              {cert.IndustryCertification}
-                            </p>
-                          )
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {articulation.IndustryCertifications?.map(
-                          (cert, index) => (
-                            <div key={index}>
-                              <p className="text-sm font-semibold">
-                                {cert.IndustryCertification}
-                              </p>
-                              {cert.Evidences && cert.Evidences.length > 0 && (
-                                <ul className="list-disc list-inside ml-4">
-                                  {cert.Evidences.map(
-                                    (evidence, evidenceIndex) => (
-                                      <li
-                                        key={evidenceIndex}
-                                        className="text-xs"
-                                      >
-                                        {evidence.EvidenCompetency}
-                                      </li>
-                                    )
-                                  )}
-                                </ul>
-                              )}
-                            </div>
-                          )
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ArticulationList
+                articulations={filteredItems}
+                showCollegeName={showCollegeName}
+              />
             )}
           </SkeletonWrapper>
         )}
+        <CPLRequestModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          selectedCourses={selectedCourses}
+          courses={articulations}
+          onSubmit={handleCPLRequestSubmit}
+        />
       </div>
     </>
   );
@@ -315,77 +221,3 @@ const exportToExcel = (
   XLSX.utils.book_append_sheet(wb, ws, "Articulations");
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 };
-
-interface Evidence {
-  ExhibitID: number;
-  EvidenceID: number;
-  EvidenCompetency: string | null;
-}
-
-const CertificationHoverCard: React.FC<{
-  industryCertification: string | null | undefined;
-  versionNumber?: string | null;
-  cplType?: string | null;
-  learningMode?: string | null;
-  evidences: Evidence[];
-  crs: ACEExhibitCriteria[];
-}> = ({
-  industryCertification,
-  versionNumber,
-  cplType,
-  learningMode,
-  evidences,
-  crs,
-}) => (
-  <HoverCard>
-    <HoverCardTrigger className="cursor-pointer ">
-      <li className="flex items-start">
-        <span className="mr-[0.5em] flex-shrink-0">-</span>
-        <p className="text-sm font-semibold -mt-[0.1em] underline">
-          {industryCertification || "N/A"}
-          {versionNumber &&
-            versionNumber.trim() !== "" &&
-            ` Version: ${versionNumber.trim()}`}
-        </p>
-      </li>
-    </HoverCardTrigger>
-    <HoverCardContent className="w-[auto]">
-      <h3 className="font-bold mb-2">{industryCertification}</h3>
-      <p className="text-sm">
-        <span className="font-bold">CPL Type : </span>
-        {cplType}
-      </p>
-      <p className="text-sm">
-        <span className="font-bold">Learning Mode : </span>
-        {learningMode}
-      </p>
-      <div className={`grid gap-x-4 ${evidences.length > 0 && "grid-cols-2"} `}>
-        {crs && crs.length > 0 && (
-          <div>
-            <p className="font-bold text-sm my-2">Credit Recommendations:</p>
-            <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[350px]">
-              {crs.map((cr, crIndex) => (
-                <li key={cr.CriteriaID} className="text-sm">
-                  <span>{cr.Criteria}</span>{" "}
-                  {cr.SkillLevel ?? ` - ${cr.SkillLevel}`}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {evidences && evidences.length > 0 && (
-          <div>
-            <p className="font-bold text-sm my-2">Possible Evidence:</p>
-            <ul className="list-disc list-inside ml-4">
-              {evidences.map((evidence, evidenceIndex) => (
-                <li key={evidence.EvidenceID} className="text-sm">
-                  {evidence.EvidenCompetency || "No competency specified"}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </HoverCardContent>
-  </HoverCard>
-);

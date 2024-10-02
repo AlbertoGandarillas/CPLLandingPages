@@ -1,0 +1,84 @@
+import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ExtendedViewCPLCourses } from "@/types/cpl";
+
+interface ArticulationListProps {
+  articulations: ExtendedViewCPLCourses[];
+  showCollegeName?: boolean;
+}
+
+export default function ArticulationList({
+  articulations,
+  showCollegeName,
+}: ArticulationListProps) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-gray-100 text-black ">
+          {showCollegeName && (
+            <TableHead className="font-bold">College</TableHead>
+          )}
+          <TableHead className="font-bold">Subject</TableHead>
+          <TableHead className="text-center font-bold">Course Number</TableHead>
+          <TableHead className="font-bold">Title</TableHead>
+          <TableHead className="text-center font-bold">Credits</TableHead>
+          <TableHead className="font-bold">Possible Qualifications</TableHead>
+          <TableHead className="font-bold">Required Evidence</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {articulations.map((articulation) => (
+          <TableRow key={articulation.OutlineID}>
+            {showCollegeName && <TableCell>{articulation.College}</TableCell>}
+            <TableCell className="text-center">
+              {articulation.Subject}
+            </TableCell>
+            <TableCell className="text-center">
+              {articulation.CourseNumber}
+            </TableCell>
+            <TableCell>{articulation.CourseTitle}</TableCell>
+            <TableCell className="text-center">{articulation.Units}</TableCell>
+            <TableCell>
+              {articulation.IndustryCertifications?.map((cert, index) => (
+                <div key={index} className="flex">
+                  <p className="text-sm font-semibold">
+                    {cert.CPLTypeDescription}
+                  </p>
+                  <span> - </span>
+                  <p className="text-sm">{cert.IndustryCertification}</p>
+                </div>
+              ))}
+            </TableCell>
+            <TableCell>
+              {articulation.IndustryCertifications?.map((cert, index) => (
+                <div key={index}>
+                  {cert.Evidences && cert.Evidences.length > 0 && (
+                    <p className="text-sm font-semibold">
+                      {cert.IndustryCertification}
+                    </p>
+                  )}
+                  {cert.Evidences && cert.Evidences.length > 0 && (
+                    <ul className="list-disc list-inside ml-4">
+                      {cert.Evidences.map((evidence, evidenceIndex) => (
+                        <li key={evidenceIndex} className="text-xs">
+                          {evidence.EvidenCompetency}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}

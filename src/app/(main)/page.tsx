@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
-import MainCard from "@/components/shared/MainCard";
 import SearchBar from "@/components/shared/SearchBar";
 import {
   Accordion,
@@ -21,7 +20,7 @@ import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndu
 export default function Home() {
   const [open, setOpen] = useState("item-1");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
+  const [selectedCollege, setSelectedCollege] = useState<string | null>("1");
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
   const [selectedCPLType, setSelectedCPLType] = useState<string | null>(null);
@@ -81,10 +80,53 @@ export default function Home() {
       >
         <AccordionItem value="item-1" className="border-0">
           <AccordionTrigger className="bg-gray-100 text-3xl text-black p-4 flex justify-">
-            <h1 className="text-lg">Dashboard</h1>
+            <h1 className="text-lg">Welcome</h1>
           </AccordionTrigger>
-          <AccordionContent>
-                  <PotentialSavings />
+          <AccordionContent className="p-4 bg-white">
+            <div className="grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="pt-4">
+                  <p>
+                    <strong>
+                      Save Time and Money with College Credit for Your Skills
+                      and Experience!
+                      <br />
+                    </strong>
+                    You might be able to earn college credit based on what you
+                    already know. Check out the list of approved College Prior
+                    Learning (CPL) below.
+                    <br /> Just enter a keyword to see if you&rsquo;re eligible!
+                  </p>
+                  <p>
+                    <strong>
+                      Can&rsquo;t find what you&rsquo;re looking for? No
+                      problem!
+                    </strong>
+                    <br /> You can request a CPL review to see if we can give
+                    you credit for your certifications or skills. Here&rsquo;s
+                    how to get started:
+                    <br /> &nbsp;
+                  </p>
+                  <p>
+                    1. <strong>Apply to the College:</strong>&nbsp;First, go to
+                    CCCApply and fill out your application. You&rsquo;ll find
+                    the link on the left sidebar.
+                    <br /> 2.&nbsp;<strong>Contact a CPL Counselor:</strong>
+                    &nbsp;After you&rsquo;ve applied, come back here and click
+                    &ldquo;Contact a CPL Counselor&rdquo; to send us an email.
+                    <br /> <br /> Provide Your Details: In your email, include
+                    your certification details, your work experience, and your
+                    CCCApply ID.
+                    <br />
+                    <strong>
+                      We&rsquo;ll review your information and get back to you
+                      with the next steps!
+                    </strong>
+                  </p>
+                </CardContent>
+              </Card>
+              <PotentialSavings />
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -107,13 +149,13 @@ export default function Home() {
               onCollegeSelect={handleCollegeSelect}
             />
             {selectedCollege && (
-                <DropdownIndustryCertifications
-                  onIndustryCertificationSelect={
-                    handleIndustryCertificationSelect
-                  }
-                  collegeId={selectedCollege}
-                />
-              )}
+              <DropdownIndustryCertifications
+                onIndustryCertificationSelect={
+                  handleIndustryCertificationSelect
+                }
+                collegeId={selectedCollege}
+              />
+            )}
             <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
             <DropdownLearningModes
               onLearningModeSelect={handleLerningModeSelect}

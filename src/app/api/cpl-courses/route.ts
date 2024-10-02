@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         IndustryCertifications: {
           include: {
             Evidences: true,
-            CreditRecommendations:true,
+            CreditRecommendations: true,
           },
         },
       },

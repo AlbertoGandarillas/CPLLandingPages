@@ -389,7 +389,6 @@ model ACEExhibitCriteria {
   CreatedBy           Int?
   CreatedOn           DateTime? @default(now(), map: "DF__ACEExhibi__Creat__270FB757") @db.DateTime
   ExhibitID           Int?
-  CPLExhibit          ViewCPLIndustryCertifications? @relation(fields: [ExhibitID], references: [ExhibitID])
   @@index([SourceID], map: "idx_SourceID")
   @@index([CriteriaID], map: "Index_ACEExhibitCriteria_1")
   @@index([ExhibitID], map: "Index_ACEExhibitCriteria_2")
@@ -439,28 +438,38 @@ model ViewCPLCourses {
     Units                    String? @db.VarChar(8)
     CollegeID Int
     Course                   String?  @db.VarChar(Max)    
+    Catalog                  String
     IndustryCertifications   ViewCPLIndustryCertifications[]
 }
 
 model ViewCPLIndustryCertifications {
-    OutlineID                     Int @id
-    ExhibitID                     Int @unique
-    IndustryCertification         String? @db.VarChar(100)
-    VersionNumber                 String? @db.VarChar(3)
+    OutlineID                     Int 
+    IndustryCertification         String
     CPLType                       Int?
     ModelOfLearning               Int?
     CPLTypeDescription            String?
     CPLModeofLearningDescription  String?
     Evidences                     ViewCPLEvidenceCompetency[]
-    CreditRecommendations         ACEExhibitCriteria[]
+    CreditRecommendations         ViewCPLCreditRecommendations[]
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
+    @@id([OutlineID, IndustryCertification])
+    @@unique([OutlineID, IndustryCertification])
 }
 
 model ViewCPLEvidenceCompetency {
-    ExhibitID                Int @id
-    EvidenceID               Int
-    EvidenCompetency         String? @db.VarChar(100)
-    Exhibit                  ViewCPLIndustryCertifications? @relation(fields: [ExhibitID], references: [ExhibitID])
+    OutlineID                Int
+    IndustryCertification    String
+    EvidenCompetency         String
+    Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
+     @@id([OutlineID, IndustryCertification, EvidenCompetency])
+}
+
+model ViewCPLCreditRecommendations {
+    OutlineID                Int
+    IndustryCertification    String
+    Criteria                 String
+    Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
+     @@id([OutlineID, IndustryCertification, Criteria])
 }
 
 model CPLModeofLearning {
@@ -486,8 +495,6 @@ model ViewCPLCommonQualifications {
     CollegeID                Int 
     IndustryCertification    String @db.VarChar(500)
     UnitsTotal               String? @db.VarChar(100)
-    CPLCode                  String? @db.VarChar(100)
-    CPLDescription           String? @db.VarChar(500)
     @@id([CollegeID, IndustryCertification])
 }
 
@@ -497,6 +504,7 @@ model CollegeUILinks {
     LinkText          String @db.VarChar(300)
     LinkURL           String? @db.VarChar(500)
     LinkTarget        String? @db.VarChar(100)
+    Tooltip           String? @db.VarChar(300)
     CollegeUI         CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
 }
 

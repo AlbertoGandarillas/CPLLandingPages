@@ -2,6 +2,7 @@ import LinkButton from "./LinkButton";
 
 interface SidebarButtonsProps {
   settings: {
+    CollegeID: string;
     Email: string;
     CompBackgroundColor: string;
     CompFontColor: string;
@@ -9,6 +10,7 @@ interface SidebarButtonsProps {
       LinkText: string;
       LinkURL: string;
       LinkTarget: string;
+      Tooltip: string;
     }>;
   };
 }
@@ -37,6 +39,7 @@ export default function SidebarButtons({ settings }: SidebarButtonsProps) {
             backgroundColor: settings.CompBackgroundColor,
             color: settings.CompFontColor,
           }}
+          title={link.Tooltip}     
           variant="default"
           className="w-full"
         >

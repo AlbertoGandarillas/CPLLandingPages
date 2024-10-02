@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/accordion";
 import Sidebar from "@/components/layout/Sidebar";
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
+import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCoursesList";
+import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +77,7 @@ export default function Home({ params }: any) {
   const appCopyright = `${process.env.NEXT_PUBLIC_APP_COPYRIGHT}`;
 
   return (
-    <>
+    <SelectedCoursesProvider>
       <div className="flex flex-col min-h-screen">
         <div
           className="flex flex-1"
@@ -87,7 +89,9 @@ export default function Home({ params }: any) {
           <Sidebar
             settingsObject={settingsObject}
             onIndustryCertificationSelect={handleIndustryCertificationSelect}
-          />
+          >
+            <SelectedCoursesList articulations={articulations || []} />
+          </Sidebar>
           <main className="flex-1 p-4">
             <Accordion
               type="single"
@@ -153,6 +157,6 @@ export default function Home({ params }: any) {
           <p>{appCopyright}</p>
         </footer>
       </div>
-    </>
+    </SelectedCoursesProvider>
   );
 }

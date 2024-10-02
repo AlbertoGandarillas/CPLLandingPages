@@ -3,8 +3,6 @@ import { Menu } from "lucide-react"; // Assuming you want to use an icon from lu
 import { Logo } from "../shared/Logo";
 import ContactCard from "../shared/ContactCard";
 import SidebarButtons from "../shared/SidebarButtons";
-import MainCard from "../shared/MainCard";
-import IndustryCertificationsTable from "../features/industry-certifications/IndustryCertificationsTable";
 import Contacts from "../shared/Contact";
 interface Contact {
   ContactType: string;
@@ -30,13 +28,16 @@ interface SidebarProps {
       LinkText: string;
       LinkURL: string;
       LinkTarget: string;
+      Tooltip: string;
     }>;
     PhoneNumber: string;
   };
   onIndustryCertificationSelect: (industryCertification: string) => void;
+  children?: React.ReactNode;
 }
 export default function Sidebar({
   settingsObject,
+  children,
   onIndustryCertificationSelect,
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +60,7 @@ export default function Sidebar({
       <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block w-72 p-4 flex flex-col justify-start`}
+        } lg:block w-80 p-4 flex flex-col justify-start`}
       >
         {
           <>
@@ -77,6 +78,7 @@ export default function Sidebar({
               />
             </MainCard> */}
             <Contacts settings={settingsObject} className="mt-4" />
+            {children}
           </>
         }
       </aside>

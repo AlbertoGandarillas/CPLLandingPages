@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ReactNode } from "react";
 import RootProviders from "@/components/providers/RootProviders";
+import { Toaster } from "@/components/ui/toaster";
 const appName = `${process.env.NEXT_PUBLIC_APP_NAME}`;
 export const metadata: Metadata = {
   title: appName,
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <RootProviders>
           {children}
+          <Toaster />
         </RootProviders>
       </body>
     </html>

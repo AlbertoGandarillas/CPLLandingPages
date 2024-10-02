@@ -15,12 +15,13 @@ import { Card, CardContent } from "../ui/card";
 import MainCard from "../shared/MainCard";
 interface PotentialSavingsProps {
   cplType?: string | null;
+  className?: string;
 }
-export const PotentialSavings = ({ cplType }: PotentialSavingsProps) => {
+export const PotentialSavings = ({ cplType, className }: PotentialSavingsProps) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const { data, isLoading, error } = usePotentialSavings(selectedType);
   return (
-    <Card>
+    <Card className={`w-full ${className}`}>
       <CardContent className="max-h-[350px] text-center overflow-y-auto grid grid-cols-1 gap-x-4">
         <MainCard
           title="Potential CPL Savings & Preservation of Funds (PoF), 20-Year Impact, College Metrics"
