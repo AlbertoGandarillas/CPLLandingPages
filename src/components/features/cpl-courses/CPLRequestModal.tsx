@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ExtendedViewCPLCourses } from "@/types/cpl";
+import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import { Checkbox } from "@/components/ui/checkbox";
 interface CPLRequestModalProps {

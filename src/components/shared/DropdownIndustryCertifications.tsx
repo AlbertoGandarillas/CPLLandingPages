@@ -46,7 +46,7 @@ export const DropdownIndustryCertifications = ({
               ? data?.find(
                   (item) => item.IndustryCertification.toString() === value
                 )?.IndustryCertification ?? "Unknown Approved Opportunity"
-              : "Select Approved Opportunity..."}
+              : "Select Approved Opportunities..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

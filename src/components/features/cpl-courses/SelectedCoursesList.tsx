@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { ExtendedViewCPLCourses } from "@/types/cpl";
+import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 
 interface SelectedCoursesListProps {

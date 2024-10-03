@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { Star } from "lucide-react";
-import { ExtendedViewCPLCourses } from "@/types/cpl";
+import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import CertificationHoverCard from "./CertificationHoverCard";
 import { toast, useToast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
@@ -72,7 +72,7 @@ export default function ArticulationCard({
               {articulation.CourseTitle}
             </p>
             <HoverCard>
-              <HoverCardTrigger className="cursor-pointer">
+              <HoverCardTrigger className="cursor-default">
                 <Info />
               </HoverCardTrigger>
               <HoverCardContent className="w-[450px] font-normal max-h-[300px] overflow-y-auto text-sm">

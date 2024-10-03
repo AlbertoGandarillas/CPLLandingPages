@@ -7,7 +7,7 @@ import {
   ViewCPLEvidenceCompetency,
   ViewCPLIndustryCertifications,
 } from "@prisma/client";
-import { ArticulationExport } from "@/app/types/ArticulationExport";
+import { ArticulationExport } from "@/types/ArticulationExport";
 import SkeletonWrapper from "../../shared/SkeletonWrapper";
 import ArticulationHeader from "./ArticulationsHeader";
 import ArticulationCard from "./ArticulationCard";
@@ -16,13 +16,8 @@ import CPLRequestModal from "./CPLRequestModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
+import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 
-interface ExtendedViewCPLCourses extends ViewCPLCourses {
-  IndustryCertifications?: (ViewCPLIndustryCertifications & {
-    Evidences?: ViewCPLEvidenceCompetency[];
-    CreditRecommendations?: ViewCPLCreditRecommendations[];
-  })[];
-}
 interface ArticulationsTableProps {
   articulations: ExtendedViewCPLCourses[];
   loading: boolean;
@@ -186,7 +181,7 @@ export default function ArticulationsTable({
         <ArticulationHeader
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onExport={() => exportToExcel(filteredItems, "Articulations_Export")}
+          onExport={() => exportToExcel(filteredItems, "EligibleCourses")}
         >
           <div className="hidden">
             <div className="flex justify-end">
@@ -272,6 +267,9 @@ const exportToExcel = (
             return certString;
           }
         ).join("; "),
+        "Credit Recommendations": articulation.IndustryCertifications?.flatMap(
+          (ic) => ic.CreditRecommendations?.map((e) => e.Criteria) ?? []
+        ).join(", "),
         "Required Evidence": articulation.IndustryCertifications?.flatMap(
           (ic) => ic.Evidences?.map((e) => e.EvidenCompetency) ?? []
         ).join(", "),
@@ -279,6 +277,6 @@ const exportToExcel = (
     )
   );
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Articulations");
+  XLSX.utils.book_append_sheet(wb, ws, "Eligible Courses Sheet");
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 };

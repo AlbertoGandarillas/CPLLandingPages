@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ExtendedViewCPLCourses } from "@/types/cpl";
+import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 
 interface ArticulationListProps {
   articulations: ExtendedViewCPLCourses[];
@@ -30,6 +30,7 @@ export default function ArticulationList({
           <TableHead className="font-bold">Title</TableHead>
           <TableHead className="text-center font-bold">Credits</TableHead>
           <TableHead className="font-bold">Possible Qualifications</TableHead>
+          <TableHead className="font-bold">Credit Recommendations</TableHead>
           <TableHead className="font-bold">Required Evidence</TableHead>
         </TableRow>
       </TableHeader>
@@ -48,11 +49,28 @@ export default function ArticulationList({
             <TableCell>
               {articulation.IndustryCertifications?.map((cert, index) => (
                 <div key={index} className="flex">
-                  <p className="text-sm font-semibold">
-                    {cert.CPLTypeDescription}
+                  <p className="text-sm">{cert.CPLTypeDescription}</p>
+                  <span className="pl-1"> - </span>
+                  <p className="pl-1 text-sm font-semibold">
+                    {cert.IndustryCertification}
                   </p>
-                  <span> - </span>
-                  <p className="text-sm">{cert.IndustryCertification}</p>
+                </div>
+              ))}
+            </TableCell>
+            <TableCell>
+              {articulation.IndustryCertifications?.map((cert, index) => (
+                <div key={index}>
+                  {cert.CreditRecommendations &&
+                    cert.CreditRecommendations.length > 0 && (
+                      <p className="text-sm font-semibold">
+                        {cert.IndustryCertification}
+                      </p>
+                    )}
+                  {cert.CreditRecommendations?.map((credit, creditIndex) => (
+                    <p key={creditIndex} className="text-xs">
+                      {credit.Criteria}
+                    </p>
+                  ))}
                 </div>
               ))}
             </TableCell>
