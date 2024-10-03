@@ -24,7 +24,9 @@ export default function Home({ params }: any) {
   );
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
-  const handleIndustryCertificationSelect = (industryCertification: string | null) => {
+  const handleIndustryCertificationSelect = (
+    industryCertification: string | null
+  ) => {
     setSelectedIndustryCertification(industryCertification);
   };
   const {
@@ -121,9 +123,12 @@ export default function Home({ params }: any) {
             <div className="mt-4">
               <Card>
                 <CardHeader className="bg-gray-100">
-                  <CardTitle className="grid grid-cols-2">
-                    <div className="text-xl">Eligible Courses</div>
-                    <SearchBar onSearch={setSearchTerm} />
+                  <CardTitle className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
+                    <div className="text-md text-center lg:text-left text-lg">
+                      Eligible courses below are faculty approved for credit
+                      based on the prior learning listed
+                    </div>
+                    <SearchBar className="w-full lg:w-96" onSearch={setSearchTerm} />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

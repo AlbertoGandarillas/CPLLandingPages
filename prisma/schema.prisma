@@ -535,3 +535,14 @@ model ViewCPLImplementedColleges {
     CollegeID  Int @id
     College    String? @db.VarChar(200)
 }
+
+model CPLRequest {
+  id            Int      @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String
+  hasCCCApplyId Boolean
+  cccApplyId    String?
+  selectedCourses String
+  createdAt     DateTime @default(now())
+}

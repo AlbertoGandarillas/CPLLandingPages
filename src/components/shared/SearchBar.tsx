@@ -7,12 +7,14 @@ interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
   placeholder?: string;
   debounceTime?: number;
+  className?: string;
 }
 
 export default function SearchBar({
   onSearch,
   placeholder = "Search by keyword...",
   debounceTime = 300,
+  className
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -33,12 +35,12 @@ export default function SearchBar({
   };
   return (
     <>
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <div className={`relative ${className}`}>
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
         <Input
           type="text"
           placeholder={placeholder}
-          className="pl-10 pr-10"
+          className="pl-10 pr-10 w-full"
           value={searchTerm}
           onChange={handleSearchChange}
         />

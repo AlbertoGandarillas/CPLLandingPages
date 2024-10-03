@@ -75,7 +75,8 @@ export default function ArticulationCard({
               <HoverCardTrigger className="cursor-pointer">
                 <Info />
               </HoverCardTrigger>
-              <HoverCardContent className="max-w-96 font-normal max-h-[300px] overflow-y-auto text-sm">
+              <HoverCardContent className="w-[450px] font-normal max-h-[300px] overflow-y-auto text-sm">
+                <h3 className="text-lg font-bold mb-2">Catalog Description</h3>
                 {articulation.Catalog}
               </HoverCardContent>
             </HoverCard>
@@ -101,9 +102,9 @@ export default function ArticulationCard({
                 <Tooltip>
                   <TooltipTrigger>
                     <Star
-                      className="h-4 w-4"
-                      fill={isSelected ? "#1d4ed8" : "currentColor"}
-                      color={isSelected ? "#1d4ed8" : "currentColor"}
+                      className="h-4 w-4 hidden"
+                      fill={isSelected ? "#1d4ed8" : "#c1c1c1"}
+                      color={isSelected ? "#1d4ed8" : "#c1c1c1"}
                     />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -204,7 +205,7 @@ export default function ArticulationCard({
                           />
                         </TableCell>
                         <TableCell className="align-top">
-                          {cert.Evidences && cert.Evidences.length > 0 && (
+                          {cert.Evidences && cert.Evidences.length > 0 ? (
                             <ul className="ml-4">
                               {cert.Evidences.map((evidence, evidenceIndex) => (
                                 <li
@@ -215,6 +216,8 @@ export default function ArticulationCard({
                                 </li>
                               ))}
                             </ul>
+                          ) : (
+                            <>{cert.CPLTypeDescription === "Military" && (<li className="text-sm pl-4 list-none">JST</li>)}</>
                           )}
                         </TableCell>
                       </TableRow>

@@ -19,7 +19,7 @@ export default function SelectedCoursesList({
   );
 
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 hidden">
       <CardHeader>
         <CardTitle>Favorited Courses</CardTitle>
       </CardHeader>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Mails } from "lucide-react";
 import { ViewCPLCreditRecommendations } from "@prisma/client";
@@ -72,7 +72,7 @@ export default function ArticulationsTable({
     );
   };
 
-const { selectedCourses } = useSelectedCourses();
+  const { selectedCourses } = useSelectedCourses();
 
   const handleCPLRequestSubmit = async (name: string, email: string) => {
     try {
@@ -121,6 +121,65 @@ const { selectedCourses } = useSelectedCourses();
     }
   };
 
+  const handleCPLRequestDBSubmit = async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    hasCCCApplyId: boolean,
+    cccApplyId: string | null
+  ) => {
+    try {
+      const response = await fetch("/api/cpl-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          hasCCCApplyId,
+          cccApplyId,
+          selectedCourses: selectedCourses.map((id) => {
+            const course = articulations.find(
+              (a) => a.OutlineID.toString() === id
+            );
+            return course
+              ? `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`
+              : "";
+          }),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Handle successful submission
+      toast({
+        title: "Request Submitted",
+        description:
+          "Your CPL information request has been submitted successfully.",
+        variant: "success",
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit your request. Please try again.",
+        variant: "destructive",
+      });
+      // The modal will remain open, and the form will not be cleared
+    }
+  };
+
+    const handleModalClose = () => {
+      setIsModalOpen(false);
+    };
+
   return (
     <>
       <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4">
@@ -129,14 +188,16 @@ const { selectedCourses } = useSelectedCourses();
           onViewModeChange={setViewMode}
           onExport={() => exportToExcel(filteredItems, "Articulations_Export")}
         >
-          <div className="flex justify-end">
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              disabled={selectedCourses.length === 0}
-            >
-              <Mails className="mr-2" />
-              Request CPL Information ({selectedCourses.length})
-            </Button>
+          <div className="hidden">
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                disabled={selectedCourses.length === 0}
+              >
+                <Mails className="mr-2" />
+                Request CPL Information ({selectedCourses.length})
+              </Button>
+            </div>
           </div>
           {children}
         </ArticulationHeader>
@@ -180,10 +241,10 @@ const { selectedCourses } = useSelectedCourses();
         )}
         <CPLRequestModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
           selectedCourses={selectedCourses}
           courses={articulations}
-          onSubmit={handleCPLRequestSubmit}
+          onSubmit={handleCPLRequestDBSubmit}
         />
       </div>
     </>
