@@ -15,6 +15,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
 import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCoursesList";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
+import NotFoundPage from "../not-found";
 
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +74,7 @@ export default function Home({ params }: any) {
   if (settingsLoading) return <div>Loading settings...</div>;
   if (settingsError) return <div>Error loading settings</div>;
   if (!settingsObject) {
-    return <div>No settings available</div>;
+    return <NotFoundPage/>;
   }
   const appName = `${process.env.NEXT_PUBLIC_APP_NAME}`;
   const appCopyright = `${process.env.NEXT_PUBLIC_APP_COPYRIGHT}`;
