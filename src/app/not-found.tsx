@@ -21,12 +21,7 @@ export default function NotFoundPage() {
           </p>
         </CardContent>
         <CardFooter className="flex justify-center space-x-4">
-          <Button asChild>
             <Link href="/">Go to Homepage</Link>
-          </Button>
-          <Button variant="outline" onClick={() => window.history.back()}>
-            Go Back
-          </Button>
         </CardFooter>
       </Card>
     </div>
