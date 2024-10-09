@@ -16,8 +16,9 @@ export default function NotFoundPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center">
-            Sorry, we couldn't find the page you're looking for. It might have
-            been removed, had its name changed, or is temporarily unavailable.
+            Sorry, we couldn&apos;t find the page you&apos;re looking for. It
+            might have been removed, had its name changed, or is temporarily
+            unavailable.
           </p>
         </CardContent>
         <CardFooter className="flex justify-center space-x-4">
