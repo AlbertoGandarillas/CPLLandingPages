@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Mails } from "lucide-react";
-import { ViewCPLCreditRecommendations } from "@prisma/client";
-import {
-  ViewCPLCourses,
-  ViewCPLEvidenceCompetency,
-  ViewCPLIndustryCertifications,
-} from "@prisma/client";
 import { ArticulationExport } from "@/types/ArticulationExport";
 import SkeletonWrapper from "../../shared/SkeletonWrapper";
 import ArticulationHeader from "./ArticulationsHeader";
@@ -14,9 +8,9 @@ import ArticulationCard from "./ArticulationCard";
 import ArticulationList from "./ArticulationList";
 import CPLRequestModal from "./CPLRequestModal";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
+import { ContactForm } from "@/components/shared/ContactForm";
 
 interface ArticulationsTableProps {
   articulations: ExtendedViewCPLCourses[];
@@ -26,6 +20,7 @@ interface ArticulationsTableProps {
   CPLAssistantEmail?: string;
   showCollegeName?: boolean;
   children?: React.ReactNode;
+  CollegeID: number;
 }
 export default function ArticulationsTable({
   articulations,
@@ -35,11 +30,13 @@ export default function ArticulationsTable({
   CPLAssistantEmail,
   showCollegeName,
   children,
+  CollegeID,
 }: ArticulationsTableProps) {
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
   const [viewMode, setViewMode] = React.useState("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const filteredItems =
     searchTerm.length >= 3
       ? articulations.filter((articulation) => {
@@ -69,111 +66,9 @@ export default function ArticulationsTable({
 
   const { selectedCourses } = useSelectedCourses();
 
-  const handleCPLRequestSubmit = async (name: string, email: string) => {
-    try {
-      const response = await fetch("/api/send-cpl-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          selectedCourses: selectedCourses.map((id) => {
-            const course = articulations.find(
-              (a) => a.OutlineID.toString() === id
-            );
-            return course
-              ? `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`
-              : "";
-          }),
-          CPLAssistantEmail,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send email");
-      }
-
-      toast({
-        title: "Request Sent",
-        description: `Your CPL information request has been sent to ${CPLAssistantEmail}.`,
-      });
-
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error sending email:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to send your request. Please try again later.",
-        variant: "destructive",
-      });
-    }
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
-
-  const handleCPLRequestDBSubmit = async (
-    firstName: string,
-    lastName: string,
-    email: string,
-    hasCCCApplyId: boolean,
-    cccApplyId: string | null
-  ) => {
-    try {
-      const response = await fetch("/api/cpl-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          hasCCCApplyId,
-          cccApplyId,
-          selectedCourses: selectedCourses.map((id) => {
-            const course = articulations.find(
-              (a) => a.OutlineID.toString() === id
-            );
-            return course
-              ? `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`
-              : "";
-          }),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Handle successful submission
-      toast({
-        title: "Request Submitted",
-        description:
-          "Your CPL information request has been submitted successfully.",
-        variant: "success",
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error submitting request:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit your request. Please try again.",
-        variant: "destructive",
-      });
-      // The modal will remain open, and the form will not be cleared
-    }
-  };
-
-    const handleModalClose = () => {
-      setIsModalOpen(false);
-    };
 
   return (
     <>
@@ -183,17 +78,21 @@ export default function ArticulationsTable({
           onViewModeChange={setViewMode}
           onExport={() => exportToExcel(filteredItems, "EligibleCourses")}
         >
-          <div className="hidden">
-            <div className="flex justify-end">
-              <Button
-                onClick={() => setIsModalOpen(true)}
-                disabled={selectedCourses.length === 0}
-              >
-                <Mails className="mr-2" />
-                Request CPL Information ({selectedCourses.length})
-              </Button>
-            </div>
-          </div>
+          {CollegeID && (
+            <Button
+              onClick={() => {
+                selectedCourses.length === 0
+                  ? setIsInquiryModalOpen(true)
+                  : setIsModalOpen(true);
+              }}
+            >
+              <Mails className="mr-2" />
+              Request CPL Review{" "}
+              {selectedCourses.length > 0
+                ? "( " + selectedCourses.length + " )"
+                : ""}
+            </Button>
+          )}
           {children}
         </ArticulationHeader>
         {error && <p>Error: {error.message}</p>}
@@ -215,7 +114,7 @@ export default function ArticulationsTable({
         ) : (
           <SkeletonWrapper isLoading={loading} fullWidth={true} variant="table">
             {viewMode === "grid" ? (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 overflow-y-auto max-h-svh">
                 {!loading &&
                   !error &&
                   filteredItems.map((articulation) => (
@@ -223,6 +122,7 @@ export default function ArticulationsTable({
                       key={articulation.OutlineID}
                       articulation={articulation}
                       showCollegeName={showCollegeName}
+                      showFavoriteStar={CollegeID ? true : false}
                     />
                   ))}
               </div>
@@ -234,12 +134,19 @@ export default function ArticulationsTable({
             )}
           </SkeletonWrapper>
         )}
+
         <CPLRequestModal
           isOpen={isModalOpen}
-          onClose={handleModalClose}
+          onClose={() => setIsModalOpen(false)}
           selectedCourses={selectedCourses}
           courses={articulations}
-          onSubmit={handleCPLRequestDBSubmit}
+          CPLAssistantEmail={CPLAssistantEmail || ""}
+          CollegeID={CollegeID ? CollegeID.toString() : undefined}
+        />
+        <ContactForm
+          isOpen={isInquiryModalOpen}
+          onClose={() => setIsInquiryModalOpen(false)}
+          CPLAssistantEmail={CPLAssistantEmail || ""}
         />
       </div>
     </>

@@ -1,80 +1,104 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { sendEmail } from "@/services/emailService";
+import { cplRequestSchema, CPLRequestData } from "@/schemas/cplRequestSchema";
 
 export async function POST(request: Request) {
   try {
-    const { firstName, lastName, email, selectedCourses, CPLAssistantEmail } =
-      await request.json();
+    const body = await request.json();
+    const validatedData = cplRequestSchema.parse(body) as CPLRequestData;
 
-    console.log("Received request:", {
+    const {
       firstName,
       lastName,
       email,
       selectedCourses,
       CPLAssistantEmail,
-    });
+      files,
+      unlistedQualifications,
+      cccApplyId,
+    } = validatedData;
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || "465"),
-      secure: true, // Use TLS
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+    const attachments =
+      files?.map((file) => ({
+        filename: file.name,
+        content: file.data.replace(/^data:.*?;base64,/, ""),
+        encoding: "base64",
+      })) || [];
 
-    console.log("Transporter created, attempting to verify...");
-
-    try {
-      await transporter.verify();
-      console.log("Transporter verified successfully");
-    } catch (verifyError) {
-      console.error("Transporter verification failed:", verifyError);
-      throw verifyError;
-    }
-
+    const coursesHtml = selectedCourses
+      .map(
+        ({ course, certifications }) => `
+      <li>
+        ${course}
+        ${
+          certifications.length > 0
+            ? `
+          <ul>
+            ${certifications.map((cert) => `<li>${cert}</li>`).join("")}
+          </ul>
+        `
+            : ""
+        }
+      </li>
+    `
+      )
+      .join("");
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: CPLAssistantEmail,
       subject: "New CPL Information Request",
+      cc: email,
       text: `
         Name: ${firstName} ${lastName}
         Email: ${email}
+        CCC Apply ID: ${cccApplyId || "None provided"}
         Selected Courses:
         ${selectedCourses.join("\n")}
+        Unlisted Qualifications:
+        ${unlistedQualifications || "None provided"}
       `,
       html: `
         <p>Hello,</p>
-        <p>My name is ${firstName} ${lastName}, and have a CCCApply id: <CCCApply Id>. I am interested in receiving a CPL review for the following courses:</p>
+        <p>My name is ${firstName} ${lastName}${
+        cccApplyId ? `, and I have a CCCApply ID: ${cccApplyId}` : ""
+      }. I am interested in receiving a CPL review for the following courses:</p>
         <ul>
-          ${selectedCourses.map((course: any) => `<li>${course}</li>`).join("")}
+          ${coursesHtml}
         </ul>
-        <p>According to your CPL page, the following required evidence is needed:<p>
-        [List of required evidence]
-        <p>I have attached the evidence I have available and look forward to hearing from you soon!<p>
+        ${
+          unlistedQualifications
+            ? `
+          <p>Additionally, I have the following unlisted qualifications:</p>
+          <p>${unlistedQualifications}</p>
+        `
+            : ""
+        }
+        ${
+          attachments.length > 0
+            ? `<p>I have attached the evidence I have available and look forward to hearing from you soon!</p>`
+            : ""
+        }    
         <p>Thanks,</p>
         <p>${firstName} ${lastName}</p>
         <p>${email}</p>
       `,
+      attachments,
+      unlistedQualifications,
     };
 
-    console.log("Sending email with options:", mailOptions);
-
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("Email sent:", info.messageId);
+    const info = await sendEmail(mailOptions);
 
     return NextResponse.json({ success: true, messageId: info.messageId });
   } catch (error) {
-    console.error("Failed to send email:", error);
-    if (error instanceof Error) {
-      console.error("Error name:", error.name);
-      console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
+    console.error("Failed to process request:", error);
+    if (error instanceof Error && "errors" in error) {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          details: error.errors,
+        },
+        { status: 400 }
+      );
     }
     return NextResponse.json(
       {

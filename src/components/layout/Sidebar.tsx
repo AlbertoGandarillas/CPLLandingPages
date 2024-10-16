@@ -34,11 +34,13 @@ interface SidebarProps {
   };
   onIndustryCertificationSelect: (industryCertification: string) => void;
   children?: React.ReactNode;
+  className?: string;
 }
 export default function Sidebar({
   settingsObject,
   children,
   onIndustryCertificationSelect,
+  className
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -46,7 +48,7 @@ export default function Sidebar({
   return (
     <>
       {/* Mobile icon */}
-      <div className="block lg:hidden fixed top-4 left-4 z-50">
+      <div className="block lg:hidden fixed top-4 left-4 z-50 ">
         <button
           onClick={toggleSidebar}
           className="p-2 rounded-full bg-white bg-opacity-80 shadow-lg hover:bg-opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -60,15 +62,16 @@ export default function Sidebar({
       <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block w-80 p-4 flex flex-col justify-start`}
+        } lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start ${className}`}
       >
         {
           <>
-            <Logo
-              logoUrl={logoUrl}
-              college={settingsObject.College.College}
-              settings={settingsObject}
-            />
+              <Logo
+                logoUrl={logoUrl}
+                college={settingsObject.College.College}
+                settings={settingsObject}
+              />
+
             <ContactCard settings={settingsObject} />
             <SidebarButtons settings={settingsObject} />
             {/* <MainCard title="Approved Opportunities" className="w-full mt-4">

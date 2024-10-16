@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface SelectedCoursesListProps {
   articulations: ExtendedViewCPLCourses[];
@@ -12,16 +13,30 @@ interface SelectedCoursesListProps {
 export default function SelectedCoursesList({
   articulations,
 }: SelectedCoursesListProps) {
+  const { toast } = useToast();
   const { selectedCourses, removeCourse } = useSelectedCourses();
 
   const selectedArticulations = articulations.filter((articulation) =>
     selectedCourses.includes(articulation.OutlineID.toString())
   );
 
+  const handleToggleSelection = (articulation:any) => {
+    removeCourse(articulation.OutlineID.toString())
+    toast({
+      variant: "warning",
+      title: "Course removed",
+      description: `${articulation.Subject} ${articulation.CourseNumber}: ${
+        articulation.CourseTitle
+      } has been removed from your selected courses.`,
+    });
+  };
+ if (selectedCourses.length === 0) {
+   return null;
+ }
   return (
-    <Card className="mt-4 hidden">
+    <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Favorited Courses</CardTitle>
+        <CardTitle className="text-lg">Favorited Courses</CardTitle>
       </CardHeader>
       <CardContent>
         {selectedArticulations.length === 0 ? (
@@ -41,7 +56,7 @@ export default function SelectedCoursesList({
                   variant="ghost"
                   size="sm"
                   onClick={() =>
-                    removeCourse(articulation.OutlineID.toString())
+                    handleToggleSelection(articulation)
                   }
                 >
                   <Trash2 className="h-4 w-4" />

@@ -5,11 +5,9 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    // Log the raw request body
     const rawBody = await request.text();
     console.log("Raw request body:", rawBody);
 
-    // Attempt to parse the JSON
     let body;
     try {
       body = JSON.parse(rawBody);
@@ -28,10 +26,11 @@ export async function POST(request: NextRequest) {
       hasCCCApplyId,
       cccApplyId,
       selectedCourses,
+      CollegeID,
+      unlistedQualifications,
     } = body;
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !selectedCourses) {
+    if (!firstName || !lastName || !email || !selectedCourses || !CollegeID) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -46,6 +45,8 @@ export async function POST(request: NextRequest) {
         hasCCCApplyId,
         cccApplyId,
         selectedCourses: JSON.stringify(selectedCourses),
+        CollegeID: parseInt(CollegeID, 10),
+        unlistedQualifications,
       },
     });
 

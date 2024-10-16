@@ -537,12 +537,14 @@ model ViewCPLImplementedColleges {
 }
 
 model CPLRequest {
-  id            Int      @id @default(autoincrement())
-  firstName     String
-  lastName      String
-  email         String
-  hasCCCApplyId Boolean
-  cccApplyId    String?
-  selectedCourses String
-  createdAt     DateTime @default(now())
+  id                        Int      @id @default(autoincrement())
+  firstName                 String
+  lastName                  String
+  email                     String
+  hasCCCApplyId             Boolean
+  cccApplyId                String?
+  selectedCourses           String
+  unlistedQualifications    String?
+  createdAt                 DateTime @default(now())
+  CollegeID                 Int?
 }

@@ -1,172 +1,226 @@
 "use client";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
+import Image from "next/image";
 import SearchBar from "@/components/shared/SearchBar";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createQueryString } from "@/lib/createQueryString";
-import { PotentialSavings } from "@/components/dashboard/PotentialSavings";
-import { DropdownImplementedColleges } from "@/components/shared/DropdownImplementedColleges";
-import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
-import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
-import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
-import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { Bell, CircleUser, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
-export default function Home() {
+export default function Homepage() {
   const [open, setOpen] = useState("item-1");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCollege, setSelectedCollege] = useState<string | null>("1");
-  const [selectedIndustryCertification, setSelectedIndustryCertification] =
-    useState<string | null>(null);
-  const [selectedCPLType, setSelectedCPLType] = useState<string | null>(null);
-  const [selectedLearningMode, setSelectedLearningMode] = useState<
-    string | null
-  >(null);
-  const {
-    data: articulations,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: [
-      "articulations",
-      selectedCollege,
-      selectedIndustryCertification,
-      selectedCPLType,
-      selectedLearningMode,
-    ],
-    queryFn: () =>
-      fetch(
-        `/api/cpl-courses?${createQueryString({
-          college: selectedCollege ?? undefined,
-          industryCertification: selectedIndustryCertification,
-          cplType: selectedCPLType ?? undefined,
-          learningMode: selectedLearningMode,
-        })}`
-      ).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      }),
-  });
-
-  const handleCollegeSelect = (collegeId: string | null) => {
-    setSelectedCollege(collegeId);
-  };
-  const handleIndustryCertificationSelect = (
-    industryCertification: string | null
-  ) => {
-    setSelectedIndustryCertification(industryCertification);
-  };
-  const handleCPLTypeSelect = (cplType: string | null) => {
-    setSelectedCPLType(cplType);
-  };
-  const handleLerningModeSelect = (learningMode: string | null) => {
-    setSelectedLearningMode(learningMode);
-  };
+  const options = [
+    {
+      name: "Find a MAP College",
+      href: "/find-a-map-college",
+    },
+    {
+      name: "Contact a CPL Assistant",
+      href: "/contact-a-cpl-assistant",
+    },
+    {
+      name: "Portfolio Builder",
+      href: "/portfolio-builder",
+    },
+  ];
+  const additionalOptions = [
+    {
+      name: "CCCApply ID",
+      href: "/cccapply-id",
+    },
+    {
+      name: "FAFSA",
+      href: "/fafsa",
+    },
+  ];
   return (
-    <SelectedCoursesProvider>
-      <div className="container grid gap-4">
-        <Accordion
-          type="single"
-          value={open}
-          onValueChange={setOpen}
-          collapsible
-          className="mt-4"
-        >
-          <AccordionItem value="item-1" className="border-0">
-            <AccordionTrigger className="bg-gray-100 text-3xl text-black p-4 flex justify-">
-              <h1 className="text-lg">Welcome</h1>
-            </AccordionTrigger>
-            <AccordionContent className="p-4 bg-white">
-              <div className="grid grid-cols-2 gap-4">
-                <Card>
-                  <CardContent className="pt-4">
-                    <p>
-                      <strong>
-                        Save Time and Money with College Credit for Your Skills
-                        and Experience!
-                        <br />
-                      </strong>
-                      You might be able to earn college credit based on what you
-                      already know. Check out the list of approved College Prior
-                      Learning (CPL) below.
-                      <br /> Just enter a keyword to see if you&rsquo;re
-                      eligible!
-                    </p>
-                    <p>
-                      <strong>
-                        Can&rsquo;t find what you&rsquo;re looking for? No
-                        problem!
-                      </strong>
-                      <br /> You can request a CPL review to see if we can give
-                      you credit for your certifications or skills. Here&rsquo;s
-                      how to get started:
-                      <br /> &nbsp;
-                    </p>
-                    <p>
-                      1. <strong>Apply to the College:</strong>&nbsp;First, go
-                      to CCCApply and fill out your application. You&rsquo;ll
-                      find the link on the left sidebar.
-                      <br /> 2.&nbsp;<strong>Contact a CPL Counselor:</strong>
-                      &nbsp;After you&rsquo;ve applied, come back here and click
-                      &ldquo;Contact a CPL Counselor&rdquo; to send us an email.
-                      <br /> <br /> Provide Your Details: In your email, include
-                      your certification details, your work experience, and your
-                      CCCApply ID.
-                      <br />
-                      <strong>
-                        We&rsquo;ll review your information and get back to you
-                        with the next steps!
-                      </strong>
-                    </p>
-                  </CardContent>
-                </Card>
-                <PotentialSavings />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-        <Card>
-          <CardHeader className="bg-gray-100">
-            <CardTitle className="grid grid-cols-2">
-              <div className="text-xl">Eligible Courses</div>
-              <SearchBar onSearch={setSearchTerm} />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ArticulationsTable
-              articulations={articulations || []}
-              loading={isLoading}
-              error={error}
-              searchTerm={searchTerm}
-              showCollegeName={!selectedCollege || selectedCollege === ""}
-            >
-              <DropdownImplementedColleges
-                onCollegeSelect={handleCollegeSelect}
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-none bg-muted/20 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex justify-center h-14 items-center border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <Image
+                src="/images/map-logo-white.png"
+                alt="MAP"
+                width={100}
+                height={100}
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="inline-block object-contain"
               />
-              {selectedCollege && (
-                <DropdownIndustryCertifications
-                  onIndustryCertificationSelect={
-                    handleIndustryCertificationSelect
-                  }
-                  collegeId={selectedCollege}
-                />
-              )}
-              <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
-              <DropdownLearningModes
-                onLearningModeSelect={handleLerningModeSelect}
-              />
-            </ArticulationsTable>
-          </CardContent>
-        </Card>
+            </Link>
+          </div>
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              {options.map((option, index) => (
+                <Link
+                  key={index}
+                  href={option.href}
+                  className={`flex items-center justify-center gap-3 rounded-lg px-3 py-3 my-2 text-white transition-all hover:text-primary bg-[#1e3964]`}
+                >
+                  {option.name}
+                </Link>
+              ))}
+              <h3 className="px-3 py-4 text-xl">Additional Resources</h3>
+              {additionalOptions.map((option, index) => (
+                <Link
+                  key={index}
+                  href={option.href}
+                  className={`flex justify-center items-center w-full gap-3 rounded-lg px-3 py-3 my-2 text-muted-foreground transition-all hover:text-primary bg-muted`}
+                >
+                  {option.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <div className="mt-auto p-4">
+            <RequestReview type="mobile" />
+          </div>
+        </div>
       </div>
-    </SelectedCoursesProvider>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+              <nav className="grid gap-2 text-lg font-medium">
+                <Link
+                  href="#"
+                  className="flex items-center gap-2 text-lg font-semibold"
+                >
+                  <span className="sr-only">ITPI</span>
+                </Link>
+                {options.map((option, index) => (
+                  <Link
+                    key={index}
+                    href={option.href}
+                    className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                      index === 1
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground"
+                    } hover:text-foreground`}
+                  >
+                    {option.name}
+                  </Link>
+                ))}
+                <h2 className="px-3 py2">Additional Resources</h2>
+                {additionalOptions.map((option, index) => (
+                  <Link
+                    key={index}
+                    href={option.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                      index === 2 ? "bg-muted" : ""
+                    }`}
+                  >
+                    {option.name}
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-auto">
+                <RequestReview />
+              </div>
+            </SheetContent>
+          </Sheet>
+          <div className="w-full flex-1">
+            <form>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search keywords..."
+                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                />
+              </div>
+            </form>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full ml-auto text-white"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Toggle notifications</span>
+          </Button>
+          <UserLogin />
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          <div className="flex items-center">
+            <h1 className="text-lg font-semibold md:text-2xl">Welcome</h1>
+          </div>
+          <div
+            className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
+            x-chunk="dashboard-02-chunk-1"
+          >
+            <div className="flex flex-col items-center gap-1 text-center"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+interface RequestReviewProps {
+  type?: "mobile" | "desktop";
+}
+
+function RequestReview({ type }: RequestReviewProps) {
+  return (
+    <Card {...(type === "mobile" ? { "x-chunk": "dashboard-02-chunk-0" } : {})}>
+      <CardHeader className="p-2 pt-0 md:p-4">
+        <CardDescription>
+          If you would like to submit review request to MAP Support Center or
+          College
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+        <Button size="sm" className="w-full">
+          Request a review here
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+function UserLogin() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full text-white">
+          <CircleUser className="h-5 w-5" />
+          <span className="sr-only">Toggle user menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Settings</DropdownMenuItem>
+        <DropdownMenuItem>Support</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Logout</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

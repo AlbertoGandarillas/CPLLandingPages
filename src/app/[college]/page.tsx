@@ -92,6 +92,7 @@ export default function Home({ params }: any) {
           <Sidebar
             settingsObject={settingsObject}
             onIndustryCertificationSelect={handleIndustryCertificationSelect}
+            className=""
           >
             <SelectedCoursesList articulations={articulations || []} />
           </Sidebar>
@@ -129,7 +130,16 @@ export default function Home({ params }: any) {
                       Eligible courses below are faculty approved for credit
                       based on the prior learning listed
                     </div>
-                    <SearchBar className="w-full lg:w-96" onSearch={setSearchTerm} />
+                    <SearchBar
+                      className="w-full lg:w-96"
+                      onSearch={setSearchTerm}
+                    />
+                    <DropdownIndustryCertifications
+                      onIndustryCertificationSelect={
+                        handleIndustryCertificationSelect
+                      }
+                      collegeId={selectedCollege}
+                    />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -139,14 +149,8 @@ export default function Home({ params }: any) {
                     error={error}
                     searchTerm={searchTerm}
                     CPLAssistantEmail={settingsObject.Email}
-                  >
-                    <DropdownIndustryCertifications
-                      onIndustryCertificationSelect={
-                        handleIndustryCertificationSelect
-                      }
-                      collegeId={selectedCollege}
-                    />
-                  </ArticulationsTable>
+                    CollegeID={settingsObject.CollegeID}
+                  ></ArticulationsTable>
                 </CardContent>
               </Card>
             </div>

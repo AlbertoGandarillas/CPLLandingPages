@@ -37,11 +37,13 @@ import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 interface ArticulationCardProps {
   articulation: ExtendedViewCPLCourses;
   showCollegeName?: boolean;
+  showFavoriteStar?: boolean;
 }
 
 export default function ArticulationCard({
   articulation,
   showCollegeName,
+  showFavoriteStar
 }: ArticulationCardProps) {
   const { toast } = useToast();
   const { selectedCourses, toggleCourse } = useSelectedCourses();
@@ -97,22 +99,24 @@ export default function ArticulationCard({
             >
               Credits: {articulation.Units}
             </Badge>
-            <Button variant="ghost" size="icon" onClick={handleToggleSelection}>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Star
-                      className="h-4 w-4 hidden"
-                      fill={isSelected ? "#1d4ed8" : "#c1c1c1"}
-                      color={isSelected ? "#1d4ed8" : "#c1c1c1"}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add this course to your favorites</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </Button>
+            {showFavoriteStar && (
+              <div className="cursor-pointer" onClick={handleToggleSelection}>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Star
+                        className="h-4 w-4"
+                        fill={isSelected ? "#1d4ed8" : "#c1c1c1"}
+                        color={isSelected ? "#1d4ed8" : "#c1c1c1"}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add this course to your favorites</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
           </div>
           <div className="overflow-y-auto max-h-56">
             {articulation.IndustryCertifications &&
@@ -217,7 +221,11 @@ export default function ArticulationCard({
                               ))}
                             </ul>
                           ) : (
-                            <>{cert.CPLTypeDescription === "Military" && (<li className="text-sm pl-4 list-none">JST</li>)}</>
+                            <>
+                              {cert.CPLTypeDescription === "Military" && (
+                                <li className="text-sm pl-4 list-none">JST</li>
+                              )}
+                            </>
                           )}
                         </TableCell>
                       </TableRow>
@@ -233,8 +241,8 @@ export default function ArticulationCard({
           (cert) => cert.CPLTypeDescription === "Military"
         ) && (
           <p className="text-xs text-sky-950 mt-2 font-semibold">
-            * This has military type possible qualification, upload your JST for
-            personalized details.
+            * This may qualify for military-related CPL. Please upload your JST
+            for personalized information
           </p>
         )}
       </CardFooter>
