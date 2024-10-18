@@ -7,6 +7,8 @@ interface SidebarButtonsProps {
     Email: string;
     CompBackgroundColor: string;
     CompFontColor: string;
+    PanelBackgroundColor: string;
+    PanelFontColor: string;
     Links: Array<{
       LinkText: string;
       LinkURL: string;
@@ -38,8 +40,8 @@ export default function SidebarButtons({ settings }: SidebarButtonsProps) {
           target="_blank"
           href={normalizeUrl(link.LinkURL)}
           style={{
-            backgroundColor: settings.CompBackgroundColor,
-            color: settings.CompFontColor,
+            backgroundColor: settings.PanelBackgroundColor,
+            color: settings.PanelFontColor,
           }}
           title={link.Tooltip}
           variant="default"

@@ -24,6 +24,8 @@ interface ArticulationsTableProps {
   settingsObject: {
     CompBackgroundColor: string;
     CompFontColor: string;
+    PanelBackgroundColor: string;
+    PanelFontColor: string;
   } | null
 }
 export default function ArticulationsTable({
@@ -132,6 +134,8 @@ export default function ArticulationsTable({
                       articulation={articulation}
                       showCollegeName={showCollegeName}
                       showFavoriteStar={CollegeID ? true : false}
+                      CardBackgroundColor={settingsObject?.PanelBackgroundColor}
+                      CardFontColor={settingsObject?.PanelFontColor}
                     />
                   ))}
               </div>

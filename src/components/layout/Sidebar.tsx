@@ -24,6 +24,8 @@ interface SidebarProps {
     Email: string;
     CompBackgroundColor: string;
     CompFontColor: string;
+    PanelBackgroundColor: string;
+    PanelFontColor: string;
     Links: Array<{
       LinkText: string;
       LinkURL: string;

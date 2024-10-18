@@ -38,12 +38,16 @@ interface ArticulationCardProps {
   articulation: ExtendedViewCPLCourses;
   showCollegeName?: boolean;
   showFavoriteStar?: boolean;
+  CardBackgroundColor?: string;
+  CardFontColor?: string;
 }
 
 export default function ArticulationCard({
   articulation,
   showCollegeName,
-  showFavoriteStar
+  showFavoriteStar,
+  CardBackgroundColor,
+  CardFontColor,
 }: ArticulationCardProps) {
   const { toast } = useToast();
   const { selectedCourses, toggleCourse } = useSelectedCourses();
@@ -66,7 +70,13 @@ export default function ArticulationCard({
   };
   return (
     <Card className="flex flex-col">
-      <CardHeader className="bg-gray-100 flex-shrink-0">
+      <CardHeader
+        className={`flex-shrink-0 ${CardBackgroundColor ? '' : 'bg-gray-100'}`}
+        style={{
+          backgroundColor: CardBackgroundColor || undefined,
+          color: CardFontColor || undefined,
+        }}
+      >
         <CardTitle className="text-md h-auto flex align-bottom">
           <div className="flex items-center justify-between w-full gap-x-2">
             <p>

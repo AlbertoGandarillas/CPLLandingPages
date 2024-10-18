@@ -342,42 +342,12 @@ export default function CPLRequestModal({
                     onFileChange={handleFileChange}
                     onRemoveFile={removeFile}
                   />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center text-xs">
-                        <Info
-                          size={16}
-                          className="ml-1 text-gray-400 cursor-help mr-2"
-                        />{" "}
-                        What possible evidence can I submit?
-                      </TooltipTrigger>
-                      <TooltipContent className="p-4 text-xs">
-                        <ul className="list-disc list-inside">
-                          <li>Certificate</li>
-                          <li>License</li>
-                          <li>Portfolio Review</li>
-                          <li>Oral Interview</li>
-                          <li>Writing Sample</li>
-                          <li>Exam Scores</li>
-                          <li>Evidence of Work Experience</li>
-                          <li>Course Grade/Credit</li>
-                          <li>Credit Recommendation by ACE, etc.</li>
-                          <li>Performance, Demonstration, Audition</li>
-                        </ul>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <div className="flex items-center text-sm text-gray-500 bg-gray-100 p-3 mt-4 rounded-md">
-                    <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <p>
-                      Your information will be kept confidential and used only
-                      for CPL evaluation purposes.
-                    </p>
-                  </div>
                 </div>
                 <div>
-                  <div className="grid gap-y-4 pb-4">
-                    <h3 className="text-sm font-bold">Selected Courses:</h3>
+                  <div className="grid gap-y-4">
+                    <Label htmlFor="" className="font-bold">
+                      Selected Courses:
+                    </Label>
                     <ul className="list-disc list-inside overflow-y-auto max-h-64">
                       {selectedCourses.map((id) => {
                         const course = courses.find(
@@ -427,6 +397,44 @@ export default function CPLRequestModal({
                       })}
                     </ul>
                   </div>
+                </div>
+              </div>
+              <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                <div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center text-xs">
+                        <Info
+                          size={16}
+                          className="ml-1 text-gray-400 cursor-help mr-2"
+                        />{" "}
+                        What possible evidence can I submit?
+                      </TooltipTrigger>
+                      <TooltipContent className="p-4 text-xs">
+                        <ul className="list-disc list-inside">
+                          <li>Certificate</li>
+                          <li>License</li>
+                          <li>Portfolio Review</li>
+                          <li>Oral Interview</li>
+                          <li>Writing Sample</li>
+                          <li>Exam Scores</li>
+                          <li>Evidence of Work Experience</li>
+                          <li>Course Grade/Credit</li>
+                          <li>Credit Recommendation by ACE, etc.</li>
+                          <li>Performance, Demonstration, Audition</li>
+                        </ul>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <div className="flex items-center text-sm text-gray-500 bg-gray-100 p-3 mt-4 rounded-md">
+                    <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <p>
+                      Your information will be kept confidential and used only
+                      for CPL evaluation purposes.
+                    </p>
+                  </div>
+                </div>
+                <div>
                   <div className="grid gap-y-2">
                     <Label htmlFor="unlistedCertifications">
                       Unlisted Qualifications
