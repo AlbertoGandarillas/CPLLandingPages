@@ -31,22 +31,26 @@ export default function ArticulationList({
           <TableHead className="text-center font-bold">Credits</TableHead>
           <TableHead className="font-bold">Possible Qualifications</TableHead>
           <TableHead className="font-bold">Credit Recommendations</TableHead>
-          <TableHead className="font-bold">Required Evidence</TableHead>
+          <TableHead className="font-bold">Possible Evidence</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {articulations.map((articulation) => (
           <TableRow key={articulation.OutlineID}>
             {showCollegeName && <TableCell>{articulation.College}</TableCell>}
-            <TableCell className="text-center">
+            <TableCell className="text-center align-top">
               {articulation.Subject}
             </TableCell>
-            <TableCell className="text-center">
+            <TableCell className="text-center align-top">
               {articulation.CourseNumber}
             </TableCell>
-            <TableCell>{articulation.CourseTitle}</TableCell>
-            <TableCell className="text-center">{articulation.Units}</TableCell>
-            <TableCell>
+            <TableCell className="align-top">
+              {articulation.CourseTitle}
+            </TableCell>
+            <TableCell className="text-center align-top">
+              {articulation.Units}
+            </TableCell>
+            <TableCell className="align-top">
               {articulation.IndustryCertifications?.map((cert, index) => (
                 <div key={index} className="flex">
                   <p className="text-sm">{cert.CPLTypeDescription}</p>
@@ -57,7 +61,7 @@ export default function ArticulationList({
                 </div>
               ))}
             </TableCell>
-            <TableCell>
+            <TableCell className="align-top">
               {articulation.IndustryCertifications?.map((cert, index) => (
                 <div key={index}>
                   {cert.CreditRecommendations &&
@@ -74,7 +78,7 @@ export default function ArticulationList({
                 </div>
               ))}
             </TableCell>
-            <TableCell>
+            <TableCell className="align-top">
               {articulation.IndustryCertifications?.map((cert, index) => (
                 <div key={index}>
                   {cert.Evidences && cert.Evidences.length > 0 && (

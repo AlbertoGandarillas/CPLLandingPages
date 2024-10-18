@@ -1,226 +1,269 @@
 "use client";
-import { useState } from "react";
-import Image from "next/image";
-import SearchBar from "@/components/shared/SearchBar";
+import * as React from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
-import Link from "next/link";
-import { Bell, CircleUser, Menu, Search } from "lucide-react";
+  Search,
+  MapPin,
+  Upload,
+  FileText,
+  User,
+  Menu,
+  ChevronDown,
+  Filter,
+  ArrowUpDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuTrigger,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function Homepage() {
-  const [open, setOpen] = useState("item-1");
-  const [searchTerm, setSearchTerm] = useState("");
-  const options = [
-    {
-      name: "Find a MAP College",
-      href: "/find-a-map-college",
-    },
-    {
-      name: "Contact a CPL Assistant",
-      href: "/contact-a-cpl-assistant",
-    },
-    {
-      name: "Portfolio Builder",
-      href: "/portfolio-builder",
-    },
-  ];
-  const additionalOptions = [
-    {
-      name: "CCCApply ID",
-      href: "/cccapply-id",
-    },
-    {
-      name: "FAFSA",
-      href: "/fafsa",
-    },
-  ];
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-none bg-muted/20 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex justify-center h-14 items-center border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Image
-                src="/images/map-logo-white.png"
-                alt="MAP"
-                width={100}
-                height={100}
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="inline-block object-contain"
-              />
-            </Link>
-          </div>
-          <div className="flex-1">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              {options.map((option, index) => (
-                <Link
-                  key={index}
-                  href={option.href}
-                  className={`flex items-center justify-center gap-3 rounded-lg px-3 py-3 my-2 text-white transition-all hover:text-primary bg-[#1e3964]`}
-                >
-                  {option.name}
-                </Link>
-              ))}
-              <h3 className="px-3 py-4 text-xl">Additional Resources</h3>
-              {additionalOptions.map((option, index) => (
-                <Link
-                  key={index}
-                  href={option.href}
-                  className={`flex justify-center items-center w-full gap-3 rounded-lg px-3 py-3 my-2 text-muted-foreground transition-all hover:text-primary bg-muted`}
-                >
-                  {option.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="mt-auto p-4">
-            <RequestReview type="mobile" />
-          </div>
+    <>
+      {/* Hero section with search bar */}
+      <section className="text-center space-y-6">
+        <h2 className="text-3xl font-bold tracking-tight lg:text-4xl">
+          Discover Your Path to Academic Credit
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          Unlock the value of your experiences with Credit for Prior Learning.
+          Start your journey today.
+        </p>
+      </section>
+
+      {/* Info cards */}
+      <section className="grid mt-4 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="mr-2 h-5 w-5" />
+              What is CPL?
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              Credit for Prior Learning (CPL) allows students and professionals
+              to earn academic credit for knowledge and skills they&apos;ve
+              gained outside the classroom, whether through work, military
+              service, or other experiences. This tool guides you in identifying
+              eligible prior learning and helps you streamline the process of
+              turning that experience into recognized credit.
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Upload className="mr-2 h-5 w-5" />
+              Why is a CPL portfolio important?
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              A CPL portfolio is crucial because it organizes and presents your
+              prior learning, skills, and experiences in a structured way that
+              colleges can assess for credit. By compiling items like your JST,
+              certificates, scores, and resume, the portfolio shows how your
+              background meets academic standards, making it easier to receive
+              credit when you enroll.
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <div className="grid grid-cols-2 gap-6">
+        <div className="relative my-4">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search by Program, City, Zip Code, MOS, or Industry"
+            className="pl-10 pr-4"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-      </div>
-      <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 md:hidden"
-              >
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
-                <Link
-                  href="#"
-                  className="flex items-center gap-2 text-lg font-semibold"
-                >
-                  <span className="sr-only">ITPI</span>
-                </Link>
-                {options.map((option, index) => (
-                  <Link
-                    key={index}
-                    href={option.href}
-                    className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
-                      index === 1
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground"
-                    } hover:text-foreground`}
-                  >
-                    {option.name}
-                  </Link>
-                ))}
-                <h2 className="px-3 py2">Additional Resources</h2>
-                {additionalOptions.map((option, index) => (
-                  <Link
-                    key={index}
-                    href={option.href}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
-                      index === 2 ? "bg-muted" : ""
-                    }`}
-                  >
-                    {option.name}
-                  </Link>
-                ))}
-              </nav>
-              <div className="mt-auto">
-                <RequestReview />
-              </div>
-            </SheetContent>
-          </Sheet>
-          <div className="w-full flex-1">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search keywords..."
-                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                />
-              </div>
-            </form>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full ml-auto text-white"
-          >
-            <Bell className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
+        <section className="flex items-center justify-center text-center">
+          <Button size="lg" className="text-lg px-8 py-6">
+            <FileText className="mr-2 h-5 w-5" />
+            Start Your CPL Portfolio
           </Button>
-          <UserLogin />
-        </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Welcome</h1>
-          </div>
-          <div
-            className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-            x-chunk="dashboard-02-chunk-1"
-          >
-            <div className="flex flex-col items-center gap-1 text-center"></div>
-          </div>
-        </main>
+        </section>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <section>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MapPin className="mr-2 h-5 w-5" />
+                Mapping Articulated Pathways
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">
+                Mapping articulated pathways ensures that common industry
+                certifications and military occupations are accurately
+                recognized, allowing students to earn academic credit
+                efficiently and apply it directly toward their degree programs.
+              </p>
+              <Tabs defaultValue="certifications" className="w-full">
+                <TabsList>
+                  <TabsTrigger value="certifications">
+                    Industry Certifications
+                  </TabsTrigger>
+                  <TabsTrigger value="occupations">
+                    Military Occupations
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="certifications">
+                  <DataTable
+                    data={certifications}
+                    columns={certificationColumns}
+                  />
+                </TabsContent>
+                <TabsContent value="occupations">
+                  <DataTable data={occupations} columns={occupationColumns} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="hidden">
+          <h2 className="text-2xl font-bold mb-4">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-2">
+            {faqs.map((faq, index) => (
+              <Collapsible key={index} className="border rounded-lg">
+                <CollapsibleTrigger className="flex justify-between items-center w-full p-4 font-medium">
+                  {faq.question}
+                  <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 pt-0 text-sm">
+                  {faq.answer}
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
   );
-}
-interface RequestReviewProps {
-  type?: "mobile" | "desktop";
 }
 
-function RequestReview({ type }: RequestReviewProps) {
+
+// Data table component
+function DataTable({ data, columns }: { data: any; columns: any }) {
+  const [sorting, setSorting] = React.useState({ column: '', direction: 'asc' })
+
+  const sortedData = React.useMemo(() => {
+    if (sorting.column) {
+      return [...data].sort((a, b) => {
+        if (a[sorting.column] < b[sorting.column]) return sorting.direction === 'asc' ? -1 : 1
+        if (a[sorting.column] > b[sorting.column]) return sorting.direction === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+    return data
+  }, [data, sorting])
+
   return (
-    <Card {...(type === "mobile" ? { "x-chunk": "dashboard-02-chunk-0" } : {})}>
-      <CardHeader className="p-2 pt-0 md:p-4">
-        <CardDescription>
-          If you would like to submit review request to MAP Support Center or
-          College
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-        <Button size="sm" className="w-full">
-          Request a review here
-        </Button>
-      </CardContent>
-    </Card>
-  );
+    <Table>
+      <TableHeader>
+        <TableRow>
+          {columns.map((column: any) => (
+            <TableHead key={column.key} className="text-left">
+              <Button
+                variant="ghost"
+                onClick={() => setSorting({
+                  column: column.key,
+                  direction: sorting.column === column.key && sorting.direction === 'asc' ? 'desc' : 'asc',
+                })}
+              >
+                {column.label}
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sortedData.map((row: any, index: any) => (
+          <TableRow key={index}>
+            {columns.map((column: any) => (
+              <TableCell key={column.key}>{row[column.key]}</TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
 }
-function UserLogin() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full text-white">
-          <CircleUser className="h-5 w-5" />
-          <span className="sr-only">Toggle user menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+
+// Sample data
+const certifications = [
+  { title: "CompTIA A+", type: "IT", students: 120 },
+  { title: "AWS Certified Solutions Architect", type: "Cloud Computing", students: 85 },
+  { title: "Certified Nursing Assistant (CNA)", type: "Healthcare", students: 200 },
+  { title: "Project Management Professional (PMP)", type: "Management", students: 150 },
+  { title: "Certified Information Systems Security Professional (CISSP)", type: "Cybersecurity", students: 75 },
+]
+
+const occupations = [
+  { title: "Unit Supply Specialist", type: "Logistics", students: 45 },
+  { title: "Wheeled Vehicle Mechanic", type: "Maintenance", students: 43 },
+  { title: "Signal Support Specialist", type: "Communications", students: 42 },
+  { title: "Culinary Specialist", type: "Food Service", students: 38 },
+  { title: "FIT Academy Conditioning (FIT-S3A)", type: "Physical Training", students: 37 },
+]
+
+const certificationColumns = [
+  { key: 'title', label: 'Certification' },
+  { key: 'type', label: 'Type' },
+  { key: 'students', label: 'Students' },
+]
+
+const occupationColumns = [
+  { key: 'title', label: 'Occupation' },
+  { key: 'type', label: 'Type' },
+  { key: 'students', label: 'Students' },
+]
+
+const faqs = [
+  {
+    question: "How do I know if I'm eligible for CPL?",
+    answer: "Eligibility for CPL varies depending on your experiences and the institution. Generally, if you have significant work experience, military service, certifications, or other forms of learning outside traditional classrooms, you may be eligible. Contact your chosen institution for specific eligibility criteria."
+  },
+  {
+    question: "How much credit can I earn through CPL?",
+    answer: "The amount of credit you can earn through CPL varies by institution and program. Some colleges may have a cap on the number of credits you can earn through CPL, while others may be more flexible. It's best to check with your specific institution for their policies."
+  },
+  {
+    question: "How long does the CPL process take?",
+    answer: "The duration of the CPL process can vary depending on the complexity of your portfolio and the institution's review process. It can take anywhere from a few weeks to several months. Start the process as early as possible to ensure you have enough time before your intended enrollment date."
+  },
+]

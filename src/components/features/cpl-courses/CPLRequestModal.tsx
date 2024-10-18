@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FileAttachments } from "@/components/shared/FileAttachments";
 import { CCCApplyInstructions } from "@/components/shared/CCCApplyInstructions";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CPLRequestModalProps {
   isOpen: boolean;
@@ -341,6 +342,31 @@ export default function CPLRequestModal({
                     onFileChange={handleFileChange}
                     onRemoveFile={removeFile}
                   />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center text-xs">
+                        <Info
+                          size={16}
+                          className="ml-1 text-gray-400 cursor-help mr-2"
+                        />{" "}
+                        What possible evidence can I submit?
+                      </TooltipTrigger>
+                      <TooltipContent className="p-4 text-xs">
+                        <ul className="list-disc list-inside">
+                          <li>Certificate</li>
+                          <li>License</li>
+                          <li>Portfolio Review</li>
+                          <li>Oral Interview</li>
+                          <li>Writing Sample</li>
+                          <li>Exam Scores</li>
+                          <li>Evidence of Work Experience</li>
+                          <li>Course Grade/Credit</li>
+                          <li>Credit Recommendation by ACE, etc.</li>
+                          <li>Performance, Demonstration, Audition</li>
+                        </ul>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <div className="flex items-center text-sm text-gray-500 bg-gray-100 p-3 mt-4 rounded-md">
                     <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
                     <p>
@@ -351,10 +377,8 @@ export default function CPLRequestModal({
                 </div>
                 <div>
                   <div className="grid gap-y-4 pb-4">
-                    <h3 className="text-sm mb-2 font-bold">
-                      Selected Courses:
-                    </h3>
-                    <ul className="list-disc list-inside">
+                    <h3 className="text-sm font-bold">Selected Courses:</h3>
+                    <ul className="list-disc list-inside overflow-y-auto max-h-64">
                       {selectedCourses.map((id) => {
                         const course = courses.find(
                           (c) => c.OutlineID.toString() === id

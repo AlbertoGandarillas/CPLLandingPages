@@ -38,7 +38,7 @@ export default function SelectedCoursesList({
       <CardHeader>
         <CardTitle className="text-lg">Favorited Courses</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-y-auto max-h-64">
         {selectedArticulations.length === 0 ? (
           <p>No courses selected yet.</p>
         ) : (

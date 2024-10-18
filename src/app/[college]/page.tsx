@@ -150,6 +150,7 @@ export default function Home({ params }: any) {
                     searchTerm={searchTerm}
                     CPLAssistantEmail={settingsObject.Email}
                     CollegeID={settingsObject.CollegeID}
+                    settingsObject={settingsObject}
                   ></ArticulationsTable>
                 </CardContent>
               </Card>

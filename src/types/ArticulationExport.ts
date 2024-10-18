@@ -5,5 +5,5 @@ export interface ArticulationExport {
   Units: string;
   "Industry Certifications": string | undefined;
   "Credit Recommendations": string | undefined;
-  "Required Evidence": string | undefined;
+  "Possible Evidence": string | undefined;
 }

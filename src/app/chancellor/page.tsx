@@ -148,6 +148,7 @@ export default function Home() {
               searchTerm={searchTerm}
               showCollegeName={!selectedCollege || selectedCollege === ""}
               CollegeID={selectedCollege ? parseInt(selectedCollege, 10) : 1}
+              settingsObject={null}
             >
               <DropdownImplementedColleges
                 onCollegeSelect={handleCollegeSelect}

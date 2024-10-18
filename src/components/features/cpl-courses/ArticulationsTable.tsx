@@ -21,6 +21,10 @@ interface ArticulationsTableProps {
   showCollegeName?: boolean;
   children?: React.ReactNode;
   CollegeID: number;
+  settingsObject: {
+    CompBackgroundColor: string;
+    CompFontColor: string;
+  } | null
 }
 export default function ArticulationsTable({
   articulations,
@@ -31,6 +35,7 @@ export default function ArticulationsTable({
   showCollegeName,
   children,
   CollegeID,
+  settingsObject,
 }: ArticulationsTableProps) {
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
@@ -80,6 +85,10 @@ export default function ArticulationsTable({
         >
           {CollegeID && (
             <Button
+              style={{
+                backgroundColor: settingsObject?.CompBackgroundColor,
+                color: settingsObject?.CompFontColor,
+              }}
               onClick={() => {
                 selectedCourses.length === 0
                   ? setIsInquiryModalOpen(true)
@@ -177,7 +186,7 @@ const exportToExcel = (
         "Credit Recommendations": articulation.IndustryCertifications?.flatMap(
           (ic) => ic.CreditRecommendations?.map((e) => e.Criteria) ?? []
         ).join(", "),
-        "Required Evidence": articulation.IndustryCertifications?.flatMap(
+        "Possible Evidence": articulation.IndustryCertifications?.flatMap(
           (ic) => ic.Evidences?.map((e) => e.EvidenCompetency) ?? []
         ).join(", "),
       })
