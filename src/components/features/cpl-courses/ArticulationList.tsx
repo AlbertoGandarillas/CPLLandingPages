@@ -8,7 +8,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
-
+import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Star } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 interface ArticulationListProps {
   articulations: ExtendedViewCPLCourses[];
   showCollegeName?: boolean;
@@ -18,10 +22,28 @@ export default function ArticulationList({
   articulations,
   showCollegeName,
 }: ArticulationListProps) {
+   const { selectedCourses, toggleCourse } = useSelectedCourses();
+   const { toast } = useToast();
+
+   const handleStarClick = (articulation: ExtendedViewCPLCourses) => {
+     const courseId = articulation.OutlineID.toString();
+     const isSelected = selectedCourses.includes(courseId);
+
+     toggleCourse(courseId);
+
+     toast({
+       title: isSelected ? "Course Removed" : "Course Added",
+       description: `${articulation.Subject} ${
+         articulation.CourseNumber
+       } has been ${isSelected ? "removed from" : "added to"} your selection.`,
+     });
+   };
+
   return (
     <Table>
       <TableHeader>
         <TableRow className="bg-gray-100 text-black ">
+          <TableHead className="w-10"></TableHead>
           {showCollegeName && (
             <TableHead className="font-bold">College</TableHead>
           )}
@@ -37,6 +59,39 @@ export default function ArticulationList({
       <TableBody>
         {articulations.map((articulation) => (
           <TableRow key={articulation.OutlineID}>
+            <TableCell>
+              <div
+                className="cursor-pointer"
+                onClick={() => handleStarClick(articulation)}
+              >
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Star
+                        className="h-4 w-4"
+                        fill={
+                          selectedCourses.includes(
+                            articulation.OutlineID.toString()
+                          )
+                            ? "#1d4ed8"
+                            : "#c1c1c1"
+                        }
+                        color={
+                          selectedCourses.includes(
+                            articulation.OutlineID.toString()
+                          )
+                            ? "#1d4ed8"
+                            : "#c1c1c1"
+                        }
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add this course to your CPL Review</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </TableCell>
             {showCollegeName && <TableCell>{articulation.College}</TableCell>}
             <TableCell className="text-center align-top">
               {articulation.Subject}
@@ -51,52 +106,58 @@ export default function ArticulationList({
               {articulation.Units}
             </TableCell>
             <TableCell className="align-top">
-              {articulation.IndustryCertifications?.map((cert, index) => (
-                <div key={index} className="flex">
-                  <p className="text-sm">{cert.CPLTypeDescription}</p>
-                  <span className="pl-1"> - </span>
-                  <p className="pl-1 text-sm font-semibold">
-                    {cert.IndustryCertification}
-                  </p>
-                </div>
-              ))}
+              <div className="overflow-y-auto max-h-[200px]">
+                {articulation.IndustryCertifications?.map((cert, index) => (
+                  <div key={index} className="flex">
+                    <p className="text-sm">{cert.CPLTypeDescription}</p>
+                    <span className="pl-1"> - </span>
+                    <p className="pl-1 text-sm font-semibold">
+                      {cert.IndustryCertification}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </TableCell>
             <TableCell className="align-top">
-              {articulation.IndustryCertifications?.map((cert, index) => (
-                <div key={index}>
-                  {cert.CreditRecommendations &&
-                    cert.CreditRecommendations.length > 0 && (
+              <div className="overflow-y-auto max-h-[200px]">
+                {articulation.IndustryCertifications?.map((cert, index) => (
+                  <div key={index}>
+                    {cert.CreditRecommendations &&
+                      cert.CreditRecommendations.length > 0 && (
+                        <p className="text-sm font-semibold">
+                          {cert.IndustryCertification}
+                        </p>
+                      )}
+                    {cert.CreditRecommendations?.map((credit, creditIndex) => (
+                      <p key={creditIndex} className="text-xs">
+                        {credit.Criteria}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </TableCell>
+            <TableCell className="align-top">
+              <div className="overflow-y-auto max-h-[200px]">
+                {articulation.IndustryCertifications?.map((cert, index) => (
+                  <div key={index}>
+                    {cert.Evidences && cert.Evidences.length > 0 && (
                       <p className="text-sm font-semibold">
                         {cert.IndustryCertification}
                       </p>
                     )}
-                  {cert.CreditRecommendations?.map((credit, creditIndex) => (
-                    <p key={creditIndex} className="text-xs">
-                      {credit.Criteria}
-                    </p>
-                  ))}
-                </div>
-              ))}
-            </TableCell>
-            <TableCell className="align-top">
-              {articulation.IndustryCertifications?.map((cert, index) => (
-                <div key={index}>
-                  {cert.Evidences && cert.Evidences.length > 0 && (
-                    <p className="text-sm font-semibold">
-                      {cert.IndustryCertification}
-                    </p>
-                  )}
-                  {cert.Evidences && cert.Evidences.length > 0 && (
-                    <ul className="list-disc list-inside ml-4">
-                      {cert.Evidences.map((evidence, evidenceIndex) => (
-                        <li key={evidenceIndex} className="text-xs">
-                          {evidence.EvidenCompetency}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+                    {cert.Evidences && cert.Evidences.length > 0 && (
+                      <ul className="list-disc list-inside ml-4">
+                        {cert.Evidences.map((evidence, evidenceIndex) => (
+                          <li key={evidenceIndex} className="text-xs">
+                            {evidence.EvidenCompetency}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
             </TableCell>
           </TableRow>
         ))}

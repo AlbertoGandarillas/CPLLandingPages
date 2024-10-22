@@ -43,9 +43,9 @@ export default function CPLRequestModal({
   const { selectedCourses } = useSelectedCourses();
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCertifications, setSelectedCertifications] = useState<
-    Record<string, string[]>
-  >({});
+   const [selectedCertifications, setSelectedCertifications] = useState<
+     Record<string, string[]>
+   >({});
   const [unlistedQualifications, setUnlistedQualifications] = useState("");
   const resetForm = () => {
     setFirstName("");
@@ -63,6 +63,22 @@ export default function CPLRequestModal({
       resetForm();
     }
   }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      const initialCertifications: Record<string, string[]> = {};
+      selectedCourses.forEach((courseId) => {
+        const course = courses.find((c) => c.OutlineID.toString() === courseId);
+        if (course && course.IndustryCertifications) {
+          initialCertifications[courseId] = course.IndustryCertifications.map(
+            (cert) => cert.IndustryCertification
+          );
+        }
+      });
+      setSelectedCertifications(initialCertifications);
+    } else {
+      setSelectedCertifications({});
+    }
+  }, [isOpen, courses, selectedCourses]);
 
    const handleCertificationChange = (
      courseId: string,
@@ -368,18 +384,27 @@ export default function CPLRequestModal({
                                       >
                                         <Checkbox
                                           id={`cert-${id}-${index}`}
-                                          checked={selectedCertifications[
-                                            id
-                                          ]?.includes(
-                                            cert.IndustryCertification
-                                          )}
-                                          onCheckedChange={(checked) =>
+                                          checked={selectedCertifications[id]?.includes(cert.IndustryCertification)}
+                                          onCheckedChange={(checked) => {
                                             handleCertificationChange(
                                               id,
                                               cert.IndustryCertification,
                                               checked as boolean
-                                            )
-                                          }
+                                            );
+                                            setSelectedCertifications(prev => {
+                                              if (checked) {
+                                                return {
+                                                  ...prev,
+                                                  [id]: [...(prev[id] || []), cert.IndustryCertification]
+                                                };
+                                              } else {
+                                                return {
+                                                  ...prev,
+                                                  [id]: prev[id]?.filter(c => c !== cert.IndustryCertification) || []
+                                                };
+                                              }
+                                            });
+                                          }}
                                         />
                                         <label
                                           htmlFor={`cert-${id}-${index}`}
@@ -403,26 +428,32 @@ export default function CPLRequestModal({
                 <div>
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger className="flex items-center text-xs">
-                        <Info
-                          size={16}
-                          className="ml-1 text-gray-400 cursor-help mr-2"
-                        />{" "}
-                        What possible evidence can I submit?
+                      <TooltipTrigger asChild>
+                        <div className="flex items-start text-xs cursor-help">
+                          <Info
+                            size={32}
+                            className="ml-3 text-gray-400 mr-2"
+                          />
+                          <p className="text-sm text-left">
+                            Please provide documentation that showcases your
+                            knowledge and competency in the course(s) for which
+                            you are seeking credit for.
+                          </p>
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent className="p-4 text-xs">
                         <ul className="list-disc list-inside">
                           <li>Certificate</li>
                           <li>License</li>
-                          <li>Portfolio Review</li>
-                          <li>Oral Interview</li>
-                          <li>Writing Sample</li>
+                          <li>Portfolio</li>
                           <li>Exam Scores</li>
                           <li>Evidence of Work Experience</li>
-                          <li>Course Grade/Credit</li>
                           <li>Credit Recommendation by ACE, etc.</li>
-                          <li>Performance, Demonstration, Audition</li>
                         </ul>
+                        <p className="mt-2">
+                          Any evidence that speaks to your knowledge of the
+                          course content
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -437,7 +468,7 @@ export default function CPLRequestModal({
                 <div>
                   <div className="grid gap-y-2">
                     <Label htmlFor="unlistedCertifications">
-                      Unlisted Qualifications
+                      List Additional Qualification
                     </Label>
                     <Textarea
                       id="unlistedCertifications"

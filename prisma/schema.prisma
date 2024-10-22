@@ -548,3 +548,34 @@ model CPLRequest {
   createdAt                 DateTime @default(now())
   CollegeID                 Int?
 }
+
+model ViewCPLArticulations {
+  OutlineID                   Int
+  College                     String?
+  Subject                     String?
+  CourseNumber                String?
+  CourseTitle                 String?
+  Units                       String?
+  CollegeID                   Int
+  ArticulationID              Int
+  IndustryCertification       String?
+  ExhibitID                   Int
+  AceID                       String?
+  TeamRevd                    DateTime?
+  VersionNumber               String?
+  CPLType                     Int?
+  ModelOfLearning             Int?
+  CPLTypeDescription          String?
+  CPLModeofLearningDescription String?
+  CriteriaID                  Int?
+  Criteria                    String?
+  IssuedFormID                Int?
+  CIDNumber                   String?
+  CIDDescriptor               String?
+  TopCode                     Int?
+  Program_Title               String?
+  Students                    Int?
+  CRUnits                     Decimal?
+  Course                      String? 
+  @@id([ExhibitID])
+}

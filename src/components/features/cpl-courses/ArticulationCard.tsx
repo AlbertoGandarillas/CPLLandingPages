@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -31,7 +30,7 @@ import { Info } from "lucide-react";
 import { Star } from "lucide-react";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import CertificationHoverCard from "./CertificationHoverCard";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 
 interface ArticulationCardProps {
@@ -71,7 +70,7 @@ export default function ArticulationCard({
   return (
     <Card className="flex flex-col">
       <CardHeader
-        className={`flex-shrink-0 ${CardBackgroundColor ? '' : 'bg-gray-100'}`}
+        className={`flex-shrink-0 ${CardBackgroundColor ? "" : "bg-gray-100"}`}
         style={{
           backgroundColor: CardBackgroundColor || undefined,
           color: CardFontColor || undefined,
@@ -104,7 +103,7 @@ export default function ArticulationCard({
           )}
           <div className="py-4 flex justify-between items-center w-full">
             <Badge
-              className="font-bold flex justify-center text-xs bg-blue-100 text-blue-800 w-[100px]"
+              className="font-bold flex justify-center text-sm bg-blue-100 text-blue-800 w-[100px]"
               variant="outline"
             >
               Credits: {articulation.Units}
@@ -115,13 +114,13 @@ export default function ArticulationCard({
                   <Tooltip>
                     <TooltipTrigger>
                       <Star
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         fill={isSelected ? "#1d4ed8" : "#c1c1c1"}
                         color={isSelected ? "#1d4ed8" : "#c1c1c1"}
                       />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Add this course to your favorites</p>
+                      <p>Add this course to your CPL Review</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

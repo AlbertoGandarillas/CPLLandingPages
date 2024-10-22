@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Trash2 } from "lucide-react";
+import { FileText, Trash2, Upload } from "lucide-react";
 interface FileAttachmentsProps {
   files: File[];
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -11,15 +11,35 @@ interface FileAttachmentsProps {
   acceptedFileTypes?: string;
 }
 export const FileAttachments = ({ files, onFileChange, onRemoveFile, acceptedFileTypes }: FileAttachmentsProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+   const handleButtonClick = () => {
+     fileInputRef.current?.click();
+   };
   return (
     <div className="grid gap-y-2 py-4">
       <Label htmlFor="files">Attachments (optional)</Label>
-      <Input
-        id="files"
-        type="file"
-        onChange={onFileChange}
-        accept={acceptedFileTypes}
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          id="files"
+          type="file"
+          onChange={onFileChange}
+          accept={acceptedFileTypes}
+          className="hidden"
+          ref={fileInputRef}
+        />
+        <Button
+          type="button"
+          onClick={handleButtonClick}
+          className="bg-blue-500 hover:bg-blue-600 text-white"
+        >
+          <Upload className="mr-2 h-4 w-4" /> Choose File
+        </Button>
+        <span className="text-sm text-gray-500">
+          {files.length > 0
+            ? `${files.length} file(s) selected`
+            : "No file chosen"}
+        </span>
+      </div>
       {files.length > 0 && (
         <Card className="mt-4">
           <CardHeader>
@@ -37,6 +57,7 @@ export const FileAttachments = ({ files, onFileChange, onRemoveFile, acceptedFil
                     <span className="text-sm pl-1">{file.name}</span>
                   </div>
                   <Button
+                    type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => onRemoveFile(index)}
