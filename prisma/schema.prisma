@@ -438,7 +438,7 @@ model ViewCPLCourses {
     Units                    String? @db.VarChar(8)
     CollegeID Int
     Course                   String?  @db.VarChar(Max)    
-    Catalog                  String
+    Catalog                  String?
     IndustryCertifications   ViewCPLIndustryCertifications[]
 }
 

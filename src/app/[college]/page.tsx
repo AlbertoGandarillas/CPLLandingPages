@@ -57,9 +57,12 @@ export default function Home({ params }: any) {
           industryCertification: selectedIndustryCertification,
         })}`
       ).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
+      if (!res.ok) {
+        if (res.status === 404) {
+          return [];
         }
+        throw new Error(`API error: ${res.status}`);
+      }
         return res.json();
       }),
   });
