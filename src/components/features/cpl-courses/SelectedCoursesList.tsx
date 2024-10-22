@@ -36,7 +36,7 @@ export default function SelectedCoursesList({
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="text-lg">Favorited Courses</CardTitle>
+        <CardTitle className="text-lg">Courses for CPL Review</CardTitle>
       </CardHeader>
       <CardContent className="overflow-y-auto max-h-64">
         {selectedArticulations.length === 0 ? (
@@ -55,9 +55,7 @@ export default function SelectedCoursesList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() =>
-                    handleToggleSelection(articulation)
-                  }
+                  onClick={() => handleToggleSelection(articulation)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
