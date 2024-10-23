@@ -14,8 +14,7 @@ interface ContactCardProps {
 
 export default function ContactCard({ settings }: ContactCardProps) {
   return (
-    <Card className="bg-transparent border-none">
-      <CardContent className="grid gap-4 pt-4">
+    <>
         <div className="flex items-center space-x-4 pb-3">
           <Globe />
           <div className="flex-1 space-y-1">
@@ -43,7 +42,6 @@ export default function ContactCard({ settings }: ContactCardProps) {
             </p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+    </>
   );
 }

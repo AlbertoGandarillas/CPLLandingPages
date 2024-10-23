@@ -59,11 +59,6 @@ export default function CPLRequestModal({
   };
 
   useEffect(() => {
-    if (!isOpen) {
-      resetForm();
-    }
-  }, [isOpen]);
-  useEffect(() => {
     if (isOpen) {
       const initialCertifications: Record<string, string[]> = {};
       selectedCourses.forEach((courseId) => {
@@ -228,7 +223,7 @@ export default function CPLRequestModal({
       });
 
       await handleCPLRequestSubmit(firstName, lastName, email, files, cccApplyId);
-
+      resetForm();
       onClose();
     } catch (error) {
       console.error("Error submitting request:", error);
@@ -270,214 +265,232 @@ export default function CPLRequestModal({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          {hasCCCApplyId === false && <CCCApplyInstructions />}
-          <div className="flex items-center space-x-2 py-4">
-            <Label htmlFor="hasCCCApplyId" className="font-bold">
-              Do you have a CCCApply ID?
-            </Label>
-            <RadioGroup
-              onValueChange={(value) => setHasCCCApplyId(value === "yes")}
-              value={
-                hasCCCApplyId === null
-                  ? undefined
-                  : hasCCCApplyId
-                  ? "yes"
-                  : "no"
-              }
-              className="flex gap-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="yes" id="hasCCCApplyId-yes" />
-                <Label htmlFor="hasCCCApplyId-yes">Yes</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="no" id="hasCCCApplyId-no" />
-                <Label htmlFor="hasCCCApplyId-no">No</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          {hasCCCApplyId && (
-            <div className="grid gap-y-4">
-              <Label htmlFor="cccApplyId" className="font-bold">
-                CCCApply ID
+          <div className="grid grid-cols-2">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="hasCCCApplyId" className="font-bold">
+                Do you have a CCCApply ID?
               </Label>
-              <Input
-                id="cccApplyId"
-                value={cccApplyId}
-                placeholder="Enter your CCCApply ID"
-                onChange={(e) => setCCCApplyId(e.target.value)}
-                required
-              />
+              <RadioGroup
+                onValueChange={(value) => setHasCCCApplyId(value === "yes")}
+                value={
+                  hasCCCApplyId === null
+                    ? undefined
+                    : hasCCCApplyId
+                    ? "yes"
+                    : "no"
+                }
+                className="flex"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="yes" id="hasCCCApplyId-yes" />
+                  <Label htmlFor="hasCCCApplyId-yes">Yes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="no" id="hasCCCApplyId-no" />
+                  <Label htmlFor="hasCCCApplyId-no">No</Label>
+                </div>
+              </RadioGroup>
             </div>
-          )}
+            {hasCCCApplyId && (
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="cccApplyId" className="font-bold">
+                  CCCApply ID
+                </Label>
+                <Input
+                  id="cccApplyId"
+                  className="w-38"
+                  value={cccApplyId}
+                  placeholder="Enter your CCCApply ID"
+                  onChange={(e) => setCCCApplyId(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+          </div>
           {hasCCCApplyId && cccApplyId && cccApplyId.length > 0 && (
             <>
-              <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4 py-4">
-                <div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-y-4">
-                      <Label htmlFor="firstName" className="font-bold">
-                        First Name
+              <div className="overflow-y-auto max-h-[550px] p-2">
+                <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4 py-4">
+                  <div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-y-4">
+                        <Label htmlFor="firstName" className="font-bold">
+                          First Name
+                        </Label>
+                        <Input
+                          id="firstName"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                          placeholder="Enter your first name"
+                        />
+                      </div>
+                      <div className="grid gap-y-4">
+                        <Label htmlFor="lastName" className="font-bold">
+                          Last Name
+                        </Label>
+                        <Input
+                          id="lastName"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                          placeholder="Enter your last name"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid gap-y-4 py-4">
+                      <Label htmlFor="email" className="font-bold">
+                        Email
                       </Label>
                       <Input
-                        id="firstName"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
-                        placeholder="Enter your first name"
+                        placeholder="Enter your email address"
                       />
                     </div>
-                    <div className="grid gap-y-4">
-                      <Label htmlFor="lastName" className="font-bold">
-                        Last Name
-                      </Label>
-                      <Input
-                        id="lastName"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                        placeholder="Enter your last name"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid gap-y-4 py-4">
-                    <Label htmlFor="email" className="font-bold">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      placeholder="Enter your email address"
+                    <FileAttachments
+                      files={files}
+                      onFileChange={handleFileChange}
+                      onRemoveFile={removeFile}
                     />
                   </div>
-                  <FileAttachments
-                    files={files}
-                    onFileChange={handleFileChange}
-                    onRemoveFile={removeFile}
-                  />
-                </div>
-                <div>
-                  <div className="grid gap-y-4">
-                    <Label htmlFor="" className="font-bold">
-                      Selected Courses:
-                    </Label>
-                    <ul className="list-disc list-inside overflow-y-auto max-h-64">
-                      {selectedCourses.map((id) => {
-                        const course = courses.find(
-                          (c) => c.OutlineID.toString() === id
-                        );
-                        return course ? (
-                          <li key={id} className="text-sm">
-                            {course.Subject} {course.CourseNumber}:{" "}
-                            {course.CourseTitle}
-                            {course.IndustryCertifications &&
-                              course.IndustryCertifications.length > 0 && (
-                                <ul className="list-none ml-4 mt-1">
-                                  {course.IndustryCertifications.map(
-                                    (cert, index) => (
-                                      <li
-                                        key={index}
-                                        className="flex items-center space-x-2 py-1"
-                                      >
-                                        <Checkbox
-                                          id={`cert-${id}-${index}`}
-                                          checked={selectedCertifications[id]?.includes(cert.IndustryCertification)}
-                                          onCheckedChange={(checked) => {
-                                            handleCertificationChange(
-                                              id,
-                                              cert.IndustryCertification,
-                                              checked as boolean
-                                            );
-                                            setSelectedCertifications(prev => {
-                                              if (checked) {
-                                                return {
-                                                  ...prev,
-                                                  [id]: [...(prev[id] || []), cert.IndustryCertification]
-                                                };
-                                              } else {
-                                                return {
-                                                  ...prev,
-                                                  [id]: prev[id]?.filter(c => c !== cert.IndustryCertification) || []
-                                                };
-                                              }
-                                            });
-                                          }}
-                                        />
-                                        <label
-                                          htmlFor={`cert-${id}-${index}`}
-                                          className="text-xs text-gray-600"
+                  <div>
+                    <div className="grid gap-y-4">
+                      <Label htmlFor="" className="font-bold">
+                        Selected Courses:
+                      </Label>
+                      <ul className="list-disc list-inside overflow-y-auto max-h-64">
+                        {selectedCourses.map((id) => {
+                          const course = courses.find(
+                            (c) => c.OutlineID.toString() === id
+                          );
+                          return course ? (
+                            <li key={id} className="text-sm">
+                              {course.Subject} {course.CourseNumber}:{" "}
+                              {course.CourseTitle}
+                              {course.IndustryCertifications &&
+                                course.IndustryCertifications.length > 0 && (
+                                  <ul className="list-none ml-4 mt-1">
+                                    {course.IndustryCertifications.map(
+                                      (cert, index) => (
+                                        <li
+                                          key={index}
+                                          className="flex items-center space-x-2 py-1"
                                         >
-                                          {cert.IndustryCertification}
-                                        </label>
-                                      </li>
-                                    )
-                                  )}
-                                </ul>
-                              )}
-                          </li>
-                        ) : null;
-                      })}
-                    </ul>
+                                          <Checkbox
+                                            id={`cert-${id}-${index}`}
+                                            checked={selectedCertifications[
+                                              id
+                                            ]?.includes(
+                                              cert.IndustryCertification
+                                            )}
+                                            onCheckedChange={(checked) => {
+                                              handleCertificationChange(
+                                                id,
+                                                cert.IndustryCertification,
+                                                checked as boolean
+                                              );
+                                              setSelectedCertifications(
+                                                (prev) => {
+                                                  if (checked) {
+                                                    return {
+                                                      ...prev,
+                                                      [id]: [
+                                                        ...(prev[id] || []),
+                                                        cert.IndustryCertification,
+                                                      ],
+                                                    };
+                                                  } else {
+                                                    return {
+                                                      ...prev,
+                                                      [id]:
+                                                        prev[id]?.filter(
+                                                          (c) =>
+                                                            c !==
+                                                            cert.IndustryCertification
+                                                        ) || [],
+                                                    };
+                                                  }
+                                                }
+                                              );
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`cert-${id}-${index}`}
+                                            className="text-xs text-gray-600"
+                                          >
+                                            {cert.IndustryCertification}
+                                          </label>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                )}
+                            </li>
+                          ) : null;
+                        })}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-                <div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-start text-xs cursor-help">
-                          <Info
-                            size={32}
-                            className="ml-3 text-gray-400 mr-2"
-                          />
-                          <p className="text-sm text-left">
-                            Please provide documentation that showcases your
-                            knowledge and competency in the course(s) for which
-                            you are seeking credit for.
+                <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                  <div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-start text-xs cursor-help">
+                            <Info
+                              size={32}
+                              className="ml-3 text-gray-400 mr-2"
+                            />
+                            <p className="text-sm text-left">
+                              Please provide documentation that showcases your
+                              knowledge and competency in the course(s) for
+                              which you are seeking credit for.
+                            </p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="p-4 text-xs">
+                          <ul className="list-disc list-inside">
+                            <li>Certificate</li>
+                            <li>License</li>
+                            <li>Portfolio</li>
+                            <li>Exam Scores</li>
+                            <li>Evidence of Work Experience</li>
+                            <li>Credit Recommendation by ACE, etc.</li>
+                          </ul>
+                          <p className="mt-2">
+                            Any evidence that speaks to your knowledge of the
+                            course content
                           </p>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent className="p-4 text-xs">
-                        <ul className="list-disc list-inside">
-                          <li>Certificate</li>
-                          <li>License</li>
-                          <li>Portfolio</li>
-                          <li>Exam Scores</li>
-                          <li>Evidence of Work Experience</li>
-                          <li>Credit Recommendation by ACE, etc.</li>
-                        </ul>
-                        <p className="mt-2">
-                          Any evidence that speaks to your knowledge of the
-                          course content
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <div className="flex items-center text-sm text-gray-500 bg-gray-100 p-3 mt-4 rounded-md">
-                    <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <p>
-                      Your information will be kept confidential and used only
-                      for CPL evaluation purposes.
-                    </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <div className="flex items-center text-sm text-gray-500 bg-gray-100 p-3 mt-4 rounded-md">
+                      <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
+                      <p>
+                        Your information will be kept confidential and used only
+                        for CPL evaluation purposes.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="grid gap-y-2">
-                    <Label htmlFor="unlistedCertifications">
-                      List Additional Qualifications
-                    </Label>
-                    <Textarea
-                      id="unlistedCertifications"
-                      placeholder="Enter any unlisted qualifications here..."
-                      value={unlistedQualifications}
-                      onChange={(e) =>
-                        setUnlistedQualifications(e.target.value)
-                      }
-                    />
+                  <div>
+                    <div className="grid gap-y-2">
+                      <Label htmlFor="unlistedCertifications">
+                        List Additional Qualifications
+                      </Label>
+                      <Textarea
+                        id="unlistedCertifications"
+                        placeholder="Enter any unlisted qualifications here..."
+                        value={unlistedQualifications}
+                        onChange={(e) =>
+                          setUnlistedQualifications(e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

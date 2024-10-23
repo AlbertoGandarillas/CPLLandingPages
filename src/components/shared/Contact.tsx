@@ -16,7 +16,7 @@ interface ContactsProps {
 }
 
 export default function Contacts({ settings, className }: ContactsProps) {
-  const validContacts = settings.Contacts.filter((contact) => contact.Email);
+  const validContacts = settings.Contacts.filter((contact) => contact.Name);
 
   if (validContacts.length === 0) {
     return <EmptyContactsCard className={className} />;

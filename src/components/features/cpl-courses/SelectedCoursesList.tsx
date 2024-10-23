@@ -35,10 +35,10 @@ export default function SelectedCoursesList({
  }
   return (
     <Card className="mt-4">
-      <CardHeader>
-        <CardTitle className="text-lg">Courses for CPL Review</CardTitle>
+      <CardHeader className="py-3">
+        <CardTitle className="text-md">Courses for CPL Review</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-y-auto max-h-64">
+      <CardContent className="overflow-y-auto max-h-52">
         {selectedArticulations.length === 0 ? (
           <p>No courses selected yet.</p>
         ) : (

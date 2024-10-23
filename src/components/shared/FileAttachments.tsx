@@ -16,9 +16,9 @@ export const FileAttachments = ({ files, onFileChange, onRemoveFile, acceptedFil
      fileInputRef.current?.click();
    };
   return (
-    <div className="grid gap-y-2 py-4">
+    <div className="grid gap-y-2">
       <Label htmlFor="files">Attachments (optional)</Label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center pt-2 gap-2">
         <Input
           id="files"
           type="file"

@@ -64,7 +64,7 @@ export default function Sidebar({
       <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start ${className}`}
+        } lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start overflow-y-auto ${className}`}
       >
         {
           <>
@@ -82,8 +82,8 @@ export default function Sidebar({
                 collegeId={settingsObject.CollegeID}
               />
             </MainCard> */}
-            <Contacts settings={settingsObject} className="mt-4" />
             {children}
+            <Contacts settings={settingsObject} className="mt-4" />
           </>
         }
       </aside>

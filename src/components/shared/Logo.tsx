@@ -13,7 +13,7 @@ interface LogoProps {
 
 export function Logo({ logoUrl, college, settings }: LogoProps) {
   return (
-    <div className="w-full text-center mb-4">
+    <div className="w-full text-center mb-2">
       { (!settings.HideLogo ) && (
         <Image
           src={logoUrl}

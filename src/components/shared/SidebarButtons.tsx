@@ -33,7 +33,7 @@ export default function SidebarButtons({ settings }: SidebarButtonsProps) {
   const cplCounselor = `mailto:${settings.Email}`;
 
   return (
-    <div className="grid gap-4 pt-4">
+    <div className="grid gap-4 pt-2">
       {settings.Links.map((link, index) => (
         <LinkButton
           key={index}
