@@ -265,6 +265,7 @@ export default function CPLRequestModal({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          {hasCCCApplyId === false && <CCCApplyInstructions />}
           <div className="grid grid-cols-2">
             <div className="flex items-center space-x-2">
               <Label htmlFor="hasCCCApplyId" className="font-bold">

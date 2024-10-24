@@ -39,6 +39,8 @@ interface ArticulationCardProps {
   showFavoriteStar?: boolean;
   CardBackgroundColor?: string;
   CardFontColor?: string;
+  PrimaryBackgroundColor?: string;
+  PrimaryFontColor?: string;
 }
 
 export default function ArticulationCard({
@@ -47,6 +49,8 @@ export default function ArticulationCard({
   showFavoriteStar,
   CardBackgroundColor,
   CardFontColor,
+  PrimaryBackgroundColor,
+  PrimaryFontColor,
 }: ArticulationCardProps) {
   const { toast } = useToast();
   const { selectedCourses, toggleCourse } = useSelectedCourses();
@@ -103,8 +107,11 @@ export default function ArticulationCard({
           )}
           <div className="py-4 flex justify-between items-center w-full">
             <Badge
-              className="font-bold flex justify-center text-sm bg-blue-100 text-blue-800 w-[100px]"
-              variant="outline"
+              className={`font-bold flex justify-center text-sm w-[100px]`}
+              style={{
+                backgroundColor: PrimaryBackgroundColor || "#f3f4f6",
+                color: PrimaryFontColor || "#1e40af",
+              }}
             >
               Credits: {articulation.Units}
             </Badge>
@@ -115,8 +122,20 @@ export default function ArticulationCard({
                     <TooltipTrigger>
                       <Star
                         className="h-5 w-5"
-                        fill={isSelected ? "#1d4ed8" : "#c1c1c1"}
-                        color={isSelected ? "#1d4ed8" : "#c1c1c1"}
+                        fill={
+                          isSelected
+                            ? PrimaryBackgroundColor
+                              ? PrimaryBackgroundColor
+                              : "#1d4ed8"
+                            : "#c1c1c1"
+                        }
+                        color={
+                          isSelected
+                            ? PrimaryBackgroundColor
+                              ? PrimaryBackgroundColor
+                              : "#1d4ed8"
+                            : "#c1c1c1"
+                        }
                       />
                     </TooltipTrigger>
                     <TooltipContent>

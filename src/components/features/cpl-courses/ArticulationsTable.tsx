@@ -96,6 +96,7 @@ export default function ArticulationsTable({
                   ? setIsInquiryModalOpen(true)
                   : setIsModalOpen(true);
               }}
+              disabled={!CPLAssistantEmail}
             >
               <Mails className="mr-2" />
               Request CPL Review{" "}
@@ -136,6 +137,10 @@ export default function ArticulationsTable({
                       showFavoriteStar={CollegeID ? true : false}
                       CardBackgroundColor={settingsObject?.PanelBackgroundColor}
                       CardFontColor={settingsObject?.PanelFontColor}
+                      PrimaryBackgroundColor={
+                        settingsObject?.CompBackgroundColor
+                      }
+                      PrimaryFontColor={settingsObject?.CompFontColor}
                     />
                   ))}
               </div>
@@ -143,6 +148,9 @@ export default function ArticulationsTable({
               <ArticulationList
                 articulations={filteredItems}
                 showCollegeName={showCollegeName}
+                PrimaryBackgroundColor={
+                  settingsObject?.CompBackgroundColor
+                }
               />
             )}
           </SkeletonWrapper>

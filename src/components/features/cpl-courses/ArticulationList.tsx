@@ -10,17 +10,18 @@ import {
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 interface ArticulationListProps {
   articulations: ExtendedViewCPLCourses[];
   showCollegeName?: boolean;
+  PrimaryBackgroundColor?: string;
 }
 
 export default function ArticulationList({
   articulations,
   showCollegeName,
+  PrimaryBackgroundColor,
 }: ArticulationListProps) {
    const { selectedCourses, toggleCourse } = useSelectedCourses();
    const { toast } = useToast();
@@ -32,6 +33,7 @@ export default function ArticulationList({
      toggleCourse(courseId);
 
      toast({
+       variant: isSelected ? "warning" : "success",
        title: isSelected ? "Course Removed" : "Course Added",
        description: `${articulation.Subject} ${
          articulation.CourseNumber
@@ -73,14 +75,18 @@ export default function ArticulationList({
                           selectedCourses.includes(
                             articulation.OutlineID.toString()
                           )
-                            ? "#1d4ed8"
+                            ? PrimaryBackgroundColor
+                              ? PrimaryBackgroundColor
+                              : "#1d4ed8"
                             : "#c1c1c1"
                         }
                         color={
                           selectedCourses.includes(
                             articulation.OutlineID.toString()
                           )
-                            ? "#1d4ed8"
+                            ? PrimaryBackgroundColor
+                              ? PrimaryBackgroundColor
+                              : "#1d4ed8"
                             : "#c1c1c1"
                         }
                       />
