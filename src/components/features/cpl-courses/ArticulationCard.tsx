@@ -196,7 +196,7 @@ export default function ArticulationCard({
                       </TableHead>
                       <TableHead className="pl-0 text-sm">
                         <div className="flex items-center justify-start">
-                          Possible Evidence
+                          Suggested Evidence
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger>

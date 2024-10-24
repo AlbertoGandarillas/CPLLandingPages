@@ -198,7 +198,7 @@ const exportToExcel = (
         "Credit Recommendations": articulation.IndustryCertifications?.flatMap(
           (ic) => ic.CreditRecommendations?.map((e) => e.Criteria) ?? []
         ).join(", "),
-        "Possible Evidence": articulation.IndustryCertifications?.flatMap(
+        "Suggested Evidence": articulation.IndustryCertifications?.flatMap(
           (ic) => ic.Evidences?.map((e) => e.EvidenCompetency) ?? []
         ).join(", "),
       })

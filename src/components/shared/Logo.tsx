@@ -4,6 +4,7 @@ interface LogoProps {
   logoUrl: string;
   college: string;
   settings: {
+    LogoUrl: string;
     Website: string;
     HideCollegeName: boolean;
     HeaderFontColor: string;
@@ -14,7 +15,7 @@ interface LogoProps {
 export function Logo({ logoUrl, college, settings }: LogoProps) {
   return (
     <div className="w-full text-center mb-2">
-      { (!settings.HideLogo ) && (
+      { (!settings.HideLogo && settings.LogoUrl ) && (
         <Image
           src={logoUrl}
           alt={college}
