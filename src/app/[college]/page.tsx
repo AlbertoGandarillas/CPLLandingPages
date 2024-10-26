@@ -16,6 +16,7 @@ import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndu
 import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCoursesList";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import NotFoundPage from "../not-found";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -74,7 +75,7 @@ export default function Home({ params }: any) {
     }
   }, [settingsObject]);
 
-  if (settingsLoading) return <div>Loading settings...</div>;
+  if (settingsLoading) return <LoadingSkeleton />;
   if (settingsError) return <div>Error loading settings</div>;
   if (!settingsObject) {
     return <NotFoundPage/>;
@@ -97,7 +98,7 @@ export default function Home({ params }: any) {
             onIndustryCertificationSelect={handleIndustryCertificationSelect}
             className=""
           >
-            <SelectedCoursesList articulations={articulations || []} />
+            <SelectedCoursesList articulations={articulations || []} CollegeID={selectedCollege || ''} />
           </Sidebar>
           <main className="flex-1 p-4">
             <Accordion
@@ -172,5 +173,23 @@ export default function Home({ params }: any) {
         </footer>
       </div>
     </SelectedCoursesProvider>
+  );
+}
+function LoadingSkeleton() {
+  return (
+    <div className="flex flex-col min-h-screen p-4 space-y-4 bg-gray-100">
+      <Skeleton className="h-12 w-full" />
+      <div className="flex flex-1 space-x-4">
+        <div className="w-1/4 space-y-4">
+          <Skeleton className="h-[200px]" />
+          <Skeleton className="h-[300px]" />
+        </div>
+        <div className="flex-1 space-y-4">
+          <Skeleton className="h-[100px]" />
+          <Skeleton className="h-[400px]" />
+        </div>
+      </div>
+      <Skeleton className="h-8 w-full" />
+    </div>
   );
 }

@@ -41,6 +41,7 @@ interface ArticulationCardProps {
   CardFontColor?: string;
   PrimaryBackgroundColor?: string;
   PrimaryFontColor?: string;
+  collegeId: string;
 }
 
 export default function ArticulationCard({
@@ -51,16 +52,17 @@ export default function ArticulationCard({
   CardFontColor,
   PrimaryBackgroundColor,
   PrimaryFontColor,
+  collegeId,
 }: ArticulationCardProps) {
   const { toast } = useToast();
-  const { selectedCourses, toggleCourse } = useSelectedCourses();
-
-  const isSelected = selectedCourses.includes(
+  const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } = useSelectedCourses();
+  const collegeSelectedCourses = getSelectedCoursesForCollege(collegeId);
+  const isSelected = collegeSelectedCourses.includes(
     articulation.OutlineID.toString()
   );
 
   const handleToggleSelection = () => {
-    toggleCourse(articulation.OutlineID.toString());
+    toggleCourse(articulation.OutlineID.toString(), collegeId);
     toast({
       variant: isSelected ? "warning" : "success",
       title: isSelected ? "Course removed" : "Course added",

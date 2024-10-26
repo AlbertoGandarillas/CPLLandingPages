@@ -16,21 +16,24 @@ interface ArticulationListProps {
   articulations: ExtendedViewCPLCourses[];
   showCollegeName?: boolean;
   PrimaryBackgroundColor?: string;
+  collegeId: string;
 }
 
 export default function ArticulationList({
   articulations,
   showCollegeName,
   PrimaryBackgroundColor,
+  collegeId,
 }: ArticulationListProps) {
-   const { selectedCourses, toggleCourse } = useSelectedCourses();
+   const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } = useSelectedCourses();
+   const collegeSelectedCourses = getSelectedCoursesForCollege(collegeId);
    const { toast } = useToast();
 
    const handleStarClick = (articulation: ExtendedViewCPLCourses) => {
      const courseId = articulation.OutlineID.toString();
-     const isSelected = selectedCourses.includes(courseId);
+     const isSelected = collegeSelectedCourses.includes(courseId);
 
-     toggleCourse(courseId);
+     toggleCourse(courseId, collegeId);
 
      toast({
        variant: isSelected ? "warning" : "success",
@@ -72,7 +75,7 @@ export default function ArticulationList({
                       <Star
                         className="h-4 w-4"
                         fill={
-                          selectedCourses.includes(
+                          collegeSelectedCourses.includes(
                             articulation.OutlineID.toString()
                           )
                             ? PrimaryBackgroundColor
@@ -81,7 +84,7 @@ export default function ArticulationList({
                             : "#c1c1c1"
                         }
                         color={
-                          selectedCourses.includes(
+                          collegeSelectedCourses.includes(
                             articulation.OutlineID.toString()
                           )
                             ? PrimaryBackgroundColor

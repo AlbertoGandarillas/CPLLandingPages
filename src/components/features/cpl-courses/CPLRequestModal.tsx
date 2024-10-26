@@ -40,7 +40,8 @@ export default function CPLRequestModal({
   const [email, setEmail] = useState("");
   const [hasCCCApplyId, setHasCCCApplyId] = useState<boolean | null>(null);
   const [cccApplyId, setCCCApplyId] = useState("");
-  const { selectedCourses } = useSelectedCourses();
+  const { selectedCourses, getSelectedCoursesForCollege } = useSelectedCourses();
+  const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID || "");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
    const [selectedCertifications, setSelectedCertifications] = useState<
@@ -61,7 +62,7 @@ export default function CPLRequestModal({
   useEffect(() => {
     if (isOpen) {
       const initialCertifications: Record<string, string[]> = {};
-      selectedCourses.forEach((courseId) => {
+      collegeSelectedCourses.forEach((courseId) => {
         const course = courses.find((c) => c.OutlineID.toString() === courseId);
         if (course && course.IndustryCertifications) {
           initialCertifications[courseId] = course.IndustryCertifications.map(
@@ -70,10 +71,10 @@ export default function CPLRequestModal({
         }
       });
       setSelectedCertifications(initialCertifications);
-    } else {
+    } else {    
       setSelectedCertifications({});
     }
-  }, [isOpen, courses, selectedCourses]);
+  }, [isOpen, courses, collegeSelectedCourses]);
 
    const handleCertificationChange = (
      courseId: string,
@@ -132,7 +133,7 @@ export default function CPLRequestModal({
           firstName,
           lastName,
           email,
-          selectedCourses: selectedCourses.map((id) => {
+          selectedCourses: collegeSelectedCourses.map((id) => {
             const course = courses.find((a) => a.OutlineID.toString() === id);
             return course
               ? {
@@ -195,7 +196,7 @@ export default function CPLRequestModal({
           email,
           hasCCCApplyId,
           cccApplyId,
-          selectedCourses: selectedCourses.map((id) => {
+          selectedCourses: collegeSelectedCourses.map((id) => {
             const course = courses.find((a) => a.OutlineID.toString() === id);
             return course
               ? {
@@ -254,7 +255,7 @@ export default function CPLRequestModal({
   };
 
   const selectedArticulations = courses.filter((course) =>
-    selectedCourses.includes(course.OutlineID.toString())
+    collegeSelectedCourses.includes(course.OutlineID.toString())
   );
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -364,7 +365,7 @@ export default function CPLRequestModal({
                         Selected Courses:
                       </Label>
                       <ul className="list-disc list-inside overflow-y-auto max-h-64">
-                        {selectedCourses.map((id) => {
+                        {collegeSelectedCourses.map((id) => {
                           const course = courses.find(
                             (c) => c.OutlineID.toString() === id
                           );

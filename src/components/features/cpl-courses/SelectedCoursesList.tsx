@@ -8,20 +8,23 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface SelectedCoursesListProps {
   articulations: ExtendedViewCPLCourses[];
+  CollegeID: string;
 }
 
 export default function SelectedCoursesList({
   articulations,
+  CollegeID,
 }: SelectedCoursesListProps) {
   const { toast } = useToast();
-  const { selectedCourses, removeCourse } = useSelectedCourses();
+  const { selectedCourses, removeCourse, getSelectedCoursesForCollege } = useSelectedCourses();
+  const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID);
 
   const selectedArticulations = articulations.filter((articulation) =>
-    selectedCourses.includes(articulation.OutlineID.toString())
+    collegeSelectedCourses.includes(articulation.OutlineID.toString())
   );
 
   const handleToggleSelection = (articulation:any) => {
-    removeCourse(articulation.OutlineID.toString())
+    removeCourse(articulation.OutlineID.toString(), articulation.CollegeID)
     toast({
       variant: "warning",
       title: "Course removed",
@@ -30,7 +33,7 @@ export default function SelectedCoursesList({
       } has been removed from your selected courses.`,
     });
   };
- if (selectedCourses.length === 0) {
+ if (collegeSelectedCourses.length === 0) {
    return null;
  }
   return (

@@ -71,8 +71,8 @@ export default function ArticulationsTable({
     );
   };
 
-  const { selectedCourses } = useSelectedCourses();
-
+  const { getSelectedCoursesForCollege } = useSelectedCourses();
+  const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID.toString());
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
@@ -92,7 +92,7 @@ export default function ArticulationsTable({
                 color: settingsObject?.CompFontColor,
               }}
               onClick={() => {
-                selectedCourses.length === 0
+                collegeSelectedCourses.length === 0
                   ? setIsInquiryModalOpen(true)
                   : setIsModalOpen(true);
               }}
@@ -100,8 +100,8 @@ export default function ArticulationsTable({
             >
               <Mails className="mr-2" />
               Request CPL Review{" "}
-              {selectedCourses.length > 0
-                ? "( " + selectedCourses.length + " )"
+              {collegeSelectedCourses.length > 0
+                ? "( " + collegeSelectedCourses.length + " )"
                 : ""}
             </Button>
           )}
@@ -141,6 +141,7 @@ export default function ArticulationsTable({
                         settingsObject?.CompBackgroundColor
                       }
                       PrimaryFontColor={settingsObject?.CompFontColor}
+                      collegeId={CollegeID ? CollegeID.toString() : ""}
                     />
                   ))}
               </div>
@@ -151,6 +152,7 @@ export default function ArticulationsTable({
                 PrimaryBackgroundColor={
                   settingsObject?.CompBackgroundColor
                 }
+                collegeId={CollegeID ? CollegeID.toString() : ""}
               />
             )}
           </SkeletonWrapper>
@@ -159,7 +161,7 @@ export default function ArticulationsTable({
         <CPLRequestModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          selectedCourses={selectedCourses}
+          selectedCourses={collegeSelectedCourses}
           courses={articulations}
           CPLAssistantEmail={CPLAssistantEmail || ""}
           CollegeID={CollegeID ? CollegeID.toString() : undefined}

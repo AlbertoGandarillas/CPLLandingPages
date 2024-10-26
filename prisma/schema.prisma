@@ -494,7 +494,6 @@ model CPLType {
 model ViewCPLCommonQualifications {
     CollegeID                Int 
     IndustryCertification    String @db.VarChar(500)
-    UnitsTotal               String? @db.VarChar(100)
     @@id([CollegeID, IndustryCertification])
 }
 

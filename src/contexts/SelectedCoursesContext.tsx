@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 
 type SelectedCoursesContextType = {
-  selectedCourses: string[];
-  toggleCourse: (courseId: string) => void;
-  removeCourse: (courseId: string) => void;
+  selectedCourses: { [collegeId: string]: string[] };
+  toggleCourse: (courseId: string, collegeId: string) => void;
+  removeCourse: (courseId: string, collegeId: string) => void;
+  getSelectedCoursesForCollege: (collegeId: string) => string[];
 };
 
 const SelectedCoursesContext = createContext<
@@ -13,7 +14,9 @@ const SelectedCoursesContext = createContext<
 export const SelectedCoursesProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [selectedCourses, setSelectedCourses] = useState<string[]>(() => {
+  const [selectedCourses, setSelectedCourses] = useState<{
+    [collegeId: string]: string[];
+  }>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("selectedCourses");
       return saved ? JSON.parse(saved) : [];
@@ -25,21 +28,34 @@ export const SelectedCoursesProvider: React.FC<{
     localStorage.setItem("selectedCourses", JSON.stringify(selectedCourses));
   }, [selectedCourses]);
 
-  const toggleCourse = (courseId: string) => {
-    setSelectedCourses((prev) =>
-      prev.includes(courseId)
-        ? prev.filter((id) => id !== courseId)
-        : [...prev, courseId]
-    );
-  };
+const toggleCourse = (courseId: string, collegeId: string) => {
+  setSelectedCourses((prev) => {
+    const collegeSelectedCourses = prev[collegeId] || [];
+    const updatedCollegeCourses = collegeSelectedCourses.includes(courseId)
+      ? collegeSelectedCourses.filter((id) => id !== courseId)
+      : [...collegeSelectedCourses, courseId];
 
-  const removeCourse = (courseId: string) => {
-    setSelectedCourses((prev) => prev.filter((id) => id !== courseId));
-  };
+    return {
+      ...prev,
+      [collegeId]: updatedCollegeCourses,
+    };
+  });
+};
+
+const removeCourse = (courseId: string, collegeId: string) => {
+  setSelectedCourses((prev) => ({
+    ...prev,
+    [collegeId]: (prev[collegeId] || []).filter((id) => id !== courseId),
+  }));
+};
+
+const getSelectedCoursesForCollege = (collegeId: string) => {
+  return selectedCourses[collegeId] || [];
+};
 
   return (
     <SelectedCoursesContext.Provider
-      value={{ selectedCourses, toggleCourse, removeCourse }}
+      value={{ selectedCourses, toggleCourse, removeCourse, getSelectedCoursesForCollege }}
     >
       {children}
     </SelectedCoursesContext.Provider>
