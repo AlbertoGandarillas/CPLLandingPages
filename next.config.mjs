@@ -2,14 +2,15 @@
 const nextConfig = {
   images: {
     domains: [
-      "localhost", // Allow images from localhost
-      "hwsrv-1132312.hostwindsdns.com", // Example external domain
+      "localhost",
+      "hwsrv-1132312.hostwindsdns.com",
       "mappingarticulatedpathways.azurewebsites.net",
     ],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "mappingarticulatedpathways.azurewebsites.net",
+        pathname: "/Common/images/**",
       },
     ],
   },
