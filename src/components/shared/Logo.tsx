@@ -13,11 +13,14 @@ interface LogoProps {
 }
 
 export function Logo({ logoUrl, college, settings }: LogoProps) {
+  const cleanedLogoUrl = cleanImageUrl(logoUrl);
+  console.log("Original URL:", logoUrl);
+  console.log("Cleaned URL:", cleanedLogoUrl);
   return (
     <div className="w-full text-center mb-2">
-      { (!settings.HideLogo && settings.LogoUrl ) && (
+      {!settings.HideLogo && settings.LogoUrl && (
         <Image
-          src={logoUrl}
+          src={cleanedLogoUrl}
           alt={college}
           width={250}
           height={90}
@@ -38,4 +41,7 @@ export function Logo({ logoUrl, college, settings }: LogoProps) {
       )}
     </div>
   );
+}
+function cleanImageUrl(url: string) {
+  return url.replace(/([^:]\/)\/+/g, "$1");
 }
