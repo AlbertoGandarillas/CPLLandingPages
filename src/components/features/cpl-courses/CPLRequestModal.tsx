@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,9 +44,9 @@ export default function CPLRequestModal({
   const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID || "");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [selectedCertifications, setSelectedCertifications] = useState<
-     Record<string, string[]>
-   >({});
+  const [selectedCertifications, setSelectedCertifications] = useState<
+    Record<string, string[]>
+  >({});
   const [unlistedQualifications, setUnlistedQualifications] = useState("");
   const resetForm = () => {
     setFirstName("");
@@ -64,35 +64,41 @@ export default function CPLRequestModal({
       const initialCertifications: Record<string, string[]> = {};
       collegeSelectedCourses.forEach((courseId) => {
         const course = courses.find((c) => c.OutlineID.toString() === courseId);
-        if (course && course.IndustryCertifications) {
+        if (course?.IndustryCertifications) {
           initialCertifications[courseId] = course.IndustryCertifications.map(
-            (cert) => cert.IndustryCertification
+            cert => cert.IndustryCertification
           );
         }
       });
       setSelectedCertifications(initialCertifications);
-    } else {    
-      setSelectedCertifications({});
     }
   }, [isOpen, courses, collegeSelectedCourses]);
 
-   const handleCertificationChange = (
-     courseId: string,
-     certification: string,
-     isChecked: boolean
-   ) => {
-     setSelectedCertifications((prev) => {
-       const courseCerts = prev[courseId] || [];
-       if (isChecked) {
-         return { ...prev, [courseId]: [...courseCerts, certification] };
-       } else {
-         return {
-           ...prev,
-           [courseId]: courseCerts.filter((cert) => cert !== certification),
-         };
-       }
-     });
-   };
+const handleCertificationChange = useCallback(
+  (courseId: string, certification: string, isChecked: boolean) => {
+    setSelectedCertifications((prev) => {
+      const courseCerts = prev[courseId] || [];
+
+      if (isChecked) {
+        // Only add if it doesn't exist
+        if (!courseCerts.includes(certification)) {
+          return {
+            ...prev,
+            [courseId]: [...courseCerts, certification],
+          };
+        }
+        return prev;
+      }
+
+      // Remove certification
+      return {
+        ...prev,
+        [courseId]: courseCerts.filter((cert) => cert !== certification),
+      };
+    });
+  },
+  []
+);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -259,11 +265,18 @@ export default function CPLRequestModal({
   );
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 max-w-3xl min-w-[300px]">
+      <DialogContent
+        className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 max-w-3xl min-w-[300px]"
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl">
             Request CPL Information
           </DialogTitle>
+          <p id="dialog-description" className="text-sm text-muted-foreground">
+            Fill out this form to request information about Credit for Prior
+            Learning (CPL) opportunities.
+          </p>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           {hasCCCApplyId === false && <CCCApplyInstructions />}
@@ -389,36 +402,13 @@ export default function CPLRequestModal({
                                             ]?.includes(
                                               cert.IndustryCertification
                                             )}
-                                            onCheckedChange={(checked) => {
+                                            onCheckedChange={(checked) =>
                                               handleCertificationChange(
                                                 id,
                                                 cert.IndustryCertification,
                                                 checked as boolean
-                                              );
-                                              setSelectedCertifications(
-                                                (prev) => {
-                                                  if (checked) {
-                                                    return {
-                                                      ...prev,
-                                                      [id]: [
-                                                        ...(prev[id] || []),
-                                                        cert.IndustryCertification,
-                                                      ],
-                                                    };
-                                                  } else {
-                                                    return {
-                                                      ...prev,
-                                                      [id]:
-                                                        prev[id]?.filter(
-                                                          (c) =>
-                                                            c !==
-                                                            cert.IndustryCertification
-                                                        ) || [],
-                                                    };
-                                                  }
-                                                }
-                                              );
-                                            }}
+                                              )
+                                            }
                                           />
                                           <label
                                             htmlFor={`cert-${id}-${index}`}

@@ -26,7 +26,10 @@ function normalizeUrl(url: string): string {
   if (!/^(?:f|ht)tps?:\/\//i.test(url)) {
     url = "https://" + url;
   }
-  return url.replace(/^(https?:\/\/)www\./i, "$1");
+  if (!/^https?:\/\/www\./i.test(url)) {
+    url = url.replace(/^(https?:\/\/)/i, '$1www.');
+  }
+  return url;
 }
 
 export default function SidebarButtons({ settings }: SidebarButtonsProps) {
@@ -38,7 +41,7 @@ export default function SidebarButtons({ settings }: SidebarButtonsProps) {
         <LinkButton
           key={index}
           target="_blank"
-          href={normalizeUrl(link.LinkURL)}
+          href={link.LinkURL}
           style={{
             backgroundColor: settings.PanelBackgroundColor,
             color: settings.PanelFontColor,

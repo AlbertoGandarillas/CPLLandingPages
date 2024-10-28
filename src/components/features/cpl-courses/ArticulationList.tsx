@@ -17,6 +17,7 @@ interface ArticulationListProps {
   showCollegeName?: boolean;
   PrimaryBackgroundColor?: string;
   collegeId: string;
+  CPLAssistantEmail?: string;
 }
 
 export default function ArticulationList({
@@ -24,6 +25,7 @@ export default function ArticulationList({
   showCollegeName,
   PrimaryBackgroundColor,
   collegeId,
+  CPLAssistantEmail,
 }: ArticulationListProps) {
    const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } = useSelectedCourses();
    const collegeSelectedCourses = getSelectedCoursesForCollege(collegeId);
@@ -72,6 +74,7 @@ export default function ArticulationList({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
+                      {CPLAssistantEmail && (
                       <Star
                         className="h-4 w-4"
                         fill={
@@ -93,6 +96,7 @@ export default function ArticulationList({
                             : "#c1c1c1"
                         }
                       />
+                      )}
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Add this course to your CPL Review</p>

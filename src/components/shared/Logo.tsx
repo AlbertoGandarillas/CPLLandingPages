@@ -14,8 +14,6 @@ interface LogoProps {
 
 export function Logo({ logoUrl, college, settings }: LogoProps) {
   const cleanedLogoUrl = cleanImageUrl(logoUrl);
-  console.log("Original URL:", logoUrl);
-  console.log("Cleaned URL:", cleanedLogoUrl);
   return (
     <div className="w-full text-center mb-2">
       {!settings.HideLogo && settings.LogoUrl && (
@@ -26,7 +24,12 @@ export function Logo({ logoUrl, college, settings }: LogoProps) {
           height={90}
           priority
           className="max-w-[250px] m-auto"
-          style={{ maxWidth: "100%", height: "auto", width: "auto" }}
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+            width: "auto",
+            maxHeight: "120px",
+          }}
         />
       )}
       {!settings.HideCollegeName && (

@@ -18,14 +18,14 @@ export const SelectedCoursesProvider: React.FC<{
     [collegeId: string]: string[];
   }>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("selectedCourses");
+      const saved = localStorage.getItem("selectedCollegeCourses");
       return saved ? JSON.parse(saved) : [];
     }
     return [];
   });
 
   useEffect(() => {
-    localStorage.setItem("selectedCourses", JSON.stringify(selectedCourses));
+    localStorage.setItem("selectedCollegeCourses", JSON.stringify(selectedCourses));
   }, [selectedCourses]);
 
 const toggleCourse = (courseId: string, collegeId: string) => {

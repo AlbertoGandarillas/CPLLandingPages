@@ -98,7 +98,10 @@ export default function Home({ params }: any) {
             onIndustryCertificationSelect={handleIndustryCertificationSelect}
             className=""
           >
-            <SelectedCoursesList articulations={articulations || []} CollegeID={selectedCollege || ''} />
+            <SelectedCoursesList
+              articulations={articulations || []}
+              CollegeID={selectedCollege || ""}
+            />
           </Sidebar>
           <main className="flex-1 p-4">
             <Accordion
@@ -131,8 +134,8 @@ export default function Home({ params }: any) {
                 <CardHeader className="bg-gray-100">
                   <CardTitle className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
                     <div className="text-md text-center lg:text-left text-lg">
-                      Eligible courses below are faculty approved for credit
-                      based on the prior learning listed
+                      Courses below are approved for credit based on prior
+                      learning
                     </div>
                     <SearchBar
                       className="w-full lg:w-96"

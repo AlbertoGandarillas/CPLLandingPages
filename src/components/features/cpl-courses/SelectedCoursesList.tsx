@@ -33,38 +33,58 @@ export default function SelectedCoursesList({
       } has been removed from your selected courses.`,
     });
   };
- if (collegeSelectedCourses.length === 0) {
-   return null;
- }
+
+  const handleClearAll = () => {
+    selectedArticulations.forEach((articulation) => {
+      removeCourse(articulation.OutlineID.toString(), articulation.CollegeID.toString());
+    });
+    toast({
+      variant: "warning", 
+      title: "All courses cleared",
+      description: "All selected courses have been removed."
+    });
+  };
+
+  if (collegeSelectedCourses.length === 0) {
+    return null;
+  }
+
   return (
     <Card className="mt-4">
       <CardHeader className="py-3">
-        <CardTitle className="text-md">Courses for CPL Review</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-md">Courses for CPL Review</CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="overflow-y-auto max-h-52">
+      <CardContent className="">
         {selectedArticulations.length === 0 ? (
           <p>No courses selected yet.</p>
         ) : (
-          <ul className="space-y-2">
-            {selectedArticulations.map((articulation) => (
-              <li
-                key={articulation.OutlineID}
-                className="flex justify-between items-center"
-              >
-                <span className="text-sm pl-1">
-                  {articulation.Subject} {articulation.CourseNumber}:{" "}
-                  {articulation.CourseTitle}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleToggleSelection(articulation)}
+          <>
+            <ul className=" overflow-y-auto max-h-48">
+              {selectedArticulations.map((articulation) => (
+                <li
+                  key={articulation.OutlineID}
+                  className="flex justify-between items-center"
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </li>
-            ))}
-          </ul>
+                  <span className="text-xs pl-1">
+                    {articulation.Subject} {articulation.CourseNumber}:{" "}
+                    {articulation.CourseTitle}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleSelection(articulation)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <Button variant="secondary" className="mt-4 w-full" size="sm" onClick={handleClearAll}>
+              Clear All
+            </Button>
+          </>
         )}
       </CardContent>
     </Card>

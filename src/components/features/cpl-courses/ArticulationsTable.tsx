@@ -85,7 +85,7 @@ export default function ArticulationsTable({
           onViewModeChange={setViewMode}
           onExport={() => exportToExcel(filteredItems, "EligibleCourses")}
         >
-          {CollegeID && (
+          {CollegeID && CPLAssistantEmail && (
             <Button
               style={{
                 backgroundColor: settingsObject?.CompBackgroundColor,
@@ -142,6 +142,7 @@ export default function ArticulationsTable({
                       }
                       PrimaryFontColor={settingsObject?.CompFontColor}
                       collegeId={CollegeID ? CollegeID.toString() : ""}
+                      CPLAssistantEmail={CPLAssistantEmail}
                     />
                   ))}
               </div>

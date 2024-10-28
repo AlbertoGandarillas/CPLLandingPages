@@ -42,6 +42,7 @@ interface ArticulationCardProps {
   PrimaryBackgroundColor?: string;
   PrimaryFontColor?: string;
   collegeId: string;
+  CPLAssistantEmail?: string;
 }
 
 export default function ArticulationCard({
@@ -53,6 +54,7 @@ export default function ArticulationCard({
   PrimaryBackgroundColor,
   PrimaryFontColor,
   collegeId,
+  CPLAssistantEmail,
 }: ArticulationCardProps) {
   const { toast } = useToast();
   const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } = useSelectedCourses();
@@ -117,7 +119,7 @@ export default function ArticulationCard({
             >
               Credits: {articulation.Units}
             </Badge>
-            {showFavoriteStar && (
+            {showFavoriteStar && CPLAssistantEmail && (
               <div className="cursor-pointer" onClick={handleToggleSelection}>
                 <TooltipProvider>
                   <Tooltip>
