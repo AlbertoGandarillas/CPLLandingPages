@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createQueryString } from "@/lib/createQueryString";
-import { PotentialSavings } from "@/components/dashboard/PotentialSavings";
 import { DropdownImplementedColleges } from "@/components/shared/DropdownImplementedColleges";
 import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
+import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -50,7 +50,10 @@ export default function Home() {
         })}`
       ).then((res) => {
         if (!res.ok) {
-          throw new Error("Network response was not ok");
+        if (res.status === 404) {
+          return [];
+        }
+        throw new Error(`API error: ${res.status}`);
         }
         return res.json();
       }),
@@ -72,22 +75,25 @@ export default function Home() {
   };
   return (
     <SelectedCoursesProvider>
-      <div className="container grid gap-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <Accordion
           type="single"
           value={open}
           onValueChange={setOpen}
           collapsible
-          className="mt-4"
+          className="mt-4 w-full"
         >
           <AccordionItem value="item-1" className="border-0">
-            <AccordionTrigger className="bg-gray-100 text-3xl text-black p-4 flex justify-">
-              <h1 className="text-lg">Welcome</h1>
+            <AccordionTrigger className="bg-gray-100 text-black p-4 w-full">
+              <h1 className="text-base sm:text-lg font-medium text-left">
+                Potential CPL Savings & Preservation of Funds, 20-Year Impact,
+                College Metrics
+              </h1>
             </AccordionTrigger>
             <AccordionContent className="p-4 bg-white">
-              <div className="grid grid-cols-2 gap-4">
-                <Card>
-                  <CardContent className="pt-4">
+              <div className="space-y-4">
+                <Card className="hidden">
+                  <CardContent className="pt-4 text-sm sm:text-base space-y-4">
                     <p>
                       <strong>
                         Save Time and Money with College Credit for Your Skills
@@ -108,9 +114,8 @@ export default function Home() {
                       <br /> You can request a CPL review to see if we can give
                       you credit for your certifications or skills. Here&rsquo;s
                       how to get started:
-                      <br /> &nbsp;
                     </p>
-                    <p>
+                    <p className="space-y-2">
                       1. <strong>Apply to the College:</strong>&nbsp;First, go
                       to CCCApply and fill out your application. You&rsquo;ll
                       find the link on the left sidebar.
@@ -128,44 +133,58 @@ export default function Home() {
                     </p>
                   </CardContent>
                 </Card>
-                <PotentialSavings />
+                <div className="w-full overflow-x-auto">
+                  <PotentialSavingsTable
+                    setSelectedCollege={handleCollegeSelect}
+                  />
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-        <Card>
-          <CardHeader className="bg-gray-100">
-            <CardTitle className="grid grid-cols-2">
-              <div className="text-xl">Eligible Courses</div>
-              <SearchBar onSearch={setSearchTerm} />
+        <Card className="w-full">
+          <CardHeader className="bg-gray-100 p-4">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
+              <div className="w-full sm:w-auto">
+                <div className="flex sm:flex-row gap-4">
+                <SearchBar onSearch={setSearchTerm} />
+                  <DropdownImplementedColleges
+                    onCollegeSelect={handleCollegeSelect}
+                    selectedCollege={selectedCollege}
+                  />
+                  {selectedCollege && (
+                    <DropdownIndustryCertifications
+                      onIndustryCertificationSelect={
+                        handleIndustryCertificationSelect
+                      }
+                      collegeId={selectedCollege}
+                    />
+                  )}
+                  <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
+                  <DropdownLearningModes
+                    onLearningModeSelect={handleLerningModeSelect}
+                  />
+                </div>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ArticulationsTable
-              articulations={articulations || []}
-              loading={isLoading}
-              error={error}
-              searchTerm={searchTerm}
-              showCollegeName={!selectedCollege || selectedCollege === ""}
-              CollegeID={selectedCollege ? parseInt(selectedCollege, 10) : 1}
-              settingsObject={null}
-            >
-              <DropdownImplementedColleges
-                onCollegeSelect={handleCollegeSelect}
-              />
-              {selectedCollege && (
-                <DropdownIndustryCertifications
-                  onIndustryCertificationSelect={
-                    handleIndustryCertificationSelect
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              <div className="w-full overflow-x-auto">
+                <ArticulationsTable
+                  articulations={articulations || []}
+                  loading={isLoading}
+                  error={error}
+                  searchTerm={searchTerm}
+                  showCollegeName={!selectedCollege || selectedCollege === ""}
+                  CollegeID={
+                    selectedCollege ? parseInt(selectedCollege, 10) : 1
                   }
-                  collegeId={selectedCollege}
+                  settingsObject={null}
                 />
-              )}
-              <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
-              <DropdownLearningModes
-                onLearningModeSelect={handleLerningModeSelect}
-              />
-            </ArticulationsTable>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

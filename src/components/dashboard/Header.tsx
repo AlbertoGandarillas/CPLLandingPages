@@ -33,12 +33,13 @@ export default function Header() {
             />
           </Link>
           <h1 className="text-lg md:text-xl lg:text-2xl">{appName}</h1>{" "}
+          <div className="hidden">
           <nav className="hidden md:flex items-center gap-6">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center text-lg font-medium text-white transition-colors hover:text-white/80 sm:text-sm ${
+                className={`md:flex items-center text-lg font-medium text-white transition-colors hover:text-white/80 sm:text-sm ${
                   pathname === item.href
                     ? "text-foreground"
                     : "text-foreground/60"
@@ -48,6 +49,7 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+          </div>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">

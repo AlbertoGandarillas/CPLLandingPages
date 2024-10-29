@@ -9,7 +9,7 @@ export default function MainLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 min-h-screen bg-gradient-to-br from-[#eef1f6] via-[#f5f7fa] to-white">
+      <main className="flex-1 min-h-screen bg-gradient-to-br from-[#efeff0] via-[#cfcfcf] to-white">
         {children}
       </main>
       <Footer />

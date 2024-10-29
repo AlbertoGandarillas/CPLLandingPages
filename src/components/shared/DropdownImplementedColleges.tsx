@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useImplementedColleges } from "@/hooks/useImplementedColleges";
 import SkeletonWrapper from "./SkeletonWrapper";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -14,18 +14,31 @@ import {
 } from "../ui/command";
 import { cn } from "@/lib/utils";
 interface DropdownImplementedCollegesProps {
+  selectedCollege?: string | null;
   onCollegeSelect: (collegeID: string | null) => void;
 }
-export const DropdownImplementedColleges = ({onCollegeSelect}:DropdownImplementedCollegesProps) => {
+export const DropdownImplementedColleges = ({selectedCollege, onCollegeSelect}:DropdownImplementedCollegesProps) => {
 const [open, setOpen] = useState(false);
 const [value, setValue] = useState("");
 const { data, isLoading, error } = useImplementedColleges();
 
+ useEffect(() => {
+   if (selectedCollege) {
+     setValue(selectedCollege.toString());
+   } else {
+     setValue("");
+   }
+ }, [selectedCollege]);
+ 
 const handleSelect = (currentValue: string) => {
   setValue(currentValue === value ? "" : currentValue);
   setOpen(false);
   onCollegeSelect(currentValue === "all" ? null : currentValue);
 };
+
+  const selectedCollegeName = value
+    ? data?.find((item) => item.CollegeID.toString() === value)?.College
+    : null;
 
   if (isLoading) {
     return (
@@ -48,7 +61,7 @@ const handleSelect = (currentValue: string) => {
         >
           {value === "all"
             ? "All Colleges"
-            : value
+            : selectedCollegeName
             ? data?.find((item) => item.CollegeID.toString() === value)
                 ?.College ?? "Unknown College"
             : "Select College..."}

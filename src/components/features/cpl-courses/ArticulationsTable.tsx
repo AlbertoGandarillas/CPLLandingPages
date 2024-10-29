@@ -154,6 +154,7 @@ export default function ArticulationsTable({
                   settingsObject?.CompBackgroundColor
                 }
                 collegeId={CollegeID ? CollegeID.toString() : ""}
+                CPLAssistantEmail={CPLAssistantEmail || ""}
               />
             )}
           </SkeletonWrapper>
