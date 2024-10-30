@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../prisma/db";
 import { PotentialCPLSavings, Prisma } from "@prisma/client";
 
-// Make this route dynamic
 export const dynamic = "force-dynamic";
 
 async function getPotentialCPLSavings(

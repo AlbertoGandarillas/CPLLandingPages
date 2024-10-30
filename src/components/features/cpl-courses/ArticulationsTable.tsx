@@ -105,6 +105,7 @@ export default function ArticulationsTable({
                 : ""}
             </Button>
           )}
+          <div></div>
           {children}
         </ArticulationHeader>
         {error && <p>Error: {error.message}</p>}

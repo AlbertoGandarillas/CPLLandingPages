@@ -75,7 +75,7 @@ export default function Home() {
   };
   return (
     <SelectedCoursesProvider>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <Accordion
           type="single"
           value={open}
@@ -86,8 +86,7 @@ export default function Home() {
           <AccordionItem value="item-1" className="border-0">
             <AccordionTrigger className="bg-gray-100 text-black p-4 w-full">
               <h1 className="text-base sm:text-lg font-medium text-left">
-                Potential CPL Savings & Preservation of Funds, 20-Year Impact,
-                College Metrics
+                CPL Savings and College Metrics
               </h1>
             </AccordionTrigger>
             <AccordionContent className="p-4 bg-white">
@@ -147,8 +146,8 @@ export default function Home() {
             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
               <div className="w-full sm:w-auto">
-                <div className="flex sm:flex-row gap-4">
-                <SearchBar onSearch={setSearchTerm} />
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <SearchBar onSearch={setSearchTerm} />
                   <DropdownImplementedColleges
                     onCollegeSelect={handleCollegeSelect}
                     selectedCollege={selectedCollege}
@@ -177,7 +176,7 @@ export default function Home() {
                   loading={isLoading}
                   error={error}
                   searchTerm={searchTerm}
-                  showCollegeName={!selectedCollege || selectedCollege === ""}
+                  showCollegeName={true}
                   CollegeID={
                     selectedCollege ? parseInt(selectedCollege, 10) : 1
                   }

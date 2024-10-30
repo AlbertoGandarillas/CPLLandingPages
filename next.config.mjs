@@ -6,6 +6,7 @@ const nextConfig = {
       "hwsrv-1132312.hostwindsdns.com",
       "mappingarticulatedpathways.azurewebsites.net",
     ],
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

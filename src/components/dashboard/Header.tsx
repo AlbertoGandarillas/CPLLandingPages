@@ -18,8 +18,8 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-[#1e3964] font-bold text-white">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+    <header className="sticky top-0 z-40 w-full border-b bg-[#1e3964] font-bold text-white p-2">
+      <div className="flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex justify-between items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
             <Image
@@ -32,23 +32,31 @@ export default function Header() {
               className="inline-block object-contain"
             />
           </Link>
-          <h1 className="text-lg md:text-xl lg:text-2xl">{appName}</h1>{" "}
+          <Image
+            src="/images/ccc.png"
+            alt="MAP"
+            width={383}
+            height={50}
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="inline-block object-contain"
+          />
           <div className="hidden">
-          <nav className="hidden md:flex items-center gap-6">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`md:flex items-center text-lg font-medium text-white transition-colors hover:text-white/80 sm:text-sm ${
-                  pathname === item.href
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                }`}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </nav>
+            <nav className="hidden md:flex items-center gap-6">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`md:flex items-center text-lg font-medium text-white transition-colors hover:text-white/80 sm:text-sm ${
+                    pathname === item.href
+                      ? "text-foreground"
+                      : "text-foreground/60"
+                  }`}
+                >
+                  {item.title}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">

@@ -104,11 +104,6 @@ export default function ArticulationCard({
       </CardHeader>
       <CardContent className="grid flex-grow">
         <div className="">
-          {showCollegeName && (
-            <h4 className="text-sm font-bold py-4">
-              <p>College : {articulation.College}</p>
-            </h4>
-          )}
           <div className="py-4 flex justify-between items-center w-full">
             <Badge
               className={`font-bold flex justify-center text-sm w-[100px]`}
@@ -119,6 +114,11 @@ export default function ArticulationCard({
             >
               Credits: {articulation.Units}
             </Badge>
+            {showCollegeName && (
+              <h4 className="text-sm  py-4">
+                <p>{articulation.College}</p>
+              </h4>
+            )}
             {showFavoriteStar && CPLAssistantEmail && (
               <div className="cursor-pointer" onClick={handleToggleSelection}>
                 <TooltipProvider>
