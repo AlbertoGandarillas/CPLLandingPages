@@ -17,6 +17,8 @@ import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -53,7 +55,7 @@ export default function Home() {
         if (res.status === 404) {
           return [];
         }
-        throw new Error(`API error: ${res.status}`);
+        throw new Error(`API error: ${res.status} - ${res.statusText}`);
         }
         return res.json();
       }),
@@ -85,10 +87,61 @@ export default function Home() {
         >
           <AccordionItem value="item-1" className="border-0">
             <AccordionTrigger className="bg-gray-100 text-black p-4 w-full">
-              <h1 className="text-base sm:text-lg font-medium text-left">
-                Potential CPL Savings & Preservation of Funds (PoF), 20
-                Year-Impact College Metrics
-              </h1>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center">
+                    <h1 className="text-base sm:text-lg font-medium text-left">
+                      Potential CPL Savings & Preservation of Funds (PoF), 20
+                      Year-Impact College Metrics
+                    </h1>
+                    <Info
+                      size={16}
+                      className="ml-2 cursor-help"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="text-xs w-96 font-normal">
+                    <div>
+                      <p>
+                        Per-Unit Estimated Savings & Preservation of Funds= $965
+                        (Working Adult) and $1730 (Military).
+                      </p>
+                      <p>
+                        Per-Unit Estimated 20-Year Impact = $4734 (Working
+                        Adult) and $6067 (Military). Assumes AS completion --
+                        BS, MS, PhD completion yields significantly higher
+                        impact.
+                      </p>
+                      <p>
+                        Savings and Preservation of Funds factors include:
+                        Maximum GI Bill tuition or State and Federal Financial
+                        Aid; Avg. CA Basic Allowance for Housing (Military);
+                        Average College Cost of Living (Working Adult); Textbook
+                        Allowance (Military); Saved Apportionment
+                      </p>
+                      <p>
+                        Impact factors include: Increased Earnings (due to
+                        credential attainment), Federal & CA Tax Revenues,
+                        Productivity & Entrepreneurship; Multiplier Effect—all
+                        spread over a 20-year period.
+                      </p>
+                      <br />
+                      <p>
+                        <i>
+                          *Eligible CPL refers to the units of CPL listed on
+                          Student CPL Plans in MAP. These units are approved for
+                          use by students, but because student education plans
+                          are changeable, decisions to accept CPL or apply
+                          alternative CPL may be made at any time. As colleges
+                          develop the capacity to accurately record transcribed
+                          CPL in MAP and the college Student Information
+                          Systems, the dashboard will be revised to reflect
+                          transcribed CPL in addition to eligible CPL.
+                        </i>
+                      </p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </AccordionTrigger>
             <AccordionContent className="p-4 bg-white">
               <div className="space-y-4">
@@ -148,7 +201,10 @@ export default function Home() {
               <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
               <div className="w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <SearchBar onSearch={setSearchTerm} inputClassName="bg-blue-100" />
+                  <SearchBar
+                    onSearch={setSearchTerm}
+                    inputClassName="bg-blue-100"
+                  />
                   <DropdownImplementedColleges
                     onCollegeSelect={handleCollegeSelect}
                     selectedCollege={selectedCollege}

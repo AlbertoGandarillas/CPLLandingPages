@@ -30,16 +30,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import StatCard from "./StatCard";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import CPLImpact from "./CPLImpact";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string) => void;
 }
@@ -62,152 +53,152 @@ export const PotentialSavingsTable = ({
     }).format(value);
   };
 
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "CollegeID",
-      enableHiding: true,
-      enableSorting: false,
-      header: "College ID",
-      size: 0,
-      enableColumnFilter: false,
-      enableGlobalFilter: false,
+const columns: ColumnDef<any>[] = [
+  {
+    accessorKey: "CollegeID",
+    enableHiding: true,
+    enableSorting: false,
+    header: "College ID",
+    size: 0,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+  },
+  {
+    accessorKey: "College",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          College
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "College",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            College
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+  },
+  {
+    accessorKey: "Savings",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          Savings & PoF
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "Savings",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Savings & PoF
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("Savings"))}
-        </div>
-      ),
+    cell: ({ row }) => (
+      <div className="text-center">
+        {formatCurrency(row.getValue("Savings"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "YearImpact",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          20-Year Impact
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "YearImpact",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            20-Year Impact
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("YearImpact"))}
-        </div>
-      ),
+    cell: ({ row }) => (
+      <div className="text-center">
+        {formatCurrency(row.getValue("YearImpact"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "Combined",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          Combined
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "Combined",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Combined
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("Combined"))}
-        </div>
-      ),
+    cell: ({ row }) => (
+      <div className="text-center">
+        {formatCurrency(row.getValue("Combined"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "Students",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          Students
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "Students",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Students
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Math.round(row.getValue("Students")).toLocaleString()}
-        </div>
-      ),
+    cell: ({ row }) => (
+      <div className="text-center">
+        {Math.round(row.getValue("Students")).toLocaleString()}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "Units",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          Eligible CPL *
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "Units",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Eligible CPL *
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Math.round(row.getValue("Units")).toLocaleString()}
-        </div>
-      ),
+    cell: ({ row }) => (
+      <div className="text-center">
+        {Math.round(row.getValue("Units")).toLocaleString()}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "AverageUnits",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-transparent"
+        >
+          Avg
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
-    {
-      accessorKey: "AverageUnits",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Avg
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Number(row.getValue("AverageUnits")).toFixed(1)}
-        </div>
-      ),
-    },
-  ];
+    cell: ({ row }) => (
+      <div className="text-center">
+        {Number(row.getValue("AverageUnits")).toFixed(1)}
+      </div>
+    ),
+  },
+];
   const getTopTenColleges = React.useMemo(() => {
     if (!data) return [];
     return data
@@ -220,18 +211,45 @@ export const PotentialSavingsTable = ({
       }));
   }, [data]);
 
+  const getCPLImpactData = React.useMemo(() => {
+    if (!data) return [];
+    return data
+      .filter((item) => item.CollegeID !== 0)
+      .slice(0, 10)
+      .map((item) => ({
+        College: item.College,
+        Savings: item.Savings,
+        YearImpact: item.YearImpact,
+        Combined: item.Combined,
+        Students: item.Students,
+        AvgUnits: item.AverageUnits,
+        Units: item.Units
+      }));
+  }, [data]);
+
   const exportToExcel = (data: any[], fileName: string) => {
     const formattedData = data.map((row) => ({
       College: row.College,
       "Savings & PoF": formatCurrency(row.Savings),
       "20-Year Impact": formatCurrency(row.YearImpact),
       Combined: formatCurrency(row.Combined),
-      Students: row.Students,
-      "Eligible CPL *": row.Units,
-      Avg: row.AverageUnits,
+      Students: Math.round(row.Students).toLocaleString(),
+      "Eligible CPL *": Math.round(row.Units).toLocaleString(),
+      Avg: Number(row.AverageUnits).toFixed(1),
     }));
-
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const colWidths = [
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 }, 
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 8 },
+    ];
+
+    worksheet["!cols"] = colWidths;
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     XLSX.writeFile(workbook, `${fileName}.xlsx`);
@@ -335,10 +353,10 @@ export const PotentialSavingsTable = ({
         <div className="w-full lg:w-auto">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             {data
-              ?.filter((item) => item.CollegeID === 0)
+              ?.filter((item, index) => item.CollegeID === 0)
               .slice(0, 1)
               .map((item) => (
-                <>
+                <React.Fragment key={item.CollegeID}>
                   <StatCard
                     title="Savings & PoF"
                     value={`${formatCurrency(item.Savings)}`}
@@ -359,11 +377,11 @@ export const PotentialSavingsTable = ({
                     value={item.Students.toLocaleString()}
                     icon={<Users className="h-6 w-6" />}
                   />
-                </>
+                </React.Fragment>
               ))}
           </div>
           <div>
-            <div className="rounded-md border overflow-y-auto max-h-[250px]">
+            <div className="rounded-md border overflow-y-auto max-h-[365px]">
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -417,50 +435,8 @@ export const PotentialSavingsTable = ({
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-auto mt-4 lg:mt-0">
-          <div className="bg-white p-2 rounded-lg">
-            <h2 className="text-lg text-center font-bold mb-2">Top 10 Colleges</h2>
-            <ResponsiveContainer width={500} height={360}>
-              <BarChart
-                layout="vertical"
-                data={getTopTenColleges}
-                margin={{
-                  top: 5,
-                  right: 5,
-                  left: 0,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={250}
-                  tick={{ fontSize: 12, textAnchor: 'end' }}
-                  tickFormatter={(value) => value.replace(/\s+/g, ' ')}
-                />
-                <Tooltip
-                  formatter={(value, name) => {
-                    if (name === "Combined ($M)") {
-                      return [
-                        `$${Number(value).toFixed(1)}M`,
-                        "Combined",
-                      ];
-                    }
-                    return [`${Number(Number(value) * 1000).toFixed(0)}`, "Students"];
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="Combined"
-                  fill="#8884d8"
-                  name="Combined ($M)"
-                />
-                <Bar dataKey="Students" fill="#82ca9d" name="Students" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="w-full lg:w-full mt-4 lg:mt-0">
+          <CPLImpact data={getCPLImpactData} />
         </div>
       </div>
     </>

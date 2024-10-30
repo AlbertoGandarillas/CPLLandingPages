@@ -10,37 +10,23 @@ export async function GET(request: NextRequest) {
   const learningMode = url.searchParams.get("learningMode");
   try {
     const where: Prisma.ViewCPLCoursesWhereInput = {};
-
     if (college) {
       where.CollegeID = parseInt(college);
     }
-    if (industryCertification) {
+    if (industryCertification || cplType || learningMode) {
       where.IndustryCertifications = {
         some: {
-          IndustryCertification: {
-            contains: industryCertification,
-          },
+          ...(industryCertification && {
+            IndustryCertification: { contains: industryCertification },
+          }),
+          ...(cplType && { CPLType: { equals: parseInt(cplType) } }),
+          ...(learningMode && {
+            ModelOfLearning: { equals: parseInt(learningMode) },
+          }),
         },
       };
     }
-    if (cplType) {
-      where.IndustryCertifications = {
-        some: {
-          CPLType: {
-            equals: parseInt(cplType),
-          },
-        },
-      };
-    }
-    if (learningMode) {
-      where.IndustryCertifications = {
-        some: {
-          ModelOfLearning: {
-            equals: parseInt(learningMode),
-          },
-        },
-      };
-    }
+
     const commonCourses = await db.viewCPLCourses.findMany({
       where,
       include: {
@@ -62,7 +48,16 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json(commonCourses);
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes("maximum of 2100 parameters")) {
+      return NextResponse.json(
+        {
+          error:
+            "The result of your search is too large. Please adjust your search criteria to narrow down the results.",
+        },
+        { status: 400 }
+      );
+    }
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
