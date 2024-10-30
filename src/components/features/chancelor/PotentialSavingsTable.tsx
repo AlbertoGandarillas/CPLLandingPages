@@ -420,7 +420,7 @@ export const PotentialSavingsTable = ({
         <div className="w-full lg:w-auto mt-4 lg:mt-0">
           <div className="bg-white p-2 rounded-lg">
             <h2 className="text-lg text-center font-bold mb-2">Top 10 Colleges</h2>
-            <ResponsiveContainer width={450} height={360}>
+            <ResponsiveContainer width={500} height={360}>
               <BarChart
                 layout="vertical"
                 data={getTopTenColleges}
@@ -436,7 +436,7 @@ export const PotentialSavingsTable = ({
                 <YAxis
                   type="category"
                   dataKey="name"
-                  width={200}
+                  width={250}
                   tick={{ fontSize: 12, textAnchor: 'end' }}
                   tickFormatter={(value) => value.replace(/\s+/g, ' ')}
                 />
