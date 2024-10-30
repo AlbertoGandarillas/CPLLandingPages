@@ -8,13 +8,15 @@ interface SearchBarProps {
   placeholder?: string;
   debounceTime?: number;
   className?: string;
+  inputClassName?: string;
 }
 
 export default function SearchBar({
   onSearch,
   placeholder = "Search by keyword...",
   debounceTime = 300,
-  className
+  className,
+  inputClassName,
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -40,7 +42,7 @@ export default function SearchBar({
         <Input
           type="text"
           placeholder={placeholder}
-          className="pl-10 pr-10 w-full"
+          className={`pl-10 pr-10 w-full ${inputClassName}`}
           value={searchTerm}
           onChange={handleSearchChange}
         />

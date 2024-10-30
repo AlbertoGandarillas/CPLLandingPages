@@ -86,7 +86,8 @@ export default function Home() {
           <AccordionItem value="item-1" className="border-0">
             <AccordionTrigger className="bg-gray-100 text-black p-4 w-full">
               <h1 className="text-base sm:text-lg font-medium text-left">
-                CPL Savings and College Metrics
+                Potential CPL Savings & Preservation of Funds (PoF), 20
+                Year-Impact College Metrics
               </h1>
             </AccordionTrigger>
             <AccordionContent className="p-4 bg-white">
@@ -147,7 +148,7 @@ export default function Home() {
               <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
               <div className="w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <SearchBar onSearch={setSearchTerm} />
+                  <SearchBar onSearch={setSearchTerm} inputClassName="bg-blue-100" />
                   <DropdownImplementedColleges
                     onCollegeSelect={handleCollegeSelect}
                     selectedCollege={selectedCollege}

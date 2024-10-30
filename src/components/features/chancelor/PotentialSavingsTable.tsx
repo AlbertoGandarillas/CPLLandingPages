@@ -319,7 +319,7 @@ export const PotentialSavingsTable = ({
           placeholder="Filter Colleges..."
           value={filterValue}
           onChange={(event) => setFilterValue(event.target.value)}
-          className="w-full max-w-sm"
+          className="w-full max-w-sm bg-blue-100"
         />
         <Button
           size="sm"
@@ -331,8 +331,8 @@ export const PotentialSavingsTable = ({
           Export to Excel
         </Button>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
-        <div className="col-span-3">
+      <div className="flex flex-col lg:flex-row gap-2">
+        <div className="w-full lg:w-auto">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             {data
               ?.filter((item) => item.CollegeID === 0)
@@ -417,9 +417,10 @@ export const PotentialSavingsTable = ({
             </div>
           </div>
         </div>
-        <div className="col-span-1">
+        <div className="w-full lg:w-auto mt-4 lg:mt-0">
           <div className="bg-white p-2 rounded-lg">
-            <ResponsiveContainer width="100%" height={360}>
+            <h2 className="text-lg text-center font-bold mb-2">Top 10 Colleges</h2>
+            <ResponsiveContainer width={450} height={360}>
               <BarChart
                 layout="vertical"
                 data={getTopTenColleges}
@@ -435,8 +436,9 @@ export const PotentialSavingsTable = ({
                 <YAxis
                   type="category"
                   dataKey="name"
-                  width={100}
-                  tick={{ fontSize: 12 }}
+                  width={200}
+                  tick={{ fontSize: 12, textAnchor: 'end' }}
+                  tickFormatter={(value) => value.replace(/\s+/g, ' ')}
                 />
                 <Tooltip
                   formatter={(value, name) => {
