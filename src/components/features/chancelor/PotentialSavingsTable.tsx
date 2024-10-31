@@ -357,8 +357,8 @@ const columns: ColumnDef<any>[] = [
           Export to Excel
         </Button>
       </div>
-      <div className="flex flex-col lg:flex-row gap-2">
-        <div className="w-full lg:w-auto">
+      <div className="flex flex-col xl:flex-row gap-4">
+        <div className="w-full xl:w-1/2 2xl:w-3/4 ">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             {data
               ?.filter((item, index) => item.CollegeID === 0)
@@ -443,7 +443,7 @@ const columns: ColumnDef<any>[] = [
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-full mt-4 lg:mt-0">
+        <div className="w-full xl:w-1/2 2xl:w-1/4">
           <CPLImpactScoreChart data={getCPLImpactData} />
         </div>
       </div>

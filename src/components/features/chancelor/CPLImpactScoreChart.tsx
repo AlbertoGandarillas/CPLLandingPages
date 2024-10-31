@@ -52,6 +52,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
     return Math.round(rawScore * 100);
   };
 
+
   const transformedData = data
     .map((college) => ({
       name: college.College,
@@ -218,6 +219,51 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                             pts
                           </p>
                         </div>
+                        <hr className="my-2" />
+                        <p className="font-medium">
+                          Penalties Applied:{" "}
+                          {(() => {
+                            const penalties = [];
+
+                            if (
+                              college.students > 500 &&
+                              college.avgUnits < 4.5
+                            ) {
+                              penalties.push(
+                                `${
+                                  college.students > 500 &&
+                                  college.avgUnits < 4.5
+                                    ? "0.95"
+                                    : "None"
+                                } (High Volume, Low Average)`
+                              );
+                            }
+                            if (
+                              college.students <= 300 &&
+                              college.avgUnits <= 4
+                            ) {
+                              penalties.push(
+                                `${
+                                  college.students <= 300 &&
+                                  college.avgUnits <= 4
+                                    ? "0.7"
+                                    : "None"
+                                } (Low Average Units)`
+                              );
+                            }
+                            if (college.students < 40) {
+                              penalties.push(
+                                `${
+                                  college.students < 40 ? "0.4" : "None"
+                                } (Low Volume)`
+                              );
+                            }
+
+                            return penalties.length > 0
+                              ? penalties.join(" & ")
+                              : "None";
+                          })()}
+                        </p>
                         <hr className="my-2" />
                         <div className="space-y-1 text-sm">
                           <p>Average Units/Student: {college.avgUnits}</p>
