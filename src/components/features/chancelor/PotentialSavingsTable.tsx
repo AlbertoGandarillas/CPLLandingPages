@@ -31,6 +31,7 @@ import {
 } from "@tanstack/react-table";
 import StatCard from "./StatCard";
 import CPLImpact from "./CPLImpact";
+import CPLImpactChart from "./CPLImpactChart";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string) => void;
 }
@@ -65,6 +66,7 @@ const columns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "College",
+    size: 200,
     header: ({ column }) => {
       return (
         <Button
@@ -77,6 +79,11 @@ const columns: ColumnDef<any>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => (
+      <div className="text-left w-[200px]">
+        {row.getValue("College")}
+      </div>
+    ),
   },
   {
     accessorKey: "Savings",
@@ -381,7 +388,7 @@ const columns: ColumnDef<any>[] = [
               ))}
           </div>
           <div>
-            <div className="rounded-md border overflow-y-auto max-h-[365px]">
+            <div className="rounded-md border overflow-y-auto max-h-[500px]">
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -436,7 +443,7 @@ const columns: ColumnDef<any>[] = [
           </div>
         </div>
         <div className="w-full lg:w-full mt-4 lg:mt-0">
-          <CPLImpact data={getCPLImpactData} />
+          <CPLImpactChart data={getCPLImpactData} />
         </div>
       </div>
     </>

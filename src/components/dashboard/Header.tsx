@@ -39,7 +39,7 @@ export default function Header() {
             height={50}
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="inline-block object-contain"
+            className="inline-block object-contain md:w-auto w-[306px]" 
           />
           <div className="hidden">
             <nav className="hidden md:flex items-center gap-6">

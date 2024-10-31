@@ -99,7 +99,7 @@ export default function Home() {
                       className="ml-2 cursor-help"
                     />
                   </TooltipTrigger>
-                  <TooltipContent className="text-xs w-96 font-normal">
+                  <TooltipContent className="text-xs w-[calc(100vw-32px)] sm:max-w-[500px] font-normal text-left bg-gray-50">
                     <div>
                       <p>
                         Per-Unit Estimated Savings & Preservation of Funds= $965
