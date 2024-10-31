@@ -11,7 +11,7 @@ export default function StatCard({ title, value, icon }: StatCardProps) {
       <CardContent className="flex items-center justify-between p-6">
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <h3 className="text-xl font-bold">{value}</h3>
+          <h3 className="text-xl font-bold xl:text-xs 2xl:text-xl">{value}</h3>
         </div>
         <div className="text-muted-foreground">{icon}</div>
       </CardContent>

@@ -7,11 +7,7 @@ import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import {
   ArrowUpDown,
-  BarChart2,
-  DollarSign,
   FileSpreadsheet,
-  Layers,
-  Users,
 } from "lucide-react";
 import {
   Table,
@@ -29,10 +25,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import StatCard from "./StatCard";
-import CPLImpact from "./CPLImpact";
-import CPLImpactChart from "./CPLImpactChart";
 import CPLImpactScoreChart from "./CPLImpactScoreChart";
+import { SummaryStats } from "./SummaryStats";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string) => void;
 }
@@ -207,17 +201,21 @@ const columns: ColumnDef<any>[] = [
     ),
   },
 ];
-  const getTopTenColleges = React.useMemo(() => {
-    if (!data) return [];
-    return data
-      .filter((item) => item.CollegeID !== 0) 
-      .slice(0, 10) 
-      .map((item) => ({
-        name: item.College.replace(/\s*college\s*/gi, ""), 
-        Combined: item.Combined / 1000000, 
-        Students: item.Students / 1000, 
-      }));
-  }, [data]);
+
+const getSummaryStatsData = React.useMemo(() => {
+  if (!data) return [];
+  return data
+    .filter((item) => item.CollegeID === 0)
+    .map((item) => ({
+      College: item.College,
+      Savings: item.Savings,
+      YearImpact: item.YearImpact,
+      Combined: item.Combined,
+      Students: item.Students,
+      AvgUnits: item.AverageUnits,
+      Units: item.Units,
+    }));
+}, [data]);
 
   const getCPLImpactData = React.useMemo(() => {
     if (!data) return [];
@@ -360,33 +358,10 @@ const columns: ColumnDef<any>[] = [
       <div className="flex flex-col xl:flex-row gap-4">
         <div className="w-full xl:w-1/2 2xl:w-3/4 ">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-            {data
-              ?.filter((item, index) => item.CollegeID === 0)
-              .slice(0, 1)
-              .map((item) => (
-                <React.Fragment key={item.CollegeID}>
-                  <StatCard
-                    title="Savings & PoF"
-                    value={`${formatCurrency(item.Savings)}`}
-                    icon={<DollarSign className="h-6 w-6" />}
-                  />
-                  <StatCard
-                    title="20-Year Impact"
-                    value={`${formatCurrency(item.YearImpact)}`}
-                    icon={<BarChart2 className="h-6 w-6" />}
-                  />
-                  <StatCard
-                    title="Combined"
-                    value={`${formatCurrency(item.Combined)}`}
-                    icon={<Layers className="h-6 w-6" />}
-                  />
-                  <StatCard
-                    title="Students"
-                    value={item.Students.toLocaleString()}
-                    icon={<Users className="h-6 w-6" />}
-                  />
-                </React.Fragment>
-              ))}
+            <SummaryStats
+              data={getSummaryStatsData}
+              formatCurrency={formatCurrency}
+            />
           </div>
           <div>
             <div className="rounded-md border overflow-y-auto max-h-[500px]">
@@ -395,7 +370,10 @@ const columns: ColumnDef<any>[] = [
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id} className="font-bold text-black">
+                        <TableHead
+                          key={header.id}
+                          className="font-bold text-black"
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
