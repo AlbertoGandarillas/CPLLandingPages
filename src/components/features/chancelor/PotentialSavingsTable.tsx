@@ -32,6 +32,7 @@ import {
 import StatCard from "./StatCard";
 import CPLImpact from "./CPLImpact";
 import CPLImpactChart from "./CPLImpactChart";
+import CPLImpactScoreChart from "./CPLImpactScoreChart";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string) => void;
 }
@@ -394,7 +395,7 @@ const columns: ColumnDef<any>[] = [
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
+                        <TableHead key={header.id} className="font-bold text-black">
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -443,7 +444,7 @@ const columns: ColumnDef<any>[] = [
           </div>
         </div>
         <div className="w-full lg:w-full mt-4 lg:mt-0">
-          <CPLImpactChart data={getCPLImpactData} />
+          <CPLImpactScoreChart data={getCPLImpactData} />
         </div>
       </div>
     </>

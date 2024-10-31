@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-interface TopCollegesChartProps {
+interface TopCollegesChartProps  {
   data: {
     College: string;
     Savings: number;
@@ -23,6 +23,7 @@ interface TopCollegesChartProps {
     Students: number;
     AvgUnits: number;
     Units: number;
+    ImpactScore?: number; // Added optional ImpactScore field
   }[];
 }
 
@@ -137,14 +138,20 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
       })(),
     };
   };
+  
+  // Add impact scores to data
+  const dataWithScores = data.map(college => ({
+    ...college,
+    ImpactScore: calculateImpactScore(college)
+  }));
 
   // Calculate system average using all colleges
   const systemAverage = Math.round(
-    data.reduce((acc, col) => acc + col.Combined, 0) / data.length
+    dataWithScores.reduce((acc, col) => acc + col.Combined, 0) / dataWithScores.length
   );
 
   // Create a new array with only top 10 colleges for display
-  const displayData = data.slice(0, 10);
+  const displayData = dataWithScores.slice(0, 10);
   const maxScore = Math.max(...displayData.map((d) => d.Combined));
   const axisMax = Math.ceil(maxScore / 20) * 20;
 
@@ -158,7 +165,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
     label?: string;
   }) => {
     if (active && payload && payload.length && label) {
-      const college = data.find((d) => d.College === label);
+      const college = dataWithScores.find((d) => d.College === label);
       if (!college) return null;
       const scores = calculateComponentScores(college);
       const formattedCombined = college.Combined >= 1000000 
@@ -177,6 +184,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
               ({college.Combined > systemAverage ? "+" : ""}
               {formattedDiff} vs avg)
             </span>
+            Impact Score: {college.ImpactScore}
           </p>
           <hr className="my-2" />
           <p className="font-medium">Score Components:</p>
@@ -217,7 +225,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
           <div style={{ marginLeft: "140px", width: "calc(100% - 140px)" }}>
             <ResponsiveContainer width="100%" height={48}>
               <BarChart
-                data={data}
+                data={dataWithScores}
                 layout="vertical"
                 margin={{ top: 15, right: 35, left: 140, bottom: 0 }}
               >
@@ -230,7 +238,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                   tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
                 />
                 <YAxis dataKey="name" type="category" hide={true} />
-                <ReferenceLine
+                {/*                <ReferenceLine
                   x={systemAverage}
                   stroke="#1d3864"
                   strokeDasharray="3 3"
@@ -241,7 +249,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                     fontSize: 10,
                     offset: -30,
                   }}
-                />
+                /> */}
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -252,14 +260,14 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
           <div
             style={{
               width: "100%",
-              height: `${data.length * 10}px`, // Increased spacing between bars
+              height: `${dataWithScores.length * 10}px`, // Increased spacing between bars
               minHeight: "360px",
               position: "relative",
             }}
           >
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={data}
+                data={dataWithScores}
                 layout="vertical"
                 margin={{
                   top: 0,
@@ -267,12 +275,11 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                   left: 140,
                   bottom: 20,
                 }}
-                
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis 
-                  type="number" 
-                  domain={[0, axisMax]} 
+                <XAxis
+                  type="number"
+                  domain={[0, axisMax]}
                   hide={true}
                   tickFormatter={(value) => `${(value / 1000000).toFixed(0)}`}
                 />
@@ -290,19 +297,22 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                         fill="#666"
                         fontSize={12}
                       >{`${props.payload.value} (${
-                        ((data.find((d) => d.College === props.payload.value)
-                          ?.Combined || 0) / 1000000).toFixed(1)
-                      }M)`}</text>
+                        dataWithScores.find(
+                          (d) => d.College === props.payload.value
+                        )?.ImpactScore || 0
+                      })`}</text>
                     </g>
                   )}
                 />
                 <Bar
                   dataKey="Combined"
                   fill="#0EA5E9"
-                  onMouseOver={(data: TooltipData, index: number) => handleMouseOver(data, index)}
+                  onMouseOver={(data: TooltipData, index: number) =>
+                    handleMouseOver(data, index)
+                  }
                   onMouseOut={handleMouseOut}
                 >
-                  {data.map((entry, index) => (
+                  {dataWithScores.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={

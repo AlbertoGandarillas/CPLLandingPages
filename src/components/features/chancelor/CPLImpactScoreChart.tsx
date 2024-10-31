@@ -29,52 +29,29 @@ interface TopCollegesChartProps {
 const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
   // Calculate composite score using revised weights
   const calculateImpactScore = (college: TopCollegesChartProps["data"][0]) => {
-    const volumeScore = (college.Units / 5585) * 25;
-    const studentsScore = (college.Students / 1796) * 20;
-    const avgUnitScore = (college.AvgUnits / 11.3) * 45;
-    const impactScore = (college.Combined / 24153809) * 10;
+    const avgUnitScore = Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5);
+    const studentScore = Math.log10(college.Students + 1) / Math.log10(1000);
+    const unitsScore = Math.pow(college.Units / 5585, 0.5);
+    const impactScore = Math.pow(college.Combined / 24153809, 0.3);
 
-    return Math.round(volumeScore + studentsScore + avgUnitScore + impactScore);
-  };
-
-  const calculateComponentScores = (
-    college: TopCollegesChartProps["data"][0]
-  ) => {
-    const avgUnitScore =
-      Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5) * 35;
-    const studentScore =
-      (Math.log10(college.Students + 1) / Math.log10(1000)) * 25;
-    const unitsScore = Math.pow(college.Units / 5585, 0.5) * 25;
-    const impactScore = Math.pow(college.Combined / 24153809, 0.3) * 15;
-    const highVolPenalty =
-      college.Students > 500 && college.AvgUnits < 4.5 ? "0.95" : "None";
+    const highVolumeLowAvgPenalty =
+      college.Students > 500 && college.AvgUnits < 5 ? 0.9 : 1;
     const lowAvgPenalty =
-      college.Students <= 300 && college.AvgUnits <= 4 ? "0.7" : "None";
-    const lowVolPenalty = college.Students < 40 ? "0.4" : "None";
+      college.Students <= 500 && college.AvgUnits <= 4 ? 0.7 : 1;
+    const lowVolumePenalty = college.Students < 40 ? 0.4 : 1;
 
-    return {
-      avgUnitScore: Math.round(avgUnitScore),
-      studentScore: Math.round(studentScore),
-      unitsScore: Math.round(unitsScore),
-      impactScore: Math.round(impactScore),
-      penalties: (() => {
-        const penalties = [];
+    const rawScore =
+      (avgUnitScore * 0.35 +
+        studentScore * 0.25 +
+        unitsScore * 0.25 +
+        impactScore * 0.15) *
+      highVolumeLowAvgPenalty *
+      lowVolumePenalty *
+      lowAvgPenalty;
 
-        if (college.Students > 500 && college.AvgUnits < 4.5) {
-          penalties.push(`${highVolPenalty} (High Volume, Low Average)`);
-        }
-        if (college.Students <= 300 && college.AvgUnits <= 4) {
-          penalties.push(`${lowAvgPenalty} (Low Average Units)`);
-        }
-        if (college.Students < 40) {
-          penalties.push(`${lowVolPenalty} (Low Volume)`);
-        }
-
-        return penalties.length > 0 ? penalties.join(" & ") : "None";
-      })(),
-    };
+    return Math.round(rawScore * 100);
   };
-  
+
   const transformedData = data
     .map((college) => ({
       name: college.College,
@@ -108,7 +85,7 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-96">
+        <div className="h-[410px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={displayData}
@@ -208,20 +185,37 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
                         <p className="font-medium">Component Scores:</p>
                         <div className="space-y-1 mt-2">
                           <p>
-                            Ave. CPL Units (45%):{" "}
-                            {Math.round((college.avgUnits / 11.3) * 45)} pts
+                            Ave. CPL Units (35%):{" "}
+                            {(
+                              Math.pow(
+                                Math.min(college.avgUnits / 6, 1.5),
+                                1.5
+                              ) * 35
+                            ).toFixed(1)}
+                            pts
                           </p>
                           <p>
                             Total CPL Units (25%):{" "}
-                            {Math.round((college.units / 5585) * 25)} pts
+                            {(
+                              (Math.log10(college.students + 1) /
+                                Math.log10(1000)) *
+                              25
+                            ).toFixed(1)}
+                            pts
                           </p>
                           <p>
-                            Reach in Students (20%):{" "}
-                            {Math.round((college.students / 1796) * 20)} pts
+                            Reach in Students (25%):{" "}
+                            {(Math.pow(college.units / 5585, 0.5) * 25).toFixed(
+                              1
+                            )}{" "}
+                            pts
                           </p>
                           <p>
-                            Economic Impact (10%):{" "}
-                            {Math.round((college.impact / 24153809) * 10)} pts
+                            Economic Impact (15%):{" "}
+                            {(
+                              Math.pow(college.impact / 24153809, 0.3) * 15
+                            ).toFixed(1)}{" "}
+                            pts
                           </p>
                         </div>
                         <hr className="my-2" />
@@ -243,6 +237,15 @@ const CPLImpactDashboard = ({ data }: TopCollegesChartProps) => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <p className="mt-4 text-sm text-gray-600">
+          A college successfully scaling CPL should demonstrate high efficiency
+          (6+ units per CPL student) while serving a meaningful student
+          population (100+ students). The ideal implementation balances
+          efficiency (high average CPL units per student) with impact (reaching
+          many students), indicating robust processes and broad adoption of CPL
+          opportunities. Scores are calculated taking these principles into
+          consideration.
+        </p>
       </CardContent>
     </Card>
   );
