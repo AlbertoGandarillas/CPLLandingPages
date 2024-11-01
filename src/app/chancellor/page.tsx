@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createQueryString } from "@/lib/createQueryString";
-import { DropdownImplementedColleges } from "@/components/shared/DropdownImplementedColleges";
 import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
@@ -19,6 +18,7 @@ import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import { DropdownColleges } from "@/components/shared/DropdownColleges";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -205,7 +205,7 @@ export default function Home() {
                     onSearch={setSearchTerm}
                     inputClassName="bg-blue-100"
                   />
-                  <DropdownImplementedColleges
+                  <DropdownColleges
                     onCollegeSelect={handleCollegeSelect}
                     selectedCollege={selectedCollege}
                   />

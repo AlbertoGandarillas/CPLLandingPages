@@ -5,10 +5,7 @@ import { usePotentialSavings } from "@/hooks/usePotentialSavings";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpDown,
-  FileSpreadsheet,
-} from "lucide-react";
+import { ArrowUpDown, FileSpreadsheet } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -49,173 +46,171 @@ export const PotentialSavingsTable = ({
     }).format(value);
   };
 
-const columns: ColumnDef<any>[] = [
-  {
-    accessorKey: "CollegeID",
-    enableHiding: true,
-    enableSorting: false,
-    header: "College ID",
-    size: 0,
-    enableColumnFilter: false,
-    enableGlobalFilter: false,
-  },
-  {
-    accessorKey: "College",
-    size: 200,
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          College
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: "CollegeID",
+      enableHiding: true,
+      enableSorting: false,
+      header: "College ID",
+      size: 0,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
     },
-    cell: ({ row }) => (
-      <div className="text-left w-[200px]">
-        {row.getValue("College")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "Savings",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          Savings & PoF
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "College",
+      size: 200,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            College
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-left w-[200px]">{row.getValue("College")}</div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {formatCurrency(row.getValue("Savings"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "YearImpact",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          20-Year Impact
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "Savings",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            Savings & PoF
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {formatCurrency(row.getValue("Savings"))}
+        </div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {formatCurrency(row.getValue("YearImpact"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "Combined",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          Combined
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "YearImpact",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            20-Year Impact
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {formatCurrency(row.getValue("YearImpact"))}
+        </div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {formatCurrency(row.getValue("Combined"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "Students",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          Students
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "Combined",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            Combined
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {formatCurrency(row.getValue("Combined"))}
+        </div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {Math.round(row.getValue("Students")).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "Units",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          Eligible CPL *
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "Students",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            Students
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {Math.round(row.getValue("Students")).toLocaleString()}
+        </div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {Math.round(row.getValue("Units")).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "AverageUnits",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent"
-        >
-          Avg
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    {
+      accessorKey: "Units",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            Eligible CPL *
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {Math.round(row.getValue("Units")).toLocaleString()}
+        </div>
+      ),
     },
-    cell: ({ row }) => (
-      <div className="text-center">
-        {Number(row.getValue("AverageUnits")).toFixed(1)}
-      </div>
-    ),
-  },
-];
+    {
+      accessorKey: "AverageUnits",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent"
+          >
+            Avg
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center">
+          {Number(row.getValue("AverageUnits")).toFixed(1)}
+        </div>
+      ),
+    },
+  ];
 
-const getSummaryStatsData = React.useMemo(() => {
-  if (!data) return [];
-  return data
-    .filter((item) => item.CollegeID === 0)
-    .map((item) => ({
-      College: item.College,
-      Savings: item.Savings,
-      YearImpact: item.YearImpact,
-      Combined: item.Combined,
-      Students: item.Students,
-      AvgUnits: item.AverageUnits,
-      Units: item.Units,
-    }));
-}, [data]);
+  const getSummaryStatsData = React.useMemo(() => {
+    if (!data) return [];
+    return data
+      .filter((item) => item.CollegeID === 0)
+      .map((item) => ({
+        College: item.College,
+        Savings: item.Savings,
+        YearImpact: item.YearImpact,
+        Combined: item.Combined,
+        Students: item.Students,
+        AvgUnits: item.AverageUnits,
+        Units: item.Units,
+      }));
+  }, [data]);
 
   const getCPLImpactData = React.useMemo(() => {
     if (!data) return [];
@@ -229,7 +224,7 @@ const getSummaryStatsData = React.useMemo(() => {
         Combined: item.Combined,
         Students: item.Students,
         AvgUnits: item.AverageUnits,
-        Units: item.Units
+        Units: item.Units,
       }));
   }, [data]);
 
@@ -248,7 +243,7 @@ const getSummaryStatsData = React.useMemo(() => {
       { wch: 30 },
       { wch: 15 },
       { wch: 15 },
-      { wch: 15 }, 
+      { wch: 15 },
       { wch: 12 },
       { wch: 15 },
       { wch: 8 },
@@ -364,60 +359,70 @@ const getSummaryStatsData = React.useMemo(() => {
             />
           </div>
           <div>
-            <div className="rounded-md border overflow-y-auto max-h-[500px]">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          className="font-bold text-black"
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="cursor-pointer hover:bg-muted/50"
-                        onClick={() =>
-                          handleRowClick(row.getValue("CollegeID"))
-                        }
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
+            <div className="rounded-md border">
+              <div className="overflow-hidden">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-white z-10">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead
+                            key={header.id}
+                            className="font-bold text-black"
+                            style={{ width: header.getSize() }}
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
                         ))}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                    ))}
+                  </TableHeader>
+                </Table>
+              </div>
+              <div className="overflow-y-auto max-h-[500px]">
+                <Table>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() =>
+                            handleRowClick(row.getValue("CollegeID"))
+                          }
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                              key={cell.id}
+                              style={{ width: cell.column.getSize() }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No results.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
