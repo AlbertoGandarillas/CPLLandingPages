@@ -12,5 +12,9 @@ export function useImplementedColleges() {
       }
       return response.json();
     },
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchInterval: 1000
   });
 }
