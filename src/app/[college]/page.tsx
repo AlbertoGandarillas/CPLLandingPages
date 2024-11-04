@@ -17,6 +17,7 @@ import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCours
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import NotFoundPage from "../not-found";
 import { Skeleton } from "@/components/ui/skeleton";
+import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 
 export default function Home({ params }: any) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +76,7 @@ export default function Home({ params }: any) {
     }
   }, [settingsObject]);
 
-  if (settingsLoading) return <LoadingSkeleton />;
+  if (settingsLoading) return <SkeletonWrapper isLoading={settingsLoading} count={2} variant="table" fullWidth />;
   if (settingsError) return <div>Error loading settings</div>;
   if (!settingsObject) {
     return <NotFoundPage/>;
@@ -176,23 +177,5 @@ export default function Home({ params }: any) {
         </footer>
       </div>
     </SelectedCoursesProvider>
-  );
-}
-function LoadingSkeleton() {
-  return (
-    <div className="flex flex-col min-h-screen p-4 space-y-4 bg-gray-100">
-      <Skeleton className="h-12 w-full" />
-      <div className="flex flex-1 space-x-4">
-        <div className="w-1/4 space-y-4">
-          <Skeleton className="h-[200px]" />
-          <Skeleton className="h-[300px]" />
-        </div>
-        <div className="flex-1 space-y-4">
-          <Skeleton className="h-[100px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-      <Skeleton className="h-8 w-full" />
-    </div>
   );
 }

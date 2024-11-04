@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
           error:
             "The result of your search is too large. Please adjust your search criteria to narrow down the results.",
         },
-        { status: 400 }
+        { status: 400, statusText: "The result of your search is too large. Please adjust your search criteria to narrow down the results." }
       );
     }
     if (error instanceof Error) {

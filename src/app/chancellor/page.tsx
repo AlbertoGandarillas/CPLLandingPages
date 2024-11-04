@@ -19,6 +19,7 @@ import { PotentialSavingsTable } from "@/components/features/chancelor/Potential
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -52,16 +53,22 @@ export default function Home() {
         })}`
       ).then((res) => {
         if (!res.ok) {
-        if (res.status === 404) {
-          return [];
-        }
-        throw new Error(`API error: ${res.status} - ${res.statusText}`);
+          if (res.status === 404) {
+            return [];
+          }
+          throw new Error(`${res.status} - ${res.statusText}`);
         }
         return res.json();
       }),
   });
 
   const handleCollegeSelect = (collegeId: string | null) => {
+    if (!collegeId && !selectedCPLType && !selectedIndustryCertification && !selectedLearningMode) {
+      toast({
+        description: "Selecting All Colleges is only allowed if you apply any filter (i.e. Apprentices Learning mode) Please apply any filter.",
+        variant: "warning",
+      });
+    }
     setSelectedCollege(collegeId);
   };
   const handleIndustryCertificationSelect = (
