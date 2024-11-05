@@ -113,31 +113,35 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
 
   const college = payload[0].payload as TransformedCollege;
-  const systemAverage = payload[0].payload.systemAverage;
   const scores = getComponentScores(college);
+  const systemAverage = Math.round(
+    payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / payload.length
+  );
 
   return (
     <div className="bg-white p-4 border rounded shadow-lg">
-      <p className="font-bold text-lg">{label}</p>
+      <p className="font-bold text-sm">{label}</p>
       <p className="text-xl font-semibold text-blue-600 mb-2">
         Impact: {college.impactScore}
         <span className="text-sm text-gray-600 ml-2">
           ({college.impactScore > systemAverage ? "+" : ""}
-          {college.impactScore - systemAverage} vs avg)
+          
+          {(college.impactScore - systemAverage) || 0} vs avg)
         </span>
       </p>
       <hr className="my-2" />
       <p className="font-medium">Component Scores:</p>
-      <div className="space-y-1 mt-2">
+      <div className="space-y-1 mt-2 text-xs">
         <p>Ave. CPL Units (35%): {scores.avgUnits} pts</p>
         <p>Total CPL Units (25%): {scores.students} pts</p>
         <p>Reach in Students (25%): {scores.units} pts</p>
         <p>Economic Impact (15%): {scores.impact} pts</p>
       </div>
       <hr className="my-2" />
-      <p className="font-medium">Penalties Applied: {getPenaltiesText(college)}</p>
+      <p className="font-medium">Penalties Applied: </p>
+      <p className="text-xs">{getPenaltiesText(college)}</p>
       <hr className="my-2" />
-      <div className="space-y-1 text-sm">
+      <div className="space-y-1 text-xs">
         <p>Average Units/Student: {college.avgUnits}</p>
         <p>Total CPL Units: {college.units}</p>
         <p>Students Served: {college.students}</p>
@@ -186,7 +190,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[410px]">
+        <div className="h-[510px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={transformedData}
@@ -241,7 +245,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-xs text-gray-600">
           A college successfully scaling CPL should demonstrate high efficiency
           (6+ units per CPL student) while serving a meaningful student
           population (100+ students). The ideal implementation balances
