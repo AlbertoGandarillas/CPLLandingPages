@@ -111,16 +111,18 @@ export default function ArticulationsTable({
         {error && <p>Error: {error.message}</p>}
         {isEmpty ? (
           <p className="text-center text-xl p-4 sm:p-10 w-full sm:w-1/2 m-auto">
-            If you have prior learning experience that you feel would qualify
-            for CPL, but you don&apos;t see the discipline or course in our
-            list,
             {CPLAssistantEmail ? (
               <>
-                please email{" "}
+                If you have prior learning experience that you feel would
+                qualify for CPL, but you don&apos;t see the discipline or course
+                in our list, please email{" "}
                 <a href={`mailto:${CPLAssistantEmail}`}>{CPLAssistantEmail}</a>
               </>
             ) : (
-              <>please contact us.</>
+              <>
+                There are no existing articulated courses for the selected
+                criteria.
+              </>
             )}
              
           </p>
@@ -151,9 +153,7 @@ export default function ArticulationsTable({
               <ArticulationList
                 articulations={filteredItems}
                 showCollegeName={showCollegeName}
-                PrimaryBackgroundColor={
-                  settingsObject?.CompBackgroundColor
-                }
+                PrimaryBackgroundColor={settingsObject?.CompBackgroundColor}
                 collegeId={CollegeID ? CollegeID.toString() : ""}
                 CPLAssistantEmail={CPLAssistantEmail || ""}
               />
