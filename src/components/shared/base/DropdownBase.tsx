@@ -124,7 +124,7 @@ export function DropdownBase<T>({
   );
 
   if (error) {
-    return <div>Error loading data</div>;
+    return content;
   }
 
   return wrapWithSkeleton ? (

@@ -19,9 +19,13 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-[#1e3964] font-bold text-white p-2">
-      <div className="flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex justify-between items-center gap-6 md:gap-10">
-          <Link href="/chancellor" className="flex items-center space-x-2">
+      <div className="flex h-16 items-center pl-6 space-x-4 sm:justify-between sm:space-x-0">
+        <div className="flex justify-between items-center  gap-6 md:gap-10">
+          <Link
+            href="https://map.rccd.edu/"
+            className="flex items-center space-x-2"
+            target="_blank"
+          >
             <Image
               src="/images/map-logo-white.png"
               alt="MAP"
@@ -39,7 +43,7 @@ export default function Header() {
             height={50}
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="inline-block object-contain md:w-auto w-[306px]" 
+            className="inline-block object-contain md:w-auto w-[306px]"
           />
           <div className="hidden">
             <nav className="hidden md:flex items-center gap-6">
