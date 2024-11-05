@@ -21,7 +21,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-[#1e3964] font-bold text-white p-2">
       <div className="flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex justify-between items-center gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/chancellor" className="flex items-center space-x-2">
             <Image
               src="/images/map-logo-white.png"
               alt="MAP"
