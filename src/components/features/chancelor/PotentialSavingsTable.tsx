@@ -216,7 +216,6 @@ export const PotentialSavingsTable = ({
     if (!data) return [];
     return data
       .filter((item) => item.CollegeID !== 0)
-      .slice(0, 10)
       .map((item) => ({
         College: item.College,
         Savings: item.Savings,
@@ -426,7 +425,7 @@ export const PotentialSavingsTable = ({
             </div>
           </div>
         </div>
-        <div className="w-full xl:w-1/2 2xl:w-1/4">
+        <div className="w-full xl:w-1/2 2xl:w-1/3">
           <CPLImpactScoreChart data={getCPLImpactData} />
         </div>
       </div>

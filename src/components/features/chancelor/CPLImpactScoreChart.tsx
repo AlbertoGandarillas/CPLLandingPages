@@ -117,7 +117,6 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
   const systemAverage = Math.round(
     payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / payload.length
   );
-
   return (
     <div className="bg-white p-4 border rounded shadow-lg">
       <p className="font-bold text-sm">{label}</p>
@@ -126,7 +125,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
         <span className="text-sm text-gray-600 ml-2">
           ({college.impactScore > systemAverage ? "+" : ""}
           
-          {(college.impactScore - systemAverage) || 0} vs avg)
+          {college.impactScore - systemAverage} vs avg)
         </span>
       </p>
       <hr className="my-2" />
@@ -162,8 +161,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         avgUnits: college.AvgUnits,
         impactScore: calculateImpactScore(college),
       }))
-      .sort((a, b) => b.impactScore - a.impactScore)
-      .slice(0, 10), // Only keep top 10
+      .sort((a, b) => b.impactScore - a.impactScore), // Only keep top 10
     [data]
   );
 
@@ -190,60 +188,80 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[510px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={transformedData}
-              layout="vertical"
-              margin={{ top: 20, right: 20, left: 60, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis
-                type="number"
-                domain={[0, axisMax]}
-                label={{ value: "CPL Impact", position: "bottom", offset: 2 }}
-              />
-              <YAxis
-                dataKey="name"
-                type="category"
-                width={140}
-                tick={({ x, y, payload }) => (
-                  <g transform={`translate(${x},${y})`}>
-                    <text x={0} y={0} dy={4} textAnchor="end" fill="#666" fontSize={12}>
-                      {`${payload.value} (${transformedData.find(d => d.name === payload.value)?.impactScore})`}
-                    </text>
-                  </g>
-                )}
-              />
-              <Bar dataKey="impactScore" fill="#0EA5E9" name="CPL Impact">
-                {transformedData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={`rgb(14, 165, 233, ${0.4 + (entry.impactScore / axisMax) * 0.6})`}
-                    onMouseOver={(e) => {
-                      (e.target as SVGElement).style.fill = "#1d3864";
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as SVGElement).style.fill = 
-                        `rgb(14, 165, 233, ${0.4 + (entry.impactScore / axisMax) * 0.6})`;
-                    }}
-                  />
-                ))}
-              </Bar>
-              <ReferenceLine
-                x={systemAverage}
-                stroke="#1d3864"
-                strokeDasharray="3 3"
-                label={{
-                  value: `System Average: ${systemAverage}`,
-                  position: "top",
-                  fill: "#1d3864",
-                  fontSize: 12,
-                }}
-              />
-              <Tooltip content={CustomTooltip} cursor={false} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="h-[410px] overflow-y-auto">
+          <div className="h-[3610px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={transformedData}
+                layout="vertical"
+                margin={{ top: 20, right: 20, left: 60, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  domain={[0, axisMax]}
+                  label={{ value: "CPL Impact", position: "bottom", offset: 2 }}
+                />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={140}
+                  tick={({ x, y, payload }) => (
+                    <g transform={`translate(${x},${y})`}>
+                      <text
+                        x={0}
+                        y={0}
+                        dy={4}
+                        textAnchor="end"
+                        fill="#666"
+                        fontSize={12}
+                      >
+                        {`${payload.value} (${
+                          transformedData.find((d) => d.name === payload.value)
+                            ?.impactScore
+                        })`}
+                      </text>
+                    </g>
+                  )}
+                />
+                <Bar dataKey="impactScore" fill="#0EA5E9" name="CPL Impact">
+                  {transformedData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`rgb(14, 165, 233, ${
+                        0.4 + (entry.impactScore / axisMax) * 0.6
+                      })`}
+                      onMouseOver={(e) => {
+                        (e.target as SVGElement).style.fill = "#1d3864";
+                      }}
+                      onMouseOut={(e) => {
+                        (
+                          e.target as SVGElement
+                        ).style.fill = `rgb(14, 165, 233, ${
+                          0.4 + (entry.impactScore / axisMax) * 0.6
+                        })`;
+                      }}
+                    />
+                  ))}
+                </Bar>
+                <ReferenceLine
+                  x={systemAverage}
+                  stroke="#1d3864"
+                  strokeDasharray="3 3"
+                  label={{
+                    value: `System Average: ${systemAverage}`,
+                    position: "top",
+                    fill: "#1d3864",
+                    fontSize: 12,
+                  }}
+                />
+                <Tooltip 
+                  content={CustomTooltip}
+                  cursor={false}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
         <p className="mt-4 text-xs text-gray-600">
           A college successfully scaling CPL should demonstrate high efficiency
