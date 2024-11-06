@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
 import SearchBar from "@/components/shared/SearchBar";
@@ -19,11 +19,10 @@ import { PotentialSavingsTable } from "@/components/features/chancelor/Potential
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
-import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCollege, setSelectedCollege] = useState<string | null>("1");
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
@@ -31,44 +30,17 @@ export default function Home() {
   const [selectedLearningMode, setSelectedLearningMode] = useState<
     string | null
   >(null);
-  const {
-    data: articulations,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: [
-      "articulations",
-      selectedCollege,
-      selectedIndustryCertification,
-      selectedCPLType,
-      selectedLearningMode,
-    ],
-    queryFn: () =>
-      fetch(
-        `/api/cpl-courses?${createQueryString({
-          college: selectedCollege ?? undefined,
-          industryCertification: selectedIndustryCertification,
-          cplType: selectedCPLType ?? undefined,
-          learningMode: selectedLearningMode,
-        })}`
-      ).then((res) => {
-        if (!res.ok) {
-          if (res.status === 404) {
-            return [];
-          }
-          throw new Error(`${res.status} - ${res.statusText}`);
-        }
-        return res.json();
-      }),
-  });
+
+  const fetchUrl = `/api/cpl-courses?${createQueryString({
+    college: selectedCollege ?? undefined,
+    industryCertification: selectedIndustryCertification,
+    cplType: selectedCPLType ?? undefined,
+    learningMode: selectedLearningMode,
+    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+  })}`;
+
 
   const handleCollegeSelect = (collegeId: string | null) => {
-    if (!collegeId && !selectedCPLType && !selectedIndustryCertification && !selectedLearningMode) {
-      toast({
-        description: "Selecting All Colleges is only allowed if you apply any filter (i.e. Apprentices Learning mode) Please apply any filter.",
-        variant: "warning",
-      });
-    }
     setSelectedCollege(collegeId);
   };
   const handleIndustryCertificationSelect = (
@@ -82,6 +54,11 @@ export default function Home() {
   const handleLerningModeSelect = (learningMode: string | null) => {
     setSelectedLearningMode(learningMode);
   };
+  const handleSearch = useCallback((term: string) => {
+    if (term.length >= 3 || term.length === 0) {
+      setSearchTerm(term);
+    }
+  }, []);
   return (
     <SelectedCoursesProvider>
       <div className="mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
@@ -209,7 +186,7 @@ export default function Home() {
               <div className="w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <SearchBar
-                    onSearch={setSearchTerm}
+                    onSearch={handleSearch}
                     inputClassName="bg-blue-100"
                   />
                   <DropdownColleges
@@ -236,15 +213,16 @@ export default function Home() {
             <div className="space-y-4">
               <div className="w-full overflow-x-auto">
                 <ArticulationsTable
-                  articulations={articulations || []}
-                  loading={isLoading}
-                  error={error}
+                  articulations={ []}
+                  loading={false}
+                  error={null}
                   searchTerm={searchTerm}
                   showCollegeName={true}
                   CollegeID={
                     selectedCollege ? parseInt(selectedCollege, 10) : 1
                   }
                   settingsObject={null}
+                  fetchUrl={fetchUrl}
                 />
               </div>
             </div>

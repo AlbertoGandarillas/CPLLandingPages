@@ -3,6 +3,7 @@ export interface QueryParams {
   industryCertification?: string | null;
   cplType?: string | null;
   learningMode?: string | null;
+  searchTerm?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryString } from "@/lib/createQueryString";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
@@ -16,11 +16,10 @@ import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndu
 import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCoursesList";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import NotFoundPage from "../not-found";
-import { Skeleton } from "@/components/ui/skeleton";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 
 export default function Home({ params }: any) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [open, setOpen] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<string | undefined>(
     undefined
@@ -46,29 +45,21 @@ export default function Home({ params }: any) {
         return res.json();
       }),
   });
-  const {
-    data: articulations,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["articulations", selectedCollege, selectedIndustryCertification],
-    queryFn: () =>
-      fetch(
-        `/api/cpl-courses?${createQueryString({
-          college: selectedCollege,
-          industryCertification: selectedIndustryCertification,
-        })}`
-      ).then((res) => {
-      if (!res.ok) {
-        if (res.status === 404) {
-          return [];
-        }
-        throw new Error(`API error: ${res.status}`);
-      }
-        return res.json();
-      }),
-  });
+
+    const fetchUrl = `/api/cpl-courses?${createQueryString({
+      college: selectedCollege,
+      industryCertification: selectedIndustryCertification,
+      searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+    })}`;
+
   const settingsObject = settings && settings.length > 0 ? settings[0] : null;
+
+     const handleSearch = useCallback((term: string) => {
+       if (term.length >= 3 || term.length === 0) {
+         setSearchTerm(term);
+       }
+     }, []);
+   
 
   useEffect(() => {
     if (settingsObject && settingsObject.College?.College) {
@@ -100,7 +91,6 @@ export default function Home({ params }: any) {
             className=""
           >
             <SelectedCoursesList
-              articulations={articulations || []}
               CollegeID={selectedCollege || ""}
             />
           </Sidebar>
@@ -140,7 +130,7 @@ export default function Home({ params }: any) {
                     </div>
                     <SearchBar
                       className="w-full lg:w-96"
-                      onSearch={setSearchTerm}
+                      onSearch={handleSearch}
                     />
                     <DropdownIndustryCertifications
                       onIndustryCertificationSelect={
@@ -152,13 +142,14 @@ export default function Home({ params }: any) {
                 </CardHeader>
                 <CardContent>
                   <ArticulationsTable
-                    articulations={articulations || []}
-                    loading={isLoading}
-                    error={error}
+                    articulations={ []}
+                    loading={false}
+                    error={null}
                     searchTerm={searchTerm}
                     CPLAssistantEmail={settingsObject.Email}
                     CollegeID={settingsObject.CollegeID}
                     settingsObject={settingsObject}
+                    fetchUrl={fetchUrl}
                   ></ArticulationsTable>
                 </CardContent>
               </Card>

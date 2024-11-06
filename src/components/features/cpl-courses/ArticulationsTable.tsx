@@ -11,6 +11,10 @@ import { Button } from "@/components/ui/button";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { ContactForm } from "@/components/shared/ContactForm";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { PaginatedResponse } from "@/types/PaginatedResponse";
+import LoadMore from "@/components/shared/LoadMore";
+import LoadMoreButton from "@/components/shared/LoadMore";
 
 interface ArticulationsTableProps {
   articulations: ExtendedViewCPLCourses[];
@@ -26,45 +30,79 @@ interface ArticulationsTableProps {
     CompFontColor: string;
     PanelBackgroundColor: string;
     PanelFontColor: string;
-  } | null
+  } | null;
+  fetchUrl?: string;
 }
+
 export default function ArticulationsTable({
-  articulations,
-  loading,
-  error,
-  searchTerm,
+  articulations: initialArticulations,
+  loading: initialLoading,
+  error: initialError,
   CPLAssistantEmail,
   showCollegeName,
   children,
   CollegeID,
   settingsObject,
+  fetchUrl,
 }: ArticulationsTableProps) {
-  const [selectedArticulation, setSelectedArticulation] =
+  const [selectedArticulation, setSelectedArticulation] = 
     useState<ExtendedViewCPLCourses | null>(null);
   const [viewMode, setViewMode] = React.useState("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
-  const filteredItems =
-    searchTerm.length >= 3
-      ? articulations.filter((articulation) => {
-          const searchContent = `
-      ${articulation.Units} 
-      ${articulation.Course} 
-      ${articulation.College}
-      ${articulation.IndustryCertifications?.map(
-        (ic) => `
-              ${ic.IndustryCertification}
-              ${ic.CPLTypeDescription}
-              ${ic.CPLModeofLearningDescription}
-              ${ic.Evidences?.map((e) => e.EvidenCompetency).join(" ")}
-              ${ic.CreditRecommendations?.map((cr) => cr.Criteria).join(" ")}
-            `
-      ).join(" ")}
-    `.toLowerCase();
-          return searchContent.includes(searchTerm.toLowerCase());
-        })
-      : articulations;
-  const isEmpty = filteredItems.length === 0 && !loading && !error;
+
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingMore,
+    error: infiniteError,
+  } = useInfiniteQuery({
+    queryKey: ["infiniteArticulations", fetchUrl],
+    enabled: !!fetchUrl,
+    initialPageParam: 1,
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await fetch(`${fetchUrl}&page=${pageParam}&limit=20`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          return {
+            data: [] as ExtendedViewCPLCourses[],
+            metadata: {
+              hasMore: false,
+              currentPage: pageParam as number,
+              totalCount: 0,
+              pageSize: 20,
+              totalPages: 0,
+            },
+          } as PaginatedResponse;
+        }
+        throw new Error("Network response was not ok");
+      }
+      const data = await res.json();
+      return {
+        data: data as ExtendedViewCPLCourses[],
+        metadata: {
+          hasMore: data.length === 20,
+          currentPage: pageParam as number,
+          totalCount: data.length,
+          pageSize: 20,
+          totalPages: Math.ceil(data.length / 20),
+        },
+      } as PaginatedResponse;
+    },
+    getNextPageParam: (lastPage: PaginatedResponse) => {
+      if (!lastPage.metadata.hasMore) return undefined;
+      return lastPage.metadata.currentPage + 1;
+    },
+  });
+
+  const allArticulations = infiniteData?.pages.flatMap((page) => page.data) ?? initialArticulations;
+
+  const isLoading = initialLoading || isLoadingMore;
+  const error = infiniteError || initialError;
+  const isEmpty = allArticulations.length === 0 && !isLoading && !error;
+
   const hasMilitaryCPLType = (articulation: ExtendedViewCPLCourses) => {
     return articulation.IndustryCertifications?.some(
       (cert) => cert.CPLTypeDescription === "Military"
@@ -72,7 +110,10 @@ export default function ArticulationsTable({
   };
 
   const { getSelectedCoursesForCollege } = useSelectedCourses();
-  const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID.toString());
+  const collegeSelectedCourses = getSelectedCoursesForCollege(
+    CollegeID.toString()
+  );
+
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
@@ -83,7 +124,7 @@ export default function ArticulationsTable({
         <ArticulationHeader
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onExport={() => exportToExcel(filteredItems, "EligibleCourses")}
+          onExport={() => exportToExcel(allArticulations, "EligibleCourses")}
         >
           {CollegeID && CPLAssistantEmail && (
             <Button
@@ -124,39 +165,66 @@ export default function ArticulationsTable({
                 criteria.
               </>
             )}
-             
           </p>
         ) : (
-          <SkeletonWrapper isLoading={loading} fullWidth={true} variant="table">
+          <SkeletonWrapper
+            isLoading={isLoading}
+            fullWidth={true}
+            variant="table"
+          >
             {viewMode === "grid" ? (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 overflow-y-auto max-h-svh">
-                {!loading &&
-                  !error &&
-                  filteredItems.map((articulation) => (
-                    <ArticulationCard
-                      key={articulation.OutlineID}
-                      articulation={articulation}
-                      showCollegeName={showCollegeName}
-                      showFavoriteStar={CollegeID ? true : false}
-                      CardBackgroundColor={settingsObject?.PanelBackgroundColor}
-                      CardFontColor={settingsObject?.PanelFontColor}
-                      PrimaryBackgroundColor={
-                        settingsObject?.CompBackgroundColor
-                      }
-                      PrimaryFontColor={settingsObject?.CompFontColor}
-                      collegeId={CollegeID ? CollegeID.toString() : ""}
-                      CPLAssistantEmail={CPLAssistantEmail}
-                    />
-                  ))}
-              </div>
+              <>
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 overflow-y-auto max-h-svh">
+                  {!isLoading &&
+                    !error &&
+                    allArticulations.map(
+                      (articulation: ExtendedViewCPLCourses) => (
+                        <>
+                          <ArticulationCard
+                            key={articulation.OutlineID}
+                            articulation={articulation}
+                            showCollegeName={showCollegeName}
+                            showFavoriteStar={CollegeID ? true : false}
+                            CardBackgroundColor={
+                              settingsObject?.PanelBackgroundColor
+                            }
+                            CardFontColor={settingsObject?.PanelFontColor}
+                            PrimaryBackgroundColor={
+                              settingsObject?.CompBackgroundColor
+                            }
+                            PrimaryFontColor={settingsObject?.CompFontColor}
+                            collegeId={CollegeID ? CollegeID.toString() : ""}
+                            CPLAssistantEmail={CPLAssistantEmail}
+                          />
+                        </>
+                      )
+                    )}
+                </div>
+                {hasNextPage && (
+                  <LoadMoreButton
+                    onClick={() => fetchNextPage()}
+                    isLoading={isFetchingNextPage}
+                    className="mt-6"
+                  />
+                )}
+              </>
             ) : (
-              <ArticulationList
-                articulations={filteredItems}
-                showCollegeName={showCollegeName}
-                PrimaryBackgroundColor={settingsObject?.CompBackgroundColor}
-                collegeId={CollegeID ? CollegeID.toString() : ""}
-                CPLAssistantEmail={CPLAssistantEmail || ""}
-              />
+              <>
+                <ArticulationList
+                  articulations={allArticulations}
+                  showCollegeName={showCollegeName}
+                  PrimaryBackgroundColor={settingsObject?.CompBackgroundColor}
+                  collegeId={CollegeID ? CollegeID.toString() : ""}
+                  CPLAssistantEmail={CPLAssistantEmail || ""}
+                />
+                {hasNextPage && (
+                  <LoadMoreButton
+                    onClick={() => fetchNextPage()}
+                    isLoading={isFetchingNextPage}
+                    className="mt-6"
+                  />
+                )}
+              </>
             )}
           </SkeletonWrapper>
         )}
@@ -165,7 +233,7 @@ export default function ArticulationsTable({
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           selectedCourses={collegeSelectedCourses}
-          courses={articulations}
+          courses={allArticulations}
           CPLAssistantEmail={CPLAssistantEmail || ""}
           CollegeID={CollegeID ? CollegeID.toString() : undefined}
         />
@@ -178,6 +246,7 @@ export default function ArticulationsTable({
     </>
   );
 }
+
 const exportToExcel = (
   articulations: ExtendedViewCPLCourses[],
   fileName: string
