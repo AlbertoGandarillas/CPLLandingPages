@@ -183,7 +183,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         <CardTitle className="flex justify-between items-center">
           <span>CPL Impact</span>
           <span className="text-sm font-normal">
-            Colleges by implementation success score
+            Colleges by Implementation Success Score
           </span>
         </CardTitle>
       </CardHeader>

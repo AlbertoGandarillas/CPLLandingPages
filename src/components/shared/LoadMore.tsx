@@ -18,7 +18,9 @@ export default function LoadMoreButton({
         onClick={onClick}
         disabled={isLoading}
         variant="outline"
-        className="min-w-[120px]"
+        className={`min-w-[120px] ${
+          !isLoading ? "bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-gradient-slow" : ""
+        }`}
       >
         {isLoading ? (
           <div className="flex items-center">
