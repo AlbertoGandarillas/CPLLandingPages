@@ -44,7 +44,9 @@ interface CPLChartProps {
 }
 
 const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
-  const [tooltipData, setTooltipData] = useState<TransformedCollege | null>(null);
+  const [tooltipData, setTooltipData] = useState<TransformedCollege | null>(
+    null
+  );
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -165,7 +167,8 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
 
   // Calculate system average using all colleges
   const systemAverage = Math.round(
-    transformedData.reduce((acc, col) => acc + col.impactScore, 0) / transformedData.length
+    transformedData.reduce((acc, col) => acc + col.impactScore, 0) /
+      transformedData.length
   );
 
   // Create a new array with only top 10 colleges for display
