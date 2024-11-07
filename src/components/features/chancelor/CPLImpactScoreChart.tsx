@@ -118,7 +118,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label, totalColleges })
     payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / totalColleges
   );
   return (
-    <div className="bg-white p-4 border rounded shadow-lg">
+    <div className="bg-white p-4 border rounded shadow-lg fixed top-1/2 right-2 transform -translate-x-4" style={{zIndex: 9999}}>
       <p className="font-bold text-sm">{label}</p>
       <p className="text-xl font-semibold text-blue-600 mb-2">
         Impact: {college.impactScore}
@@ -188,7 +188,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[410px] overflow-y-auto">
+        <div className="h-[410px] overflow-y-auto -z-50">
           <div className="h-[3610px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
