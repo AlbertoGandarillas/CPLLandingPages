@@ -24,6 +24,7 @@ import {
 } from "@tanstack/react-table";
 import CPLImpactScoreChart from "./CPLImpactScoreChart";
 import { SummaryStats } from "./SummaryStats";
+import CPLChart from "./CPLChart";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string) => void;
 }
@@ -427,7 +428,7 @@ export const PotentialSavingsTable = ({
           </div>
         </div>
         <div className="w-full xl:w-1/2 2xl:w-1/3">
-          <CPLImpactScoreChart data={getCPLImpactData} />
+          <CPLChart data={getCPLImpactData} />
         </div>
       </div>
     </>
