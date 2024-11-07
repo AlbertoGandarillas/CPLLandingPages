@@ -109,13 +109,13 @@ const getPenaltiesText = (college: TransformedCollege): string => {
   return penalties.length > 0 ? penalties.join(" & ") : "None";
 };
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<any> = ({ active, payload, label, totalColleges }) => {
   if (!active || !payload?.length) return null;
 
   const college = payload[0].payload as TransformedCollege;
   const scores = getComponentScores(college);
   const systemAverage = Math.round(
-    payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / payload.length
+    payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / totalColleges
   );
   return (
     <div className="bg-white p-4 border rounded shadow-lg">
@@ -183,7 +183,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
         <CardTitle className="flex justify-between items-center">
           <span>CPL Impact</span>
           <span className="text-sm font-normal">
-            Top 10 Colleges by CPL Implementation Success
+            Colleges by implementation success score
           </span>
         </CardTitle>
       </CardHeader>
@@ -255,10 +255,7 @@ const CPLImpactDashboard: React.FC<CPLImpactDashboardProps> = ({ data }) => {
                     fontSize: 12,
                   }}
                 />
-                <Tooltip 
-                  content={CustomTooltip}
-                  cursor={false}
-                />
+                <Tooltip content={<CustomTooltip totalColleges={transformedData.length} />} cursor={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>

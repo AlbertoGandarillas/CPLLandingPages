@@ -8,7 +8,7 @@ interface StatCardProps {
 export default function StatCard({ title, value, icon }: StatCardProps) {
   return (
     <Card className="w-full">
-      <CardContent className="flex items-center justify-between p-6">
+      <CardContent className="flex items-center justify-between p-4">
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <h3 className="text-xl font-bold xl:text-xs 2xl:text-xl">{value}</h3>

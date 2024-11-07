@@ -304,53 +304,54 @@ export const PotentialSavingsTable = ({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-center gap-4 sm:justify-between pb-4">
-        <ToggleGroup
-          type="single"
-          value={selectedType}
-          onValueChange={handleTypeChange}
-          className="bg-gray-100 p-1"
-        >
-          <ToggleGroupItem
-            value="0"
-            aria-label="All"
-            className="data-[state=on]:bg-white"
-          >
-            All
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="1"
-            aria-label="Military"
-            className="data-[state=on]:bg-white"
-          >
-            Military
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="2"
-            aria-label="Working Adult"
-            className="data-[state=on]:bg-white"
-          >
-            Working Adult
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <Input
-          placeholder="Filter Colleges..."
-          value={filterValue}
-          onChange={(event) => setFilterValue(event.target.value)}
-          className="w-full max-w-sm bg-blue-100"
-        />
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={() => exportToExcel(filteredData, "PotentialSavings")}
-          className="w-full sm:w-auto"
-        >
-          <FileSpreadsheet className="h-4 w-4 mr-2" />
-          Export to Excel
-        </Button>
-      </div>
+      <div className="flex flex-col sm:flex-row items-center sm:justify-between "></div>
       <div className="flex flex-col xl:flex-row gap-4">
         <div className="w-full xl:w-1/2 2xl:w-3/4 ">
+          <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 mb-4">
+            <ToggleGroup
+              type="single"
+              value={selectedType}
+              onValueChange={handleTypeChange}
+              className="bg-gray-100 p-1 rounded-lg"
+            >
+              <ToggleGroupItem
+                value="0"
+                aria-label="All"
+                className="data-[state=on]:bg-white"
+              >
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="1"
+                aria-label="Military"
+                className="data-[state=on]:bg-white"
+              >
+                Military
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="2"
+                aria-label="Working Adult"
+                className="data-[state=on]:bg-white"
+              >
+                Working Adult
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <Input
+              placeholder="Filter Colleges..."
+              value={filterValue}
+              onChange={(event) => setFilterValue(event.target.value)}
+              className="w-full max-w-sm bg-blue-100"
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => exportToExcel(filteredData, "PotentialSavings")}
+              className="w-full sm:w-auto"
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export to Excel
+            </Button>
+          </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             <SummaryStats
               data={getSummaryStatsData}
@@ -383,7 +384,7 @@ export const PotentialSavingsTable = ({
                   </TableHeader>
                 </Table>
               </div>
-              <div className="overflow-y-auto max-h-[500px]">
+              <div className="overflow-y-auto max-h-[405px]">
                 <Table>
                   <TableBody>
                     {table.getRowModel().rows?.length ? (
