@@ -118,7 +118,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label, totalColleges })
     payload.reduce((acc: number, p: any) => acc + (p.payload as TransformedCollege).impactScore, 0) / totalColleges
   );
   return (
-    <div className="bg-white p-4 border rounded shadow-lg fixed top-1/2 right-2 transform -translate-x-4" style={{zIndex: 9999}}>
+    <div className="bg-white p-4 border rounded shadow-lg fixed top-1/3 right-2 transform -translate-x-4" style={{zIndex: 9999}}>
       <p className="font-bold text-sm">{label}</p>
       <p className="text-xl font-semibold text-blue-600 mb-2">
         Impact: {college.impactScore}
