@@ -4,6 +4,7 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   try {
     const cplTypes = await db.cPLType.findMany({
+        where: { Active: true },
         orderBy: { CPLTypeDescription: "asc" },
     });
     if (cplTypes.length === 0) {
