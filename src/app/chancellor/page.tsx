@@ -19,6 +19,7 @@ import { PotentialSavingsTable } from "@/components/features/chancelor/Potential
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
+import { DropdownMOS } from "@/components/shared/DropdownMOS";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -53,6 +54,9 @@ export default function Home() {
   };
   const handleLerningModeSelect = (learningMode: string | null) => {
     setSelectedLearningMode(learningMode);
+  };
+  const handleMOSSelect = (industryCertification: string | null) => {
+    setSelectedIndustryCertification(industryCertification);
   };
   const handleSearch = useCallback((term: string) => {
     if (term.length >= 3 || term.length === 0) {
@@ -205,6 +209,7 @@ export default function Home() {
                   <DropdownLearningModes
                     onLearningModeSelect={handleLerningModeSelect}
                   />
+                  <DropdownMOS onMOSSelect={handleMOSSelect} />
                 </div>
               </div>
             </CardTitle>

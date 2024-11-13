@@ -578,3 +578,10 @@ model ViewCPLArticulations {
   Course                      String? 
   @@id([ExhibitID])
 }
+
+model ViewCPLMos {
+  MOS                   String  @db.VarChar(1000)
+  Occupation            String? @db.VarChar(500)
+  IndustryCertification String? @db.VarChar(500)
+  @@id([MOS])
+}
