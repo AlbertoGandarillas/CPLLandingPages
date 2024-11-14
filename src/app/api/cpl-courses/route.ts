@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const where: Prisma.ViewCPLCoursesWhereInput = {};
 
-    if (college) {
+    if (college && college !== "0") {
       where.CollegeID = parseInt(college);
     }
 
