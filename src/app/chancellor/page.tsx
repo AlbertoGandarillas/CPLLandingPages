@@ -19,11 +19,12 @@ import { PotentialSavingsTable } from "@/components/features/chancelor/Potential
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
+import { DropdownMOS } from "@/components/shared/DropdownMOS";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedCollege, setSelectedCollege] = useState<string | null>("1");
+  const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
   const [selectedCPLType, setSelectedCPLType] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export default function Home() {
 
 
   const handleCollegeSelect = (collegeId: string | null) => {
-    setSelectedCollege(collegeId);
+    setSelectedCollege(collegeId === "0" ? null : collegeId);
   };
   const handleIndustryCertificationSelect = (
     industryCertification: string | null
@@ -53,6 +54,9 @@ export default function Home() {
   };
   const handleLerningModeSelect = (learningMode: string | null) => {
     setSelectedLearningMode(learningMode);
+  };
+  const handleMOSSelect = (industryCertification: string | null) => {
+    setSelectedIndustryCertification(industryCertification);
   };
   const handleSearch = useCallback((term: string) => {
     if (term.length >= 3 || term.length === 0) {
@@ -193,18 +197,17 @@ export default function Home() {
                     onCollegeSelect={handleCollegeSelect}
                     selectedCollege={selectedCollege}
                   />
-                  {selectedCollege && (
+                  {selectedCollege && selectedCollege !== "0" ? (
                     <DropdownIndustryCertifications
-                      onIndustryCertificationSelect={
-                        handleIndustryCertificationSelect
-                      }
+                      onIndustryCertificationSelect={handleIndustryCertificationSelect}
                       collegeId={selectedCollege}
                     />
-                  )}
+                  ) : null}
                   <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
                   <DropdownLearningModes
                     onLearningModeSelect={handleLerningModeSelect}
                   />
+                  <DropdownMOS onMOSSelect={handleMOSSelect} />
                 </div>
               </div>
             </CardTitle>

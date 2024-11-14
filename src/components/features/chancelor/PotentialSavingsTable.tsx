@@ -26,7 +26,7 @@ import CPLImpactScoreChart from "./CPLImpactScoreChart";
 import { SummaryStats } from "./SummaryStats";
 import CPLChart from "./CPLChart";
 interface PotentialSavingsTableProps {
-  setSelectedCollege?: (CollegeID: string) => void;
+  setSelectedCollege?: (CollegeID: string | null) => void;
 }
 
 export const PotentialSavingsTable = ({
@@ -288,7 +288,7 @@ export const PotentialSavingsTable = ({
 
   const handleRowClick = (CollegeID: string) => {
     if (CollegeID !== "0" && setSelectedCollege) {
-      setSelectedCollege(CollegeID);
+      setSelectedCollege(CollegeID === "0" ? null : CollegeID);
     }
   };
 
