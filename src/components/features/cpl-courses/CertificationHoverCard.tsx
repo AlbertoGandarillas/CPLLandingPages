@@ -41,7 +41,7 @@ export default function CertificationHoverCard ({
           {crs && crs.length > 0 && (
             <div>
               <p className="font-bold text-sm my-2">Credit Recommendations:</p>
-              <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[350px]">
+              <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[150px]">
                 {crs.map((cr, crIndex) => (
                   <li key={crIndex} className="text-sm">
                     <span>{cr.Criteria}</span>

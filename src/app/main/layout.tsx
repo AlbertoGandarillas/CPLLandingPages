@@ -13,22 +13,22 @@ export default function MainLayout({
   children: ReactNode;
 }>) {
     const options = [
-      {
-        name: "CPL For You",
-        href: "/cpl-for-you",
-      },
+      //{
+      //  name: "CPL For You",
+      //  href: "/cpl-for-you",
+      //},
       {
         name: "Find a MAP College",
         href: "/find-a-map-college",
       },
-      {
-        name: "Contact a CPL Assistant",
-        href: "#",
-      },
-      {
-        name: "Portfolio Builder",
-        href: "/portfolio-builder",
-      },
+      // {
+      //   name: "Contact a CPL Assistant", 
+      //   href: "#",
+      // },
+      // {
+      //   name: "Portfolio Builder",
+      //   href: "/portfolio-builder", 
+      // },
     ];
     const additionalOptions = [
       {
@@ -41,7 +41,7 @@ export default function MainLayout({
       },
     ];
   return (
-    <div className="flex h-screen">
+    <div className=" flex h-screen">
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <div className="hidden border-none bg-muted/20 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
@@ -59,7 +59,8 @@ export default function MainLayout({
               </Link>
             </div>
             <div className="flex-1">
-              <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              <nav className="grid items-start mt-2 px-2 text-sm font-medium lg:px-4">
+                <div className="mb-2">
                 {options.map((option, index) => (
                   <Link
                     key={index}
@@ -69,17 +70,17 @@ export default function MainLayout({
                     {option.name}
                   </Link>
                 ))}
-                <RequestReview type="mobile" />
-                <h3 className="px-3 py-4 text-xl">Additional Resources</h3>
                 {additionalOptions.map((option, index) => (
                   <Link
-                    key={index}
-                    href={option.href}
-                    className={`flex justify-center items-center w-full gap-3 rounded-lg px-3 py-3 my-2 text-muted-foreground transition-all hover:text-primary bg-muted`}
+                  key={index}
+                  href={option.href}
+                  className={`flex justify-center items-center w-full gap-3 rounded-lg px-3 py-3 my-2 text-muted-foreground transition-all hover:text-primary bg-muted`}
                   >
                     {option.name}
                   </Link>
                 ))}
+                </div>
+                <RequestReview type="mobile" />
               </nav>
             </div>
             <div className="mt-auto p-4"></div>
@@ -119,7 +120,6 @@ export default function MainLayout({
                       {option.name}
                     </Link>
                   ))}
-                  <h2 className="px-3 py2">Additional Resources</h2>
                   {additionalOptions.map((option, index) => (
                     <Link
                       key={index}
@@ -137,20 +137,9 @@ export default function MainLayout({
                 </div>
               </SheetContent>
             </Sheet>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full ml-auto text-white"
-            >
-              <Bell className="h-4 w-4" />
-              <span className="sr-only">Toggle notifications</span>
-            </Button>
-            <UserInfo />
           </header>
           <main className="w-full flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-              <div className="flex flex-col gap-1">
-                {children}
-              </div>
+            <div className="flex flex-col gap-1">{children}</div>
           </main>
         </div>
       </div>

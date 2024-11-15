@@ -2,25 +2,15 @@
 import * as React from "react";
 import {
   Search,
-  MapPin,
-  Upload,
   FileText,
-  User,
-  Menu,
   ChevronDown,
-  Filter,
   ArrowUpDown,
+  Award,
+  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -34,101 +24,68 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function Homepage() {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <>
-      {/* Hero section with search bar */}
-      <section className="text-center space-y-6">
-        <h2 className="text-3xl font-bold tracking-tight lg:text-4xl">
-          Discover Your Path to Academic Credit
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Unlock the value of your experiences with Credit for Prior Learning.
-          Start your journey today.
-        </p>
-      </section>
-
       {/* Info cards */}
-      <section className="grid mt-4 md:grid-cols-2 gap-6">
+      <section className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
+              <Award className="mr-2 h-5 w-5" />
               What is CPL?
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p>
+          <CardContent className="text-sm">
               Credit for Prior Learning (CPL) allows students and professionals
               to earn academic credit for knowledge and skills they&apos;ve
               gained outside the classroom, whether through work, military
               service, or other experiences. This tool guides you in identifying
               eligible prior learning and helps you streamline the process of
               turning that experience into recognized credit.
-            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Upload className="mr-2 h-5 w-5" />
+              <CheckCircle className="mr-2 h-5 w-5" />
               Why is a CPL portfolio important?
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p>
+          <CardContent className="text-sm">
               A CPL portfolio is crucial because it organizes and presents your
               prior learning, skills, and experiences in a structured way that
               colleges can assess for credit. By compiling items like your JST,
               certificates, scores, and resume, the portfolio shows how your
               background meets academic standards, making it easier to receive
               credit when you enroll.
-            </p>
           </CardContent>
         </Card>
       </section>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div className="relative my-4">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search by Program, City, Zip Code, MOS, or Industry"
-            className="pl-10 pr-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <section className="flex items-center justify-center text-center">
-          <Button size="lg" className="text-lg px-8 py-6">
-            <FileText className="mr-2 h-5 w-5" />
-            Start Your CPL Portfolio
-          </Button>
-        </section>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-6 mt-4">
         <section>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <MapPin className="mr-2 h-5 w-5" />
-                Mapping Articulated Pathways
+                <FileText className="mr-2 h-5 w-5" />
+                Most Common Industry Certifications and Military Occupations
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-4">
-                Mapping articulated pathways ensures that common industry
-                certifications and military occupations are accurately
-                recognized, allowing students to earn academic credit
-                efficiently and apply it directly toward their degree programs.
-              </p>
+              <div className="relative my-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search certifications by name"
+                  className="pl-10 pr-4"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
               <Tabs defaultValue="certifications" className="w-full">
                 <TabsList>
                   <TabsTrigger value="certifications">
