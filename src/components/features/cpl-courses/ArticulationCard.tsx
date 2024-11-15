@@ -238,6 +238,7 @@ export default function ArticulationCard({
                             }
                             evidences={cert.Evidences || []}
                             crs={cert.CreditRecommendations || []}
+                            articulationCreditRecommendations={cert.ArticulationCreditRecommendations || null}
                           />
                         </TableCell>
                         <TableCell className="align-top">
