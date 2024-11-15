@@ -5,6 +5,7 @@ interface CertificationHoverCardProps {
   industryCertification: string | null | undefined;
   cplType?: string | null;
   learningMode?: string | null;
+  articulationCreditRecommendations?: string | null;
   evidences: ViewCPLEvidenceCompetency[];
   crs: ViewCPLCreditRecommendations[];
 }
@@ -12,6 +13,7 @@ export default function CertificationHoverCard ({
   industryCertification,
   cplType,
   learningMode,
+  articulationCreditRecommendations,
   evidences,
   crs,
 }:CertificationHoverCardProps) {
@@ -42,11 +44,26 @@ export default function CertificationHoverCard ({
             <div>
               <p className="font-bold text-sm my-2">Credit Recommendations:</p>
               <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[150px]">
-                {crs.map((cr, crIndex) => (
-                  <li key={crIndex} className="text-sm">
-                    <span>{cr.Criteria}</span>
-                  </li>
-                ))}
+                {crs
+                  .sort((a, b) => {
+                    const aMatched = articulationCreditRecommendations?.split('|').some(
+                      recommendation => recommendation.trim() === a.Criteria.trim()
+                    );
+                    const bMatched = articulationCreditRecommendations?.split('|').some(
+                      recommendation => recommendation.trim() === b.Criteria.trim()
+                    );
+                    return bMatched ? 1 : aMatched ? -1 : 0;
+                  })
+                  .map((cr, crIndex) => {
+                    const isMatched = articulationCreditRecommendations?.split('|').some(
+                      recommendation => recommendation.trim() === cr.Criteria.trim()
+                    );
+                    return (
+                      <li key={crIndex} className={`text-sm ${isMatched ? 'bg-blue-100 py-2' : ''}`}>
+                        <span>{cr.Criteria}</span>
+                      </li>
+                    );
+                  })}
               </ul>
             </div>
           )}

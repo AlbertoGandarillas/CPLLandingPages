@@ -449,6 +449,7 @@ model ViewCPLIndustryCertifications {
     ModelOfLearning               Int?
     CPLTypeDescription            String?
     CPLModeofLearningDescription  String?
+    ArticulationCreditRecommendations String?
     Evidences                     ViewCPLEvidenceCompetency[]
     CreditRecommendations         ViewCPLCreditRecommendations[]
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
