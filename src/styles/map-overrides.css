@@ -1,0 +1,9 @@
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+  display: none !important;
+}
+
+.leaflet-container {
+  background: white !important;
+} 

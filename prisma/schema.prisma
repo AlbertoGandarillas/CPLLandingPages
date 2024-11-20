@@ -424,6 +424,7 @@ model CollegeUIConfig {
   Slug                       String?  @db.VarChar(Max)
   WebsiteText                String?  @db.VarChar(Max)
   HideLogo                   Boolean? @default(false)
+  CollegeAward               Boolean? @default(false)
   College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
   Links                      CollegeUILinks[]
   Contacts                   ViewCPLContacts[]
@@ -585,4 +586,21 @@ model ViewCPLMos {
   Occupation            String? @db.VarChar(500)
   IndustryCertification String? @db.VarChar(500)
   @@id([MOS])
+}
+
+model ViewCPLCertifications {
+    IndustryCertification   String
+    CPLType                 String
+    TotalUnits              Float
+    CollegeViews            ViewCPLCertificationsByCollege[]
+    @@unique([IndustryCertification])
+}
+
+model ViewCPLCertificationsByCollege {
+    College                 String
+    IndustryCertification   String
+    Slug                    String?
+    TotalUnits              Float?
+    Certification           ViewCPLCertifications? @relation(fields: [IndustryCertification], references: [IndustryCertification])
+    @@unique([College, IndustryCertification])
 }

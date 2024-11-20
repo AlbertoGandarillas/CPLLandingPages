@@ -26,6 +26,7 @@ export default function SearchBar({
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const newTerm = e.target.value;
     setSearchTerm(newTerm);
     debouncedOnSearch(newTerm);
