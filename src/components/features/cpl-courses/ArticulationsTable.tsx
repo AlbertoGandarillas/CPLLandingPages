@@ -298,33 +298,54 @@ const exportToExcel = (
   articulations: ExtendedViewCPLCourses[],
   fileName: string
 ): void => {
-  const ws = XLSX.utils.json_to_sheet(
-    articulations.map(
-      (articulation): ArticulationExport => ({
-        Subject: articulation.Subject ?? "",
-        "Course Number": articulation.CourseNumber ?? "",
-        "Course Title": articulation.CourseTitle ?? "",
-        Units: articulation.Units ?? "",
-        "Possible Qualifications": articulation.IndustryCertifications?.map(
-          (ic) => {
-            let certString = `Source : ${ic.CPLTypeDescription ?? ""} - Possible Qualification: ${ic.IndustryCertification ?? ""} | `;
-            if (ic.Evidences && ic.Evidences.length > 0) {
-              certString += ` (Evidence: ${ic.Evidences.map(
-                (e) => e.EvidenCompetency
-              ).join(", ")})`;
-            }
-            return certString;
-          }
-        ).join("; "),
-        "Credit Recommendations": articulation.IndustryCertifications?.flatMap(
-          (ic) => ic.CreditRecommendations?.map((e) => e.Criteria) ?? []
-        ).join(", "),
-        "Suggested Evidence": articulation.IndustryCertifications?.flatMap(
-          (ic) => ic.Evidences?.map((e) => e.EvidenCompetency) ?? []
-        ).join(", "),
-      })
-    )
-  );
+  const flattenedRows = articulations.flatMap((articulation) => {
+    const industrycerts = articulation.IndustryCertifications || [];
+    return industrycerts.flatMap((ic) => {
+      const evidences = ic.Evidences || [];
+      const recommendations = ic.CreditRecommendations || [];
+      if (evidences.length === 0 && recommendations.length === 0) {
+        return [
+          {
+            Subject: articulation.Subject ?? "",
+            "Course Number": articulation.CourseNumber ?? "",
+            "Course Title": articulation.CourseTitle ?? "",
+            Units: articulation.Units ?? "",
+            Source: ic.CPLTypeDescription ?? "",
+            "Possible Qualifications": ic.IndustryCertification ?? "",
+            "Suggested Evidence": "",
+            "Credit Recommendation": "",
+          },
+        ];
+      }
+      const maxRows = Math.max(recommendations.length, evidences.length);
+      const rows: Array<{
+        Subject: string;
+        "Course Number": string;
+        "Course Title": string;
+        Units: string;
+        Source: string;
+        "Possible Qualifications": string;
+        "Suggested Evidence": string;
+        "Credit Recommendation": string;
+      }> = [];
+
+      for (let i = 0; i < maxRows; i++) {
+        rows.push({
+          Subject: articulation.Subject ?? "",
+          "Course Number": articulation.CourseNumber ?? "",
+          "Course Title": articulation.CourseTitle ?? "",
+          Units: articulation.Units ?? "",
+          Source: ic.CPLTypeDescription ?? "",
+          "Possible Qualifications": ic.IndustryCertification ?? "",
+          "Suggested Evidence": evidences[i]?.EvidenCompetency ?? "",
+          "Credit Recommendation": recommendations[i]?.Criteria ?? "",
+        });
+      }
+
+      return rows;
+    });
+  });
+  const ws = XLSX.utils.json_to_sheet(flattenedRows);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Eligible Courses Sheet");
   XLSX.writeFile(wb, `${fileName}.xlsx`);
