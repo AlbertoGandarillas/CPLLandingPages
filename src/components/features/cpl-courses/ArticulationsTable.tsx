@@ -312,8 +312,8 @@ const exportToExcel = (
             Units: articulation.Units ?? "",
             Source: ic.CPLTypeDescription ?? "",
             "Possible Qualifications": ic.IndustryCertification ?? "",
-            "Suggested Evidence": "",
             "Credit Recommendation": "",
+            "Suggested Evidence": "",
           },
         ];
       }
@@ -325,8 +325,8 @@ const exportToExcel = (
         Units: string;
         Source: string;
         "Possible Qualifications": string;
-        "Suggested Evidence": string;
         "Credit Recommendation": string;
+        "Suggested Evidence": string;
       }> = [];
 
       for (let i = 0; i < maxRows; i++) {
@@ -337,8 +337,8 @@ const exportToExcel = (
           Units: articulation.Units ?? "",
           Source: ic.CPLTypeDescription ?? "",
           "Possible Qualifications": ic.IndustryCertification ?? "",
-          "Suggested Evidence": evidences[i]?.EvidenCompetency ?? "",
           "Credit Recommendation": recommendations[i]?.Criteria ?? "",
+          "Suggested Evidence": evidences[i]?.EvidenCompetency ?? "",
         });
       }
 
