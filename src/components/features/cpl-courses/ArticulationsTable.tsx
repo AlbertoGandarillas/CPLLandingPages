@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
 import { Mails } from "lucide-react";
-import { ArticulationExport } from "@/types/ArticulationExport";
 import SkeletonWrapper from "../../shared/SkeletonWrapper";
 import ArticulationHeader from "./ArticulationsHeader";
 import ArticulationCard from "./ArticulationCard";
@@ -13,8 +12,6 @@ import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import { ContactForm } from "@/components/shared/ContactForm";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PaginatedResponse } from "@/types/PaginatedResponse";
-import LoadMore from "@/components/shared/LoadMore";
-import LoadMoreButton from "@/components/shared/LoadMore";
 import { toast } from "@/components/ui/use-toast";
 
 interface ArticulationsTableProps {

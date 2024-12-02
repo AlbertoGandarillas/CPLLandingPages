@@ -22,23 +22,23 @@ export default function SelectCPLType({
       <ToggleGroupItem
         value="all"
         aria-label="All"
-        className="data-[state=on]:bg-blue-100"
+        className="data-[state=on]:bg-muted"
       >
         All
       </ToggleGroupItem>
       <ToggleGroupItem
         value="occupation"
-        aria-label="Occupation"
-        className="data-[state=on]:bg-blue-100"
+        aria-label="Military CPL"
+        className="data-[state=on]:bg-muted"
       >
-        Occupations
+        Military CPL
       </ToggleGroupItem>
       <ToggleGroupItem
         value="MAP"
-        aria-label="MAP"
-        className="data-[state=on]:bg-blue-100"
+        aria-label="Non-Military CPL"
+        className="data-[state=on]:bg-muted"
       >
-        MAP
+        Non-Military CPL
       </ToggleGroupItem>
     </ToggleGroup>
   );

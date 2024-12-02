@@ -27,6 +27,10 @@ export async function GET(request: NextRequest) {
             notIn: [4,5,63,120]
         },
         },
+        include: {
+          CollegeUIConfig: true,
+          CertificationsByCollege: true,
+        },
         orderBy: { College: "asc" },
         ...(ignorePaging ? {} : {
           skip: (page - 1) * limit,

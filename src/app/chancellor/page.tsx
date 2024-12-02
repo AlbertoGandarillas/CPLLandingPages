@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
 import SearchBar from "@/components/shared/SearchBar";
 import {

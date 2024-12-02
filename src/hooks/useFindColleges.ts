@@ -1,8 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { LookupColleges } from "@prisma/client";
-
+import { LookupColleges, ViewCPLCertificationsByCollege } from "@prisma/client";
+interface CollegesResponse {
+  items: (LookupColleges & {
+    CollegeUIConfig: {
+      Slug: string | null;
+    }[];
+    CertificationsByCollege: ViewCPLCertificationsByCollege[];
+  })[];
+}
 export function useFindColleges(ignorePaging?: boolean) {
-  return useQuery<LookupColleges[], Error>({
+  return useQuery<CollegesResponse, Error>({
     queryKey: ["find-colleges", ignorePaging],
     queryFn: async () => {
       const url = `/api/find-colleges${ignorePaging ? '?ignorePaging=true' : ''}`;

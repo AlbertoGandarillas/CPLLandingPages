@@ -22,15 +22,16 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import CPLImpactScoreChart from "./CPLImpactScoreChart";
 import { SummaryStats } from "./SummaryStats";
 import CPLChart from "./CPLChart";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string | null) => void;
+  hideCPLImpactChart?: boolean;
 }
 
 export const PotentialSavingsTable = ({
   setSelectedCollege,
+  hideCPLImpactChart = false,
 }: PotentialSavingsTableProps) => {
   const [filterValue, setFilterValue] = useState("");
   const [selectedType, setSelectedType] = useState<string>("0");
@@ -307,32 +308,32 @@ export const PotentialSavingsTable = ({
     <>
       <div className="flex flex-col sm:flex-row items-center sm:justify-between "></div>
       <div className="flex flex-col xl:flex-row gap-4">
-        <div className="w-full xl:w-1/2 2xl:w-3/4 ">
+        <div className={`w-full ${hideCPLImpactChart ? 'xl:w-full 2xl:w-full' : 'xl:w-1/2 2xl:w-3/4'}`}>
           <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 mb-4">
             <ToggleGroup
               type="single"
               value={selectedType}
               onValueChange={handleTypeChange}
-              className="bg-gray-100 p-1 rounded-lg"
+              className="p-1 rounded-lg"
             >
               <ToggleGroupItem
                 value="0"
                 aria-label="All"
-                className="data-[state=on]:bg-white"
+                className="data-[state=on]:bg-muted"
               >
                 All
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="1"
                 aria-label="Military"
-                className="data-[state=on]:bg-white"
+                className="data-[state=on]:bg-muted"
               >
                 Military
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="2"
                 aria-label="Working Adult"
-                className="data-[state=on]:bg-white"
+                className="data-[state=on]:bg-muted"
               >
                 Working Adult
               </ToggleGroupItem>
@@ -341,7 +342,7 @@ export const PotentialSavingsTable = ({
               placeholder="Filter Colleges..."
               value={filterValue}
               onChange={(event) => setFilterValue(event.target.value)}
-              className="w-full max-w-sm bg-blue-100"
+              className="w-full max-w-sm"
             />
             <Button
               size="sm"
@@ -363,13 +364,13 @@ export const PotentialSavingsTable = ({
             <div className="rounded-md border">
               <div className="overflow-hidden">
                 <Table>
-                  <TableHeader className="sticky top-0 bg-white z-10">
+                  <TableHeader className="sticky top-0  z-10">
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => (
                           <TableHead
                             key={header.id}
-                            className="font-bold text-black"
+                            className="font-bold"
                             style={{ width: header.getSize() }}
                           >
                             {header.isPlaceholder
@@ -427,9 +428,11 @@ export const PotentialSavingsTable = ({
             </div>
           </div>
         </div>
+        {!hideCPLImpactChart && (
         <div className="w-full xl:w-1/2 2xl:w-1/3">
           <CPLChart data={getCPLImpactData} />
-        </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -20,22 +20,27 @@ export default function MainLayout({
         <div className="hidden border-none bg-muted/20 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex justify-between h-14 items-center border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
-              <Link href="/main" className="flex items-center gap-2 font-semibold">
+              <Link
+                href="/main"
+                className="flex items-center gap-2 font-semibold"
+              >
                 <Image
                   src="/images/map-logo-white.png"
                   alt="MAP"
                   width={100}
                   height={100}
+                  style={{
+                    width: "100px",
+                    height: "auto",
+                  }}
                   priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="inline-block object-contain"
                 />
               </Link>
             </div>
             <div className="flex-1">
               <nav className="grid items-start mt-2 px-2 text-sm font-medium lg:px-4">
                 <div className="my-2">
-                  <Options/>
+                  <Options />
                 </div>
               </nav>
             </div>
@@ -71,8 +76,8 @@ export default function MainLayout({
               Credit for Prior Learning Portal
             </h1>
             <div className="flex items-center gap-2">
-            <ModeToggle />
-            <OnBoarding />
+              <ModeToggle />
+              <OnBoarding />
             </div>
           </header>
           <main className="w-full flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
@@ -88,9 +93,9 @@ function Options() {
       const options = [
         {
           icon: <School className="h-4 w-4" />,
-          name: "Find a MAP College",
+          name: "Find a College with CPL",
           href: "/main/find-a-map-college",
-          dataIntro: "find-map-college"
+          dataIntro: "find-map-college",
         },
       ];
       const additionalOptions = [
@@ -106,23 +111,40 @@ function Options() {
   return (
     <>
       {options.map((item, index) => (
-        <Button key={index} variant="default" data-intro={item.dataIntro} className="w-full justify-start text-white dark:text-white">
-          <Link
-            href={item.href}
-            className="flex justify-start items-center gap-2"
+        <Link
+          key={index}
+          href={item.href}
+          className="w-full"
+        >
+          <Button
+            variant="default"
+            data-intro={item.dataIntro}
+            className="w-full justify-start text-white bg-[#1e3964] dark:text-white"
           >
-            {item.icon}
-            {item.name}
-          </Link>
-        </Button>
+            <div className="flex justify-start items-center gap-2">
+              {item.icon}
+              {item.name}
+            </div>
+          </Button>
+        </Link>
       ))}
       <Separator className="my-4" />
       <div data-intro="cccapply-fafsa">
-      {additionalOptions.map((option, index) => (
-        <Button key={index} variant="ghost"  className="w-full justify-start">
-          <Link href={option.href} target="_blank">{option.name}</Link>
-        </Button>
-      ))}
+        {additionalOptions.map((option, index) => (
+          <Link
+            key={index}
+            href={option.href}
+            target="_blank"
+            className="w-full"
+          >
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              {option.name}
+            </Button>
+          </Link>
+        ))}
       </div>
     </>
   );

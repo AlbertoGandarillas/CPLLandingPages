@@ -94,6 +94,7 @@ model LookupColleges {
   Initials                             String?   @default("", map: "DF__LookupCol__Initi__0C26B6F1") @db.Char(10)
   AllowEmailFacultyNotification        Boolean?  @default(false, map: "DF_LookupColleges_AllowEmailFacultyNotification")
   AllowEmailNotificationTrigger        Boolean?
+  CertificationsByCollege              ViewCPLCertificationsByCollege[]
 
   CollegeUIConfig CollegeUIConfig[]
 }
@@ -568,7 +569,7 @@ model ViewCPLArticulations {
   ModelOfLearning             Int?
   CPLTypeDescription          String?
   CPLModeofLearningDescription String?
-  CriteriaID                  Int?
+  CriteriaID                  Int
   Criteria                    String?
   IssuedFormID                Int?
   CIDNumber                   String?
@@ -578,7 +579,7 @@ model ViewCPLArticulations {
   Students                    Int?
   CRUnits                     Decimal?
   Course                      String? 
-  @@id([ExhibitID])
+  @@id([OutlineID, ExhibitID, CriteriaID])
 }
 
 model ViewCPLMos {
@@ -597,10 +598,45 @@ model ViewCPLCertifications {
 }
 
 model ViewCPLCertificationsByCollege {
+    CollegeID               Int
     College                 String
     IndustryCertification   String
     Slug                    String?
     TotalUnits              Float?
     Certification           ViewCPLCertifications? @relation(fields: [IndustryCertification], references: [IndustryCertification])
+    Colleges                LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
     @@unique([College, IndustryCertification])
+}
+
+model ViewCPLMostCommonCreditRecommendations {
+  ID Int 
+  Criteria              String?
+  Count                 Int?
+  @@id([ID])
+}
+
+model ViewCPLMostCommonTopCodes {
+  ID Int 
+  TopCode               Int?
+  Program_Title         String?
+  Count                 Int?
+  @@id([ID])
+}
+
+model ViewCPLMostCommonCIDs {
+  ID Int 
+  CIDNumber               String?
+  CIDDescriptor           String?
+  Count                   Int?
+  @@id([ID])
+}
+
+model ViewCPLExhibitCourses {
+  ExhibitID   Int
+  outline_id  Int
+  CriteriaID  Int
+  Criteria    String?
+  Course      String?
+  CatalogDescription String?
+  @@id([ExhibitID, outline_id, CriteriaID])
 }

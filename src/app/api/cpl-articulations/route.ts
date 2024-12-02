@@ -7,6 +7,11 @@ export async function GET(request: NextRequest) {
   const college = url.searchParams.get("college");
   const cplType = url.searchParams.get("cplType");
   const learningMode = url.searchParams.get("learningMode");
+  const criteria = url.searchParams.get("criteria");
+  const topCode = url.searchParams.get("topCode");
+  const cidNumber = url.searchParams.get("cidNumber");
+  const searchTerm = url.searchParams.get("searchTerm");
+
   try {
     const where: Prisma.ViewCPLArticulationsWhereInput = {};
 
@@ -19,10 +24,37 @@ export async function GET(request: NextRequest) {
     if (learningMode) {
       where.ModelOfLearning = parseInt(learningMode);
     }
+    if (criteria) {
+      where.Criteria = criteria;
+    }
+    if (topCode) {
+      where.TopCode = parseInt(topCode);
+    }
+    if (cidNumber) {
+      where.CIDNumber = cidNumber;
+    }
+    if (searchTerm) {
+      where.OR = [
+        { Subject: { contains: searchTerm } },
+        { College: { contains: searchTerm } },
+        { CourseNumber: { contains: searchTerm } },
+        { CourseTitle: { contains: searchTerm } },
+        { AceID: { contains: searchTerm } },
+        { IndustryCertification: { contains: searchTerm } },
+        { CPLTypeDescription: { contains: searchTerm } },
+        { CPLModeofLearningDescription: {  contains: searchTerm, }, },
+        { Criteria: { contains: searchTerm } },
+        { CIDNumber: { contains: searchTerm } },
+        { IndustryCertification: { contains: searchTerm }, },
+        { CIDDescriptor: { contains: searchTerm } },
+        { Program_Title: { contains: searchTerm } },
+        { Course: { contains: searchTerm } },
+      ];
+    }
 
     const articulations = await db.viewCPLArticulations.findMany({
-        where,
-        orderBy: [{College:"asc"}, { Subject: "asc" }, { CourseNumber: "asc" }],
+      where,
+      orderBy: [{College:"asc"}, { Subject: "asc" }, { CourseNumber: "asc" }],
     });
 
     if (articulations.length === 0) {

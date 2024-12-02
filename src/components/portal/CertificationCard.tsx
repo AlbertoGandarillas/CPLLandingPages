@@ -8,7 +8,6 @@ import {
 import { ChevronUp } from "lucide-react";
 import { ChevronDown } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { Button } from "../ui/button";
@@ -36,7 +35,7 @@ export default function CertificationCard({
   return (
     <Card className="flex flex-col  hover:shadow-lg transition-shadow">
       <CardHeader className="py-2 px-8">
-        <CardTitle className="text-lg">
+        <CardTitle className="text-md overflow-y-auto h-12">
           {certification.IndustryCertification}
         </CardTitle>
         <CardDescription>
@@ -50,12 +49,13 @@ export default function CertificationCard({
             {certification.CPLType}
           </Badge>
           <Badge variant="secondary" className="mb-2">
-            {certification.TotalUnits} units
+            Avg {Math.round(certification.TotalUnits / certification.CollegeViews.length)}{" "}
+            units
           </Badge>
         </div>
         <Button
           variant="link"
-          className="w-full justify-between"
+          className="w-full justify-between bg-muted"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           View Colleges

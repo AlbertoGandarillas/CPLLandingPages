@@ -3,14 +3,7 @@ import SearchBar from "../shared/SearchBar";
 import { useCertifications } from "@/hooks/useCertifications";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import SelectCPLType from "./SelectCPLType";
-import { Table, TableHead, TableRow, TableHeader, TableCell, TableBody } from "../ui/table";
-import { ColumnDef, flexRender, getSortedRowModel, getCoreRowModel, useReactTable, SortingState } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "../ui/button";
 import CertificationCard from "./CertificationCard";
-import { ViewCPLCertifications } from "@prisma/client";
-
-import { ScrollArea } from "../ui/scroll-area";
 
 interface CertificationsProps {
   onSelect: (IndustryCertification: string | null) => void;
@@ -19,7 +12,6 @@ interface CertificationsProps {
 export const Certifications = ({ onSelect }: CertificationsProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [cplType, setCplType] = useState("all");
-  const [sorting, setSorting] = useState<SortingState>([]);
 
   const handleSearch = useCallback((term: string) => {
     if (term.length >= 3 || term.length === 0) {
@@ -60,77 +52,6 @@ export const Certifications = ({ onSelect }: CertificationsProps) => {
       }
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  const columns: ColumnDef<ViewCPLCertifications>[] = [
-    {
-      accessorKey: "IndustryCertification",
-      size: 300,
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Certification
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-left">
-          {row.getValue("IndustryCertification")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "CPLType",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            CPL Type
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center w-[100px]">{row.getValue("CPLType")}</div>
-      ),
-    },
-    {
-      accessorKey: "TotalUnits",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Units
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center w-[100px]">
-          {row.getValue("TotalUnits")}
-        </div>
-      ),
-    },
-  ];
-
-  const table = useReactTable({
-    data: allCertifications,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
-  });
 
   if (isLoading) {
     return <SkeletonWrapper isLoading={true} fullWidth={true} variant="table" />;

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import Header from "@/components/dashboard/Header";
-import Footer from "@/components/dashboard/Footer";
+import Header from "@/components/chancellor/Header";
+import Footer from "@/components/chancellor/Footer";
 export default function MainLayout({
   children,
 }: Readonly<{
