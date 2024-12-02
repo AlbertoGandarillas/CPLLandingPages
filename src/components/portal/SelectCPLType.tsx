@@ -27,14 +27,14 @@ export default function SelectCPLType({
         All
       </ToggleGroupItem>
       <ToggleGroupItem
-        value="occupation"
+        value="Military CPL"
         aria-label="Military CPL"
         className="data-[state=on]:bg-muted"
       >
         Military CPL
       </ToggleGroupItem>
       <ToggleGroupItem
-        value="MAP"
+        value="Non-Military CPL"
         aria-label="Non-Military CPL"
         className="data-[state=on]:bg-muted"
       >

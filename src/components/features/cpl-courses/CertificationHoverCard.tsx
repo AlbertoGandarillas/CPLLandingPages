@@ -27,7 +27,7 @@ export default function CertificationHoverCard ({
           </p>
         </li>
       </HoverCardTrigger>
-      <HoverCardContent className="w-[auto]">
+      <HoverCardContent className="w-[auto] z-50 max-w-[500px]">
         <h3 className="font-bold mb-2">{industryCertification}</h3>
         <p className="text-sm">
           <span className="font-bold">CPL Type : </span>

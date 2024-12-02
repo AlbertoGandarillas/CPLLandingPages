@@ -25,7 +25,7 @@ export default function Homepage() {
         title: "Most Common CPL Opportunities",
         element: '[data-intro="most-common-cpl-opportunities"]',
         intro:
-          "Here you can browse or search for available CPL credits offered by college or course",
+          "Here you can browse or search for available CPL credits offered by college or course.",
         position: "left",
       },
       {

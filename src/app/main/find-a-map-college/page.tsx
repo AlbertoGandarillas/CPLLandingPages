@@ -30,19 +30,22 @@ export default function FindAMapCollege() {
       {
         title: "Search for Colleges",
         element: '[data-intro="search-colleges"]',
-        intro: "Use the search to find colleges in your area...",
+        intro:
+          "Use the search to find colleges in your area. To see specific opportunities at a college or to request a CPL review from a college, click the icon to view that colleges CPL page. To view some opportunities on this page, click the college name to filter the table of CPL Opportunities at the bottom of the page.",
         position: "bottom",
       },
       {
         title: "View Colleges on the Map",
         element: '[data-intro="view-colleges-on-map"]',
-        intro: "Click and drag to move positions on the map...",
+        intro:
+          "Click and drag to move positions on the map, click on pins to see the college name and their top CPL offerings.",
         position: "left",
       },
       {
         title: "Browse Courses",
         element: '[data-intro="browse-courses"]',
-        intro: "View some common CPL offerings in this table...",
+        intro:
+          "View some common CPL offerings in this table. You can filter the table by clicking the college name from the College Finder list, or search by keyword in the search bar.",
         position: "right",
       },
     ],

@@ -204,17 +204,6 @@ model CPL_Savings {
   AverageUnits Float?
 }
 
-model CPLCrsArticulations {
-  Id                   Int     @id(map: "PK__CPLCrsAr__3214EC07ACA4EE10") @default(autoincrement())
-  CRType               String? @db.VarChar(150)
-  Course               String? @db.VarChar(150)
-  CreditRecommendation String? @db.VarChar(1000)
-  Notes                String? @db.NVarChar(Max)
-  CatalogDescription   String? @db.NVarChar(Max)
-  ExhibitID            Int?
-  CollegeID            Int?
-  Exhibit              ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
-}
 
 model Course_IssuedForm {
   outline_id                  Int       @id(map: "PK_Course_IssuedForm") @default(autoincrement())
@@ -310,7 +299,6 @@ model Articulation {
   Action                   Int?      @default(0, map: "DF__Articulat__Actio__2DBCB4E6")
   Combined                 Int?
   Signature                String?   @db.VarChar(50)
-  Exhibit                  ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
   Stage                    Stages? @relation(fields: [ArticulationStage], references: [Id])
   @@index([AceID, TeamRevd], map: "articulation_aceid_teamrevd")
   @@index([ArticulationID, ArticulationType], map: "articulation_id_type")
@@ -357,8 +345,7 @@ model ACEExhibit {
   Rubrics               CPLRubric[]
   Evidence              CPLEvidenceCompetency[]
   CPLDocuments          CPLExhibitDocuments[]
-  CPLCrsArticulations   CPLCrsArticulations[]
-  Articulation          Articulation[]
+  Articulations         ViewCPLArticulations[]
   @@index([Title], map: "idx_Title")
   @@index([AceType], map: "IX_ACEExhibit")
   @@index([Exhibit], map: "IX_ACEExhibit_1")
@@ -579,6 +566,7 @@ model ViewCPLArticulations {
   Students                    Int?
   CRUnits                     Decimal?
   Course                      String? 
+  Exhibit                     ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
   @@id([OutlineID, ExhibitID, CriteriaID])
 }
 
