@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import introJs from 'intro.js';
 import 'intro.js/minified/introjs.min.css';
 import {
@@ -10,39 +10,26 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Certifications } from "@/components/portal/Certifications";
-import { useIntroJS } from "@/hooks/useIntroJS";
+import { usePathname } from 'next/navigation';
+import { tourSteps } from "@/components/shared/OnBoarding";
 
 export default function Homepage() {
-  useIntroJS({
-    steps: [
-      {
-        title: "Basic CPL Information",
-        element: '[data-intro="basic-info"]',
-        intro: "Here you can learn the basics of what CPL is...",
-        position: "bottom",
-      },
-      {
-        title: "Most Common CPL Opportunities",
-        element: '[data-intro="most-common-cpl-opportunities"]',
-        intro:
-          "Here you can browse or search for available CPL credits offered by college or course.",
-        position: "left",
-      },
-      {
-        title: "Find a CPL Opportunity",
-        element: '[data-intro="find-map-college"]',
-        intro: "Click here to find a MAP College near you.",
-        position: "right",
-      },
-      {
-        title: "Additional Resources",
-        element: '[data-intro="cccapply-fafsa"]',
-        intro:
-          "If you are ready to set up CCCApply, or already applied and need to apply for FAFSA, click the appropriate link here.",
-        position: "right",
-      },
-    ],
-  });
+  const [hasShownIntro, setHasShownIntro] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!hasShownIntro) {
+      const onboardingEnabled = localStorage.getItem(`onboardingEnabled-${pathname}`) !== 'false';
+      if (onboardingEnabled) {
+        const intro = introJs();
+        intro.setOptions({
+          steps: tourSteps["/main"],
+        });
+        intro.start();
+        setHasShownIntro(true);
+      }
+    }
+  }, [hasShownIntro, pathname]);
 
   return (
     <>

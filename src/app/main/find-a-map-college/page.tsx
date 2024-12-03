@@ -13,7 +13,11 @@ import { createQueryString } from "@/lib/createQueryString";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { useIntroJS } from "@/hooks/useIntroJS";
+import introJs from 'intro.js';
+import 'intro.js/minified/introjs.min.css';
+import { usePathname } from 'next/navigation';
+import { tourSteps } from "@/components/shared/OnBoarding";
+
 // Dynamically import the map component with SSR disabled
 const CollegeMap = dynamic(() => import("@/components/portal/CollegeMap"), {
   ssr: false,
@@ -25,31 +29,27 @@ const CollegeMap = dynamic(() => import("@/components/portal/CollegeMap"), {
 });
 
 export default function FindAMapCollege() {
-  useIntroJS({
-    steps: [
-      {
-        title: "Search for Colleges",
-        element: '[data-intro="search-colleges"]',
-        intro:
-          "Use the search to find colleges in your area. To see specific opportunities at a college or to request a CPL review from a college, click the icon to view that colleges CPL page. To view some opportunities on this page, click the college name to filter the table of CPL Opportunities at the bottom of the page.",
-        position: "bottom",
-      },
-      {
-        title: "View Colleges on the Map",
-        element: '[data-intro="view-colleges-on-map"]',
-        intro:
-          "Click and drag to move positions on the map, click on pins to see the college name and their top CPL offerings.",
-        position: "left",
-      },
-      {
-        title: "Browse Courses",
-        element: '[data-intro="browse-courses"]',
-        intro:
-          "View some common CPL offerings in this table. You can filter the table by clicking the college name from the College Finder list, or search by keyword in the search bar.",
-        position: "right",
-      },
-    ],
-  });
+  const [hasShownIntro, setHasShownIntro] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Set initial onboarding state to true if it hasn't been set yet
+    if (localStorage.getItem(`onboardingEnabled-${pathname}`) === null) {
+      localStorage.setItem(`onboardingEnabled-${pathname}`, 'true');
+    }
+
+    if (!hasShownIntro) {
+      const onboardingEnabled = localStorage.getItem(`onboardingEnabled-${pathname}`) !== 'false';
+      if (onboardingEnabled) {
+        const intro = introJs();
+        intro.setOptions({
+          steps: tourSteps["/main/find-a-map-college"],
+        });
+        intro.start();
+        setHasShownIntro(true);
+      }
+    }
+  }, [hasShownIntro, pathname]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<number | null>(null);
@@ -167,7 +167,7 @@ export default function FindAMapCollege() {
         <Card className="w-full" data-intro="browse-courses">
           <CardHeader className="bg-muted p-4">
             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="text-lg sm:text-xl">Browse CPL Courses</div>
+              <div className="text-lg sm:text-xl">Browse CPL Courses {selectedCollege ? `at ${filteredColleges.find(college => college.CollegeID === selectedCollege)?.College}` : ""}</div>
               <div className="w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <SearchBar
