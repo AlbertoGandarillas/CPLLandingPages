@@ -118,7 +118,6 @@ export default function OnBoarding() {
 
   const handleToggle = (checked: boolean) => {
     setOnboardingEnabled(checked);
-    // Only update the current page's onboarding state
     localStorage.setItem(localStorageKey, checked.toString());
 
     if (checked) {
@@ -127,6 +126,7 @@ export default function OnBoarding() {
       const intro = introJs();
       intro.exit(true); // Pass true to force exit
     }
+    setIsOpen(false);
   };
 
   return (
