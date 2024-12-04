@@ -79,7 +79,7 @@ export default function Homepage() {
               </CardTitle>
             </CardHeader>
             <CardContent data-intro="most-common-cpl-opportunities">
-              <Certifications onSelect={() => {}} />
+              <Certifications />
             </CardContent>
           </Card>
         </section>

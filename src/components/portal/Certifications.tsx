@@ -5,12 +5,8 @@ import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import SelectCPLType from "./SelectCPLType";
 import CertificationCard from "./CertificationCard";
 
-interface CertificationsProps {
-  onSelect: (IndustryCertification: string | null) => void;
-}
-
-export const Certifications = ({ onSelect }: CertificationsProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
+export const Certifications = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [cplType, setCplType] = useState("all");
 
   const handleSearch = useCallback((term: string) => {
@@ -72,6 +68,7 @@ export const Certifications = ({ onSelect }: CertificationsProps) => {
           onSearch={handleSearch}
           placeholder="Search CPL Certifications by name..."
           className="w-full"
+          value={searchTerm}
         />
       </div>
  
@@ -88,7 +85,7 @@ export const Certifications = ({ onSelect }: CertificationsProps) => {
         ))}
         {isFetchingNextPage && (
           <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4">
-            <SkeletonWrapper isLoading={true} fullWidth={true} variant="card" />
+            <SkeletonWrapper isLoading={true} fullWidth={true} variant="loading" />
           </div>
         )}
       </div>

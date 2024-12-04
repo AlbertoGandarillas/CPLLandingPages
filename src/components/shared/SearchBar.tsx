@@ -9,6 +9,7 @@ interface SearchBarProps {
   placeholder?: string;
   className?: string;
   inputClassName?: string;
+  value?: string;
 }
 
 export interface SearchBarRef {
@@ -21,8 +22,9 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({
   placeholder = "Search...",
   className = "",
   inputClassName = "",
-}, ref) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  value = "",
+  }, ref) => {
+  const [searchTerm, setSearchTerm] = useState(value);
 
   const debouncedOnSearch = useCallback(
     debounce((term: string) => onSearch(term), 300),
