@@ -2,12 +2,20 @@
 import { CircleHelp } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger 
+} from "../ui/dialog";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import introJs from "intro.js";
+
 interface TourStep {
   title: string;
   element: string;
@@ -79,6 +87,7 @@ export default function OnBoarding() {
   const localStorageKey = `onboardingEnabled-${pathname}`;
 
   const [onboardingEnabled, setOnboardingEnabled] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   useEffect(() => {
     // Set initial value from localStorage when component mounts
@@ -121,43 +130,53 @@ export default function OnBoarding() {
   };
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-sky-950/90 dark:bg-slate-900 border-0 text-gray-400 dark:text-white"
-            >
-              <CircleHelp className="h-5 w-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 z-50">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">Guided Tour</h4>
-                <p className="text-sm text-muted-foreground">
-                  Toggle the onboarding feature to learn how to use this page.
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="onboarding"
-                  checked={onboardingEnabled}
-                  onCheckedChange={handleToggle}
-                />
-                <Label htmlFor="onboarding">
-                  Enable Guided Tour for this page
-                </Label>
-              </div>
+    <div className="relative inline-block">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Tooltip>
+          <div>
+            <DialogTrigger asChild>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-sky-950/90 dark:bg-slate-900 border-0 text-gray-400 dark:text-white"
+                >
+                  <CircleHelp className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+            </DialogTrigger>
+            <TooltipContent>
+              <p>Here you can learn the basics of what CPL is</p>
+            </TooltipContent>
+          </div>
+        </Tooltip>
+        
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Guided Tour</DialogTitle>
+            <DialogDescription>
+              Learn how to use this page with our interactive guide.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Toggle the onboarding feature to learn how to use this page.
+              </p>
             </div>
-          </PopoverContent>
-        </Popover>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Here you can learn the basics of what CPL is</p>
-      </TooltipContent>
-    </Tooltip>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="onboarding"
+                checked={onboardingEnabled}
+                onCheckedChange={handleToggle}
+              />
+              <Label htmlFor="onboarding">
+                Enable Guided Tour for this page
+              </Label>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
