@@ -27,7 +27,6 @@ type TourSteps = {
   [key: string]: TourStep[];
 };
 
-// Define tour steps for each page
 export const tourSteps: TourSteps = {
   "/main": [
     {
@@ -90,7 +89,6 @@ export default function OnBoarding() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   useEffect(() => {
-    // Set initial value from localStorage when component mounts
     if (typeof window !== "undefined") {
       const storedValue = localStorage.getItem(localStorageKey);
       setOnboardingEnabled(storedValue !== "false");
@@ -108,7 +106,6 @@ export default function OnBoarding() {
 
       intro.oncomplete(() => {
         setOnboardingEnabled(false);
-        // Only update the current page's onboarding state
         localStorage.setItem(localStorageKey, "false");
       });
 
@@ -124,7 +121,7 @@ export default function OnBoarding() {
       startTour();
     } else {
       const intro = introJs();
-      intro.exit(true); // Pass true to force exit
+      intro.exit(true); 
     }
     setIsOpen(false);
   };
