@@ -457,9 +457,9 @@ model ViewCPLEvidenceCompetency {
 model ViewCPLCreditRecommendations {
     OutlineID                Int
     IndustryCertification    String
-    Criteria                 String
+    Criteria                 String?
     Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
-     @@id([OutlineID, IndustryCertification, Criteria])
+     @@id([OutlineID, IndustryCertification])
 }
 
 model CPLModeofLearning {
