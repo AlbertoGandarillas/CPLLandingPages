@@ -1,6 +1,7 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { ViewCPLCreditRecommendations, ViewCPLEvidenceCompetency } from '@prisma/client';
 import React from 'react'
+
 interface CertificationHoverCardProps {
   industryCertification: string | null | undefined;
   cplType?: string | null;
@@ -9,6 +10,7 @@ interface CertificationHoverCardProps {
   evidences: ViewCPLEvidenceCompetency[];
   crs: ViewCPLCreditRecommendations[];
 }
+
 export default function CertificationHoverCard ({
   industryCertification,
   cplType,
@@ -47,20 +49,20 @@ export default function CertificationHoverCard ({
                 {crs
                   .sort((a, b) => {
                     const aMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === a.Criteria.trim()
+                      recommendation => recommendation.trim() === (a.Criteria ?? '').trim()
                     );
                     const bMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === b.Criteria.trim()
+                      recommendation => recommendation.trim() === (b.Criteria ?? '').trim()
                     );
                     return bMatched ? 1 : aMatched ? -1 : 0;
                   })
                   .map((cr, crIndex) => {
                     const isMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === cr.Criteria.trim()
+                      recommendation => recommendation.trim() === (cr.Criteria ?? '').trim()
                     );
                     return (
                       <li key={crIndex} className={`text-sm ${isMatched ? 'bg-blue-100 py-2' : ''}`}>
-                        <span>{cr.Criteria}</span>
+                        <span>{cr.Criteria ?? ''}</span>
                       </li>
                     );
                   })}
