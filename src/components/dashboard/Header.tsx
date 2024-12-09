@@ -49,7 +49,7 @@ export function Header({ actionItems }: HeaderProps) {
           <MAPLogo />
         </Link>
         <h2 className="text-sm font-bold lg:text-lg">
-          Approved Credit for Prior Learning Opportunities
+          MAP CPL Inventory
         </h2>
       </div>
       <div className="flex items-center space-x-4">
