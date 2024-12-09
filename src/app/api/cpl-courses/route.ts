@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
+  const isExport = url.searchParams.get("export") === "true";
   const college = url.searchParams.get("college");
   const industryCertification = url.searchParams.get("industryCertification");
   const cplType = url.searchParams.get("cplType");
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
   const searchTerm = url.searchParams.get("searchTerm");
   const outlineIds = url.searchParams.get("outlineIds");
   const page = parseInt(url.searchParams.get("page") || "1");
-  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const limit = isExport ? undefined : parseInt(url.searchParams.get("limit") || "20");
 
   try {
     const where: Prisma.ViewCPLCoursesWhereInput = {};
@@ -98,8 +99,7 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
-        skip: (page - 1) * limit,
-        take: limit,
+        ...(!isExport && limit !== undefined && { skip: (page - 1) * limit, take: limit }),
       }),
     ]);
 

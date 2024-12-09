@@ -1,58 +1,74 @@
 import { Input } from "@/components/ui/input";
 import { CircleX, Search } from "lucide-react";
-import { useState, useCallback } from "react";
-
+import { useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import debounce from "lodash/debounce";
+
 interface SearchBarProps {
-  onSearch: (searchTerm: string) => void;
+  onSearch: (term: string) => void;
+  onClear?: () => void;
   placeholder?: string;
-  debounceTime?: number;
   className?: string;
   inputClassName?: string;
+  value?: string;
 }
 
-export default function SearchBar({
+export interface SearchBarRef {
+  clear: () => void;
+}
+
+const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({
   onSearch,
-  placeholder = "Search by keyword...",
-  debounceTime = 300,
-  className,
-  inputClassName,
-}: SearchBarProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+  onClear,
+  placeholder = "Search...",
+  className = "",
+  inputClassName = "",
+  value = "",
+  }, ref) => {
+  const [searchTerm, setSearchTerm] = useState(value);
 
   const debouncedOnSearch = useCallback(
-    debounce((term: string) => onSearch(term), debounceTime),
-    [onSearch, debounceTime]
+    debounce((term: string) => onSearch(term), 300),
+    [onSearch]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const newTerm = e.target.value;
     setSearchTerm(newTerm);
     debouncedOnSearch(newTerm);
   };
 
-  const clearSearch = () => {
+  const handleClear = () => {
     setSearchTerm("");
     onSearch("");
+    onClear?.();
   };
+
+  // Expose clear method to parent components
+  useImperativeHandle(ref, () => ({
+    clear: handleClear
+  }));
+
   return (
-    <>
-      <div className={`relative ${className}`}>
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-        <Input
-          type="text"
-          placeholder={placeholder}
-          className={`pl-10 pr-10 w-full ${inputClassName}`}
-          value={searchTerm}
-          onChange={handleSearchChange}
+    <div className={`relative ${className}`}>
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+      <Input
+        type="text"
+        placeholder={placeholder}
+        className={`pl-10 pr-10 w-full ${inputClassName}`}
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      {searchTerm && (
+        <CircleX
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+          onClick={handleClear}
         />
-        {searchTerm && (
-          <CircleX
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-            onClick={clearSearch}
-          />
-        )}
-      </div>
-    </>
+      )}
+    </div>
   );
-}
+});
+
+SearchBar.displayName = "SearchBar";
+
+export default SearchBar;

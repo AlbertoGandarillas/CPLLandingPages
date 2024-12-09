@@ -1,93 +1,48 @@
-import UserInfo from "@/components/portal/UserInfo";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, Menu, Search } from "lucide-react";
+import { HelpCircle, Menu, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
-import RequestReview from "@/components/portal/RequestReview";
 import { ReactNode } from "react";
+import "leaflet/dist/leaflet.css";
+import { Separator } from "@/components/ui/separator";
+import { ModeToggle } from "@/components/shared/ToggleMode";
+import OnBoarding from "@/components/shared/OnBoarding";
 export default function MainLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
-    const options = [
-      //{
-      //  name: "CPL For You",
-      //  href: "/cpl-for-you",
-      //},
-      {
-        name: "Find a MAP College",
-        href: "/find-a-map-college",
-      },
-      // {
-      //   name: "Contact a CPL Assistant", 
-      //   href: "#",
-      // },
-      // {
-      //   name: "Portfolio Builder",
-      //   href: "/portfolio-builder", 
-      // },
-    ];
-    const additionalOptions = [
-      {
-        name: "CCCApply ID",
-        href: "/cccapply-id",
-      },
-      {
-        name: "FAFSA",
-        href: "/fafsa",
-      },
-    ];
+
   return (
     <div className=" flex h-screen">
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <div className="hidden border-none bg-muted/20 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
-            <div className="flex justify-center h-14 items-center border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
-              <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Image
+            <div className="flex justify-between h-14 items-center border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
+              <Link
+                href="/main"
+                className="flex items-center gap-2 font-semibold"
+              >
+                <img
                   src="/images/map-logo-white.png"
-                  alt="MAP"
-                  width={100}
-                  height={100}
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="inline-block object-contain"
+                  alt="Map Logo"
+                  style={{ width: "100px", height: "auto" }} // maintain aspect ratio
                 />
               </Link>
             </div>
             <div className="flex-1">
               <nav className="grid items-start mt-2 px-2 text-sm font-medium lg:px-4">
-                <div className="mb-2">
-                {options.map((option, index) => (
-                  <Link
-                    key={index}
-                    href={option.href}
-                    className={`flex items-center justify-center gap-3 rounded-lg px-3 py-3 my-2 text-white transition-all hover:text-primary bg-[#1e3964]`}
-                  >
-                    {option.name}
-                  </Link>
-                ))}
-                {additionalOptions.map((option, index) => (
-                  <Link
-                  key={index}
-                  href={option.href}
-                  className={`flex justify-center items-center w-full gap-3 rounded-lg px-3 py-3 my-2 text-muted-foreground transition-all hover:text-primary bg-muted`}
-                  >
-                    {option.name}
-                  </Link>
-                ))}
+                <div className="my-2">
+                  <Options />
                 </div>
-                <RequestReview type="mobile" />
               </nav>
             </div>
             <div className="mt-auto p-4"></div>
           </div>
         </div>
         <div className="flex flex-col">
-          <header className="flex h-14 items-center gap-4 border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
+          <header className="flex justify-between h-14 items-center gap-4 border-none px-4 lg:h-[60px] lg:px-6 bg-[#1e3964]">
             <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -107,36 +62,17 @@ export default function MainLayout({
                   >
                     <span className="sr-only">ITPI</span>
                   </Link>
-                  {options.map((option, index) => (
-                    <Link
-                      key={index}
-                      href={option.href}
-                      className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
-                        index === 1
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground"
-                      } hover:text-foreground`}
-                    >
-                      {option.name}
-                    </Link>
-                  ))}
-                  {additionalOptions.map((option, index) => (
-                    <Link
-                      key={index}
-                      href={option.href}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
-                        index === 2 ? "bg-muted" : ""
-                      }`}
-                    >
-                      {option.name}
-                    </Link>
-                  ))}
+                  <Options />
                 </nav>
-                <div className="mt-auto">
-                  <RequestReview />
-                </div>
               </SheetContent>
             </Sheet>
+            <h1 className="text-white text-xl font-semibold">
+              Credit for Prior Learning Portal
+            </h1>
+            <div className="flex items-center gap-2">
+              <ModeToggle />
+              <OnBoarding />
+            </div>
           </header>
           <main className="w-full flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
             <div className="flex flex-col gap-1">{children}</div>
@@ -144,5 +80,66 @@ export default function MainLayout({
         </div>
       </div>
     </div>
+  );
+}
+
+function Options() {
+      const options = [
+        {
+          icon: <School className="h-4 w-4" />,
+          name: "Find a College with CPL",
+          href: "/main/find-a-map-college",
+          dataIntro: "find-map-college",
+        },
+      ];
+      const additionalOptions = [
+        {
+          name: "CCCApply ID",
+          href: "https://www.cccapply.org/en/apply",
+        },
+        {
+          name: "FAFSA",
+          href: "/fafsa",
+        },
+      ];
+  return (
+    <>
+      {options.map((item, index) => (
+        <Link
+          key={index}
+          href={item.href}
+          className="w-full"
+        >
+          <Button
+            variant="default"
+            data-intro={item.dataIntro}
+            className="w-full justify-start text-white bg-[#1e3964] dark:text-white"
+          >
+            <div className="flex justify-start items-center gap-2">
+              {item.icon}
+              {item.name}
+            </div>
+          </Button>
+        </Link>
+      ))}
+      <Separator className="my-4" />
+      <div data-intro="cccapply-fafsa">
+        {additionalOptions.map((option, index) => (
+          <Link
+            key={index}
+            href={option.href}
+            target="_blank"
+            className="w-full"
+          >
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              {option.name}
+            </Button>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }

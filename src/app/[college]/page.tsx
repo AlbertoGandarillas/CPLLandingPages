@@ -17,8 +17,10 @@ import SelectedCoursesList from "@/components/features/cpl-courses/SelectedCours
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import NotFoundPage from "../not-found";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
+import { useTheme } from "next-themes";
 
 export default function Home({ params }: any) {
+  const { setTheme } = useTheme();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [open, setOpen] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<string | undefined>(
@@ -26,6 +28,12 @@ export default function Home({ params }: any) {
   );
   const [selectedIndustryCertification, setSelectedIndustryCertification] =
     useState<string | null>(null);
+
+  // Set theme to light on component mount
+  useEffect(() => {
+    setTheme("light");
+  }, [setTheme]);
+
   const handleIndustryCertificationSelect = (
     industryCertification: string | null
   ) => {

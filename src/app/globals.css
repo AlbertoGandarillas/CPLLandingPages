@@ -73,3 +73,7 @@
       @apply bg-background text-foreground;
     }
   }
+
+  .introjs-skipbutton {
+  right: 0px !important;
+}

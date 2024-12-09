@@ -94,6 +94,7 @@ model LookupColleges {
   Initials                             String?   @default("", map: "DF__LookupCol__Initi__0C26B6F1") @db.Char(10)
   AllowEmailFacultyNotification        Boolean?  @default(false, map: "DF_LookupColleges_AllowEmailFacultyNotification")
   AllowEmailNotificationTrigger        Boolean?
+  CertificationsByCollege              ViewCPLCertificationsByCollege[]
 
   CollegeUIConfig CollegeUIConfig[]
 }
@@ -203,17 +204,6 @@ model CPL_Savings {
   AverageUnits Float?
 }
 
-model CPLCrsArticulations {
-  Id                   Int     @id(map: "PK__CPLCrsAr__3214EC07ACA4EE10") @default(autoincrement())
-  CRType               String? @db.VarChar(150)
-  Course               String? @db.VarChar(150)
-  CreditRecommendation String? @db.VarChar(1000)
-  Notes                String? @db.NVarChar(Max)
-  CatalogDescription   String? @db.NVarChar(Max)
-  ExhibitID            Int?
-  CollegeID            Int?
-  Exhibit              ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
-}
 
 model Course_IssuedForm {
   outline_id                  Int       @id(map: "PK_Course_IssuedForm") @default(autoincrement())
@@ -309,7 +299,6 @@ model Articulation {
   Action                   Int?      @default(0, map: "DF__Articulat__Actio__2DBCB4E6")
   Combined                 Int?
   Signature                String?   @db.VarChar(50)
-  Exhibit                  ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
   Stage                    Stages? @relation(fields: [ArticulationStage], references: [Id])
   @@index([AceID, TeamRevd], map: "articulation_aceid_teamrevd")
   @@index([ArticulationID, ArticulationType], map: "articulation_id_type")
@@ -356,8 +345,7 @@ model ACEExhibit {
   Rubrics               CPLRubric[]
   Evidence              CPLEvidenceCompetency[]
   CPLDocuments          CPLExhibitDocuments[]
-  CPLCrsArticulations   CPLCrsArticulations[]
-  Articulation          Articulation[]
+  Articulations         ViewCPLArticulations[]
   @@index([Title], map: "idx_Title")
   @@index([AceType], map: "IX_ACEExhibit")
   @@index([Exhibit], map: "IX_ACEExhibit_1")
@@ -424,6 +412,7 @@ model CollegeUIConfig {
   Slug                       String?  @db.VarChar(Max)
   WebsiteText                String?  @db.VarChar(Max)
   HideLogo                   Boolean? @default(false)
+  CollegeAward               Boolean? @default(false)
   College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
   Links                      CollegeUILinks[]
   Contacts                   ViewCPLContacts[]
@@ -468,9 +457,9 @@ model ViewCPLEvidenceCompetency {
 model ViewCPLCreditRecommendations {
     OutlineID                Int
     IndustryCertification    String
-    Criteria                 String
+    Criteria                 String?
     Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
-     @@id([OutlineID, IndustryCertification, Criteria])
+     @@id([OutlineID, IndustryCertification])
 }
 
 model CPLModeofLearning {
@@ -567,7 +556,7 @@ model ViewCPLArticulations {
   ModelOfLearning             Int?
   CPLTypeDescription          String?
   CPLModeofLearningDescription String?
-  CriteriaID                  Int?
+  CriteriaID                  Int
   Criteria                    String?
   IssuedFormID                Int?
   CIDNumber                   String?
@@ -577,7 +566,8 @@ model ViewCPLArticulations {
   Students                    Int?
   CRUnits                     Decimal?
   Course                      String? 
-  @@id([ExhibitID])
+  Exhibit                     ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
+  @@id([OutlineID, ExhibitID, CriteriaID])
 }
 
 model ViewCPLMos {
@@ -585,4 +575,56 @@ model ViewCPLMos {
   Occupation            String? @db.VarChar(500)
   IndustryCertification String? @db.VarChar(500)
   @@id([MOS])
+}
+
+model ViewCPLCertifications {
+    IndustryCertification   String
+    CPLType                 String
+    TotalUnits              Float
+    CollegeViews            ViewCPLCertificationsByCollege[]
+    @@unique([IndustryCertification])
+}
+
+model ViewCPLCertificationsByCollege {
+    CollegeID               Int
+    College                 String
+    IndustryCertification   String
+    Slug                    String?
+    TotalUnits              Float?
+    Certification           ViewCPLCertifications? @relation(fields: [IndustryCertification], references: [IndustryCertification])
+    Colleges                LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
+    @@unique([College, IndustryCertification])
+}
+
+model ViewCPLMostCommonCreditRecommendations {
+  ID Int 
+  Criteria              String?
+  Count                 Int?
+  @@id([ID])
+}
+
+model ViewCPLMostCommonTopCodes {
+  ID Int 
+  TopCode               Int?
+  Program_Title         String?
+  Count                 Int?
+  @@id([ID])
+}
+
+model ViewCPLMostCommonCIDs {
+  ID Int 
+  CIDNumber               String?
+  CIDDescriptor           String?
+  Count                   Int?
+  @@id([ID])
+}
+
+model ViewCPLExhibitCourses {
+  ExhibitID   Int
+  outline_id  Int
+  CriteriaID  Int
+  Criteria    String?
+  Course      String?
+  CatalogDescription String?
+  @@id([ExhibitID, outline_id, CriteriaID])
 }

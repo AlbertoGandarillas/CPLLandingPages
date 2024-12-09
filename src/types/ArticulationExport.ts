@@ -3,7 +3,7 @@ export interface ArticulationExport {
   "Course Number": string;
   "Course Title": string;
   Units: string;
-  "Industry Certifications": string | undefined;
+  "Possible Qualifications": string | undefined;
   "Credit Recommendations": string | undefined;
   "Suggested Evidence": string | undefined;
 }

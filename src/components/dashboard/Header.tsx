@@ -1,116 +1,81 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 import Image from "next/image";
-const menuItems = [
-  { title: "Home", href: "/" },
-  { title: "About", href: "/about" },
-  { title: "Contact", href: "/contact" },
-];
-const appName = `${process.env.NEXT_PUBLIC_APP_NAME}`;
-export default function Header() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const pathname = usePathname();
+import Link from "next/link";
+import { ModeToggle } from "../shared/ToggleMode";
 
+interface ActionItem {
+  name: string;
+  icon: React.ElementType;
+  href: string;
+}
+
+interface HeaderProps {
+  actionItems: ActionItem[];
+}
+
+export function Header({ actionItems }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-[#1e3964] font-bold text-white p-2">
-      <div className="flex h-16 items-center pl-6 space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex justify-between items-center  gap-6 md:gap-10">
-          <Link
-            href="https://map.rccd.edu/"
-            className="flex items-center space-x-2"
-            target="_blank"
-          >
-            <Image
-              src="/images/map-logo-white.png"
-              alt="MAP"
-              width={100}
-              height={100}
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="inline-block object-contain"
-            />
-          </Link>
-          <Image
-            src="/images/ccc.png"
-            alt="MAP"
-            width={383}
-            height={50}
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="inline-block object-contain md:w-auto w-[306px]"
-          />
-          <div className="hidden">
-            <nav className="hidden md:flex items-center gap-6">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`md:flex items-center text-lg font-medium text-white transition-colors hover:text-white/80 sm:text-sm ${
-                    pathname === item.href
-                      ? "text-foreground"
-                      : "text-foreground/60"
-                  }`}
-                >
-                  {item.title}
+    <header className="flex items-center justify-between px-6 py-4 bg-[#1e3964] text-white">
+      <div className="flex items-center space-x-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-white"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <nav className="flex flex-col space-y-4 mt-8">
+              {actionItems.map((item) => (
+                <Link key={item.name} href={item.href} target="_blank" passHref>
+                  <Button className="w-full justify-start">
+                    {React.createElement(item.icon, {
+                      className: "w-4 h-4 mr-2",
+                    })}
+                    {item.name}
+                  </Button>
                 </Link>
               ))}
             </nav>
-          </div>
-        </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-1">
-            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
-                >
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="pr-0">
-                <MobileNav
-                  items={menuItems}
-                  setIsSidebarOpen={setIsSidebarOpen}
-                />
-              </SheetContent>
-            </Sheet>
-          </nav>
-        </div>
+          </SheetContent>
+        </Sheet>
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <MAPLogo />
+        </Link>
+        <h2 className="text-sm font-bold lg:text-lg">
+          Approved Credit for Prior Learning Opportunities
+        </h2>
+      </div>
+      <div className="flex items-center space-x-4">
+      <nav className="hidden md:flex items-center space-x-4">
+        {actionItems.map((item) => (
+          <Link key={item.name} href={item.href} passHref>
+            <Button variant="secondary">
+              {React.createElement(item.icon, { className: "w-4 h-4 mr-2" })}
+              {item.name}
+            </Button>
+          </Link>
+        ))}
+      </nav>
+      <ModeToggle />
       </div>
     </header>
   );
 }
-
-function MobileNav({
-  items,
-  setIsSidebarOpen,
-}: {
-  items: { title: string; href: string }[];
-  setIsSidebarOpen: (open: boolean) => void;
-}) {
-  const pathname = usePathname();
+export function MAPLogo() {
   return (
-    <div className="flex flex-col space-y-3">
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={`text-foreground/60 transition-colors hover:text-foreground ${
-            pathname === item.href ? "text-foreground" : ""
-          }`}
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          {item.title}
-        </Link>
-      ))}
-    </div>
+    <Image
+      src="/images/map-logo-white.png"
+      alt="MAP Logo"
+      width={100}
+      height={50}
+      style={{ width: "100px", height: "auto" }}
+    />
   );
 }

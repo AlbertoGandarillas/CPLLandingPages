@@ -78,7 +78,7 @@ export default function ArticulationCard({
   return (
     <Card className="flex flex-col">
       <CardHeader
-        className={`flex-shrink-0 ${CardBackgroundColor ? "" : "bg-gray-100"}`}
+        className={`flex-shrink-0 ${CardBackgroundColor ? "" : "bg-muted"}`}
         style={{
           backgroundColor: CardBackgroundColor || undefined,
           color: CardFontColor || undefined,
@@ -273,7 +273,7 @@ export default function ArticulationCard({
         {articulation.IndustryCertifications?.some(
           (cert) => cert.CPLTypeDescription === "Military"
         ) && (
-          <p className="text-xs text-sky-950 mt-2 font-semibold">
+          <p className="text-xs text-sky-950 dark:text-white mt-2 font-semibold">
             * This may qualify for military-related CPL. Please upload your JST
             for personalized information
           </p>

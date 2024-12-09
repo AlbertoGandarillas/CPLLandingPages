@@ -1,22 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DropdownBase } from "@/components/shared/base/DropdownBase";
 import { useLearningModes } from "@/hooks/useLearningModes";
 
 interface DropdownLearningModesProps {
   onLearningModeSelect: (learningMode: string | null) => void;
+  selectedMode?: string | null;
 }
 
 export const DropdownLearningModes = ({
   onLearningModeSelect,
+  selectedMode,
 }: DropdownLearningModesProps) => {
   const { data, isLoading, error } = useLearningModes();
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    setValue(selectedMode ? selectedMode.toString() : "");
+  }, [selectedMode]);
+
+  const handleSelect = (newValue: string | null) => {
+    setValue(newValue ? newValue.toString() : "");
+    onLearningModeSelect(newValue);
+  };
 
   return (
     <DropdownBase
       data={data}
       isLoading={isLoading}
       error={error}
-      onSelect={onLearningModeSelect}
+      onSelect={handleSelect}
       getDisplayValue={(item) => item.CPLModeofLearningDescription ?? ""}
       getId={(item) => item.ID.toString()}
       placeholder="Select Learning Mode..."
@@ -24,6 +36,7 @@ export const DropdownLearningModes = ({
       noResultsText="No Learning Mode found."
       allItemsText="All Learning Modes"
       wrapWithSkeleton={false}
+      selectedValue={value}
     />
   );
 };

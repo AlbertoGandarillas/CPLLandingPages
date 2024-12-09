@@ -1,191 +1,208 @@
 "use client";
 import * as React from "react";
-import { Search, MapPin, List, Map as MapIcon } from "lucide-react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-interface College {
-  id: number;
-  name: string;
-  city: string;
-  averageCPL: number;
-  topPrograms: string[];
-}
-const Map = ({
-  colleges,
-  selectedCollege,
-}: {
-  colleges: College[];
-  selectedCollege: College | null;
-}) => (
-  <div className="h-[600px] bg-muted flex items-center justify-center">
-    <MapIcon className="h-12 w-12 text-muted-foreground" />
-    <span className="ml-2 text-muted-foreground">Interactive Map View</span>
-  </div>
-);
+import { useFindColleges } from "@/hooks/useFindColleges";
+import { LookupColleges, ViewCPLCertificationsByCollege } from "@prisma/client";
+import SearchBar from "@/components/shared/SearchBar";
+import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
+import { useCallback, useEffect, useState } from "react";
+import { createQueryString } from "@/lib/createQueryString";
+import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
+import introJs from 'intro.js';
+import 'intro.js/minified/introjs.min.css';
+import { usePathname } from 'next/navigation';
+import { tourSteps } from "@/components/shared/OnBoarding";
+
+// Dynamically import the map component with SSR disabled
+const CollegeMap = dynamic(() => import("@/components/portal/CollegeMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[600px] flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+    </div>
+  ),
+});
+
 export default function FindAMapCollege() {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedCollege, setSelectedCollege] = React.useState<College | null>(
-    null
-  );
-  const [colleges, setColleges] = React.useState([
-    {
-      id: 1,
-      name: "Norco College",
-      city: "Norco, CA",
-      averageCPL: 14.4,
-      topPrograms: ["Business Administration", "Accounting", "Nursing"],
-    },
-    {
-      id: 2,
-      name: "Riverside City College",
-      city: "Riverside, CA",
-      averageCPL: 15.2,
-      topPrograms: ["Computer Science", "Psychology", "Biology"],
-    },
-    {
-      id: 3,
-      name: "Moreno Valley College",
-      city: "Moreno Valley, CA",
-      averageCPL: 13.8,
-      topPrograms: ["Health Sciences", "Business", "Liberal Arts"],
-    },
-    // Add more colleges as needed
-  ]);
+  const [hasShownIntro, setHasShownIntro] = useState(false);
+  const pathname = usePathname();
 
-  const filteredColleges = colleges.filter(
-    (college) =>
-      college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      college.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      college.topPrograms.some((program) =>
-        program.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-  );
+  useEffect(() => {
+    // Set initial onboarding state to true if it hasn't been set yet
+    if (localStorage.getItem(`onboardingEnabled-${pathname}`) === null) {
+      localStorage.setItem(`onboardingEnabled-${pathname}`, 'true');
+    }
+
+    if (!hasShownIntro) {
+      const onboardingEnabled = localStorage.getItem(`onboardingEnabled-${pathname}`) !== 'false';
+      if (onboardingEnabled) {
+        const intro = introJs();
+        intro.setOptions({
+          steps: tourSteps["/main/find-a-map-college"],
+        });
+        intro.start();
+        setHasShownIntro(true);
+      }
+    }
+  }, [hasShownIntro, pathname]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCollege, setSelectedCollege] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState<string>("");
+  const { data, isLoading, error } = useFindColleges(true); // Always pass true to ignore paging
+
+  const filteredColleges = React.useMemo(() => {
+    if (!data) return [];
+    // Check if data is an array directly or has items property
+    const collegesArray = Array.isArray(data) ? data : data.items;
+    if (!collegesArray) return [];
+    
+    return collegesArray.filter(
+      (college: LookupColleges & { CollegeUIConfig: { Slug: string | null }[] } & { CertificationsByCollege: ViewCPLCertificationsByCollege[] }) =>
+        college.College.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        college.City?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        college.ZipCode?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        college.StateCode?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [data, searchQuery]);
+
+  const fetchUrl = `/api/cpl-courses?${createQueryString({
+    college: selectedCollege?.toString() ?? undefined,
+    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+  })}`;
+
+  const handleSearch = useCallback((term: string) => {
+    if (term.length >= 3 || term.length === 0) {
+      setSearchTerm(term);
+    }
+  }, []);
+
+  const handleSearchClear = useCallback(() => {
+    setSearchQuery("");
+    setSearchTerm("");
+    setSelectedCollege(null);
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading colleges: {error.message}</div>;
+  }
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Find a MAP College</h1>
-
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search by Program, City, Zip Code, MOS, or Industry"
-          className="pl-10 pr-4"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-
-      <Tabs defaultValue="map">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="map">
-            <MapIcon className="mr-2 h-4 w-4" />
-            Map View
-          </TabsTrigger>
-          <TabsTrigger value="list">
-            <List className="mr-2 h-4 w-4" />
-            List View
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="map" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-1">
-              <CardHeader>
-                <CardTitle>College Finder</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[500px]">
-                  {filteredColleges.map((college) => (
-                    <Button
-                      key={college.id}
-                      variant="ghost"
-                      className="w-full justify-start text-left mb-2"
-                      onClick={() => setSelectedCollege(college)}
-                    >
-                      <div>
-                        <div className="font-semibold">{college.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {college.city}
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-            <Card className="md:col-span-2">
-              <CardContent>
-                <Map
-                  colleges={filteredColleges}
-                  selectedCollege={selectedCollege}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="list" className="mt-4">
-          <Card>
+    <SelectedCoursesProvider>
+      <div className="w-full mx-auto p-6 space-y-6">
+        <h1 className="text-3xl font-bold">
+          Find CPL Opportunities at California Community Colleges
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="md:col-span-1" data-intro="search-colleges">
+            <CardHeader>
+              <CardTitle>College Finder</CardTitle>
+            </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>College</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead>Average CPL</TableHead>
-                    <TableHead>Top Programs</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredColleges.map((college) => (
-                    <TableRow key={college.id}>
-                      <TableCell className="font-medium">
-                        {college.name}
-                      </TableCell>
-                      <TableCell>{college.city}</TableCell>
-                      <TableCell>{college.averageCPL} Credits</TableCell>
-                      <TableCell>{college.topPrograms.join(", ")}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <SearchBar
+                onSearch={(term) => setSearchQuery(term)}
+                onClear={handleSearchClear}
+                placeholder="Search colleges by name, city, or zip code..."
+                className="mb-4"
+              />
+              <ScrollArea className="h-[500px]">
+                {filteredColleges.map(
+                  (
+                    college: LookupColleges & {
+                      CollegeUIConfig: { Slug: string | null }[];
+                    }
+                  ) => (
+                    <div
+                      key={college.CollegeID}
+                      className="flex justify-between items-center"
+                    >
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start text-left mb-2 ${
+                          selectedCollege === college.CollegeID
+                            ? "bg-muted"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedCollege(college.CollegeID)}
+                      >
+                        <div>
+                          <div className="font-semibold">{college.College}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {college.City}, {college.StateCode}{" "}
+                            {college.ZipCode}
+                          </div>
+                        </div>
+                      </Button>
+                      <Link
+                        target="_blank"
+                        className="p-4"
+                        href={`/${college.CollegeUIConfig[0]?.Slug || "#"}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  )
+                )}
+              </ScrollArea>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
-
-      {selectedCollege && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{selectedCollege?.name}</CardTitle>
+          <Card className="md:col-span-2" data-intro="view-colleges-on-map">
+            <CardContent className="pt-6 pb-0">
+              <CollegeMap
+                colleges={filteredColleges}
+                onSelectCollege={(collegeId) => setSelectedCollege(collegeId)}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        <Card className="w-full" data-intro="browse-courses">
+          <CardHeader className="bg-muted p-4">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="text-lg sm:text-xl">Browse CPL Courses {selectedCollege ? `at ${filteredColleges.find(college => college.CollegeID === selectedCollege)?.College}` : ""}</div>
+              <div className="w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <SearchBar
+                    onSearch={handleSearch}
+                    inputClassName="bg-blue-100"
+                  />
+                </div>
+              </div>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p>
-              <strong>City:</strong> {selectedCollege?.city}
-            </p>
-            <p>
-              <strong>Average CPL:</strong> {selectedCollege.averageCPL} Credits
-            </p>
-            <p>
-              <strong>Top Programs:</strong>{" "}
-              {selectedCollege.topPrograms.join(", ")}
-            </p>
-            <Button className="mt-4">
-              <MapPin className="mr-2 h-4 w-4" />
-              View College Details
-            </Button>
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              <div className="w-full overflow-x-auto">
+                {selectedCollege ? (
+                  <ArticulationsTable
+                    articulations={[]}
+                    loading={isLoading}
+                    error={error}
+                    searchTerm={searchTerm}
+                    showCollegeName={true}
+                    CollegeID={selectedCollege}
+                    settingsObject={null}
+                    fetchUrl={fetchUrl}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Please select a college from the list to view eligible
+                    courses
+                  </div>
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
-      )}
-    </div>
+      </div>
+    </SelectedCoursesProvider>
   );
 }

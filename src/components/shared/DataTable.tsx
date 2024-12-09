@@ -47,46 +47,73 @@ export function DataTable({
   }, [data, sorting]);
 
   return (
-    <div className="relative">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead key={column.key}>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    setSorting({
-                      column: column.key,
-                      direction:
-                        sorting.column === column.key &&
-                        sorting.direction === "asc"
-                          ? "desc"
-                          : "asc",
-                    })
-                  }
-                >
-                  {column.label}
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedData.map((row, index) => (
-            <TableRow
-              key={index}
-              onClick={() => onRowClick && onRowClick(row)}
-              className="cursor-pointer hover:bg-gray-100"
-            >
+    <div className="rounded-md border">
+      {/* Header Table */}
+      <div className="overflow-hidden">
+        <Table>
+          <TableHeader className="sticky top-0 bg-white z-10">
+            <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.key}>{row[column.key]}</TableCell>
+                <TableHead 
+                  key={column.key}
+                  className="font-bold text-black"
+                >
+                  <Button
+                    variant="ghost"
+                    onClick={() =>
+                      setSorting({
+                        column: column.key,
+                        direction:
+                          sorting.column === column.key &&
+                          sorting.direction === "asc"
+                            ? "desc"
+                            : "asc",
+                      })
+                    }
+                  >
+                    {column.label}
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+        </Table>
+      </div>
+
+      {/* Body Table with Scrolling */}
+      <div className="overflow-y-auto" style={{ maxHeight }}>
+        <Table>
+          <TableBody>
+            {sortedData.length ? (
+              sortedData.map((row, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => onRowClick && onRowClick(row)}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
+                  {columns.map((column) => (
+                    <TableCell 
+                      key={column.key}
+                    >
+                      {row[column.key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
