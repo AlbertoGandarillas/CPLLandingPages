@@ -62,8 +62,8 @@ export default function CollegeMap({ colleges, onSelectCollege }: CollegeMapProp
 
   return (
     <MapContainer
-      center={[36.7783, -119.4179]}
-      zoom={6}
+      center={[34.0522, -118.2437]}
+      zoom={8}
       className="w-full h-[600px] z-0"
       scrollWheelZoom={true}
     >

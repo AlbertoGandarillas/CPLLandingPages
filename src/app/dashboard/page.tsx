@@ -24,6 +24,12 @@ import { AlertCircle, Trash, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
+import { MostCommonIndCertifications } from "@/components/dashboard/MostCommonIndCertifications";
+
+interface TopCodeSelection {
+  code: string | null;
+  title: string | null;
+}
 
 export default function DashboardPage() {
   const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
@@ -32,7 +38,9 @@ export default function DashboardPage() {
   >(null);
   const [selectedCPLType, setSelectedCPLType] = useState<string | null>(null);
   const [selectedCR, setSelectedCR] = useState<string | null>(null);
+  const [selectedIndCert, setSelectedIndCert] = useState<string | null>(null);
   const [selectedTopCode, setSelectedTopCode] = useState<string | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [selectedCIDNumber, setSelectedCIDNumber] = useState<string | null>(
     null
   );
@@ -53,6 +61,7 @@ export default function DashboardPage() {
       selectedTopCode,
       selectedCIDNumber,
       searchTerm,
+      selectedIndCert,
     ],
     queryFn: async () => {
       const response = await fetch(
@@ -64,6 +73,7 @@ export default function DashboardPage() {
           topCode: selectedTopCode ?? undefined,
           cidNumber: selectedCIDNumber ?? undefined,
           searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+          indCert: selectedIndCert ?? undefined,
         })}`
       );
 
@@ -96,8 +106,12 @@ export default function DashboardPage() {
   const handleCRSelect = (criteria: string | null) => {
     setSelectedCR(criteria);
   };
-  const handleTopCodeSelect = (topCode: string | null) => {
-    setSelectedTopCode(topCode);
+  const handleIndCertSelect = (indCert: string | null) => {
+    setSelectedIndCert(indCert);
+  };
+  const handleTopCodeSelect = (selection: TopCodeSelection) => {
+    setSelectedTopCode(selection.code);
+    setSelectedProgram(selection.title);
   };
   const handleCIDNumberSelect = (cidNumber: string | null) => {
     setSelectedCIDNumber(cidNumber);
@@ -110,6 +124,7 @@ export default function DashboardPage() {
     setSelectedCR(null);
     setSelectedTopCode(null);
     setSelectedCIDNumber(null);
+    setSelectedIndCert(null);
     setSearchTerm("");
     searchBarRef.current?.clear();
   };
@@ -123,16 +138,19 @@ export default function DashboardPage() {
             setSelectedCollege={handleCollegeSelect}
           />
         </div>
-        <div className="w-full lg:w-[450px] lg:flex-none">
+        <div className="w-full lg:w-[550px] lg:flex-none">
           <Tabs defaultValue="crs" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="crs" className="text-xs">
+            <TabsList className="flex w-full overflow-x-auto">
+              <TabsTrigger value="crs" className="text-xs whitespace-nowrap">
                 Credit Recommendations
               </TabsTrigger>
-              <TabsTrigger value="topcodes" className="text-xs">
+              <TabsTrigger value="industry" className="text-xs whitespace-nowrap">
+                Industry Certifications
+              </TabsTrigger>
+              <TabsTrigger value="topcodes" className="text-xs whitespace-nowrap">
                 Top Codes
               </TabsTrigger>
-              <TabsTrigger value="cids" className="text-xs">
+              <TabsTrigger value="cids" className="text-xs whitespace-nowrap">
                 C-ID Numbers
               </TabsTrigger>
             </TabsList>
@@ -150,6 +168,22 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <MostCommonCRs onSelect={handleCRSelect} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="industry">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold">
+                    Most Common Industry Certifications
+                  </CardTitle>
+                  <CardDescription>
+                    Note: List reflects all industry certifications currently in
+                    MAP. Not all are articulated with a course at a college...yet.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <MostCommonIndCertifications onSelect={handleIndCertSelect} creditRecommendation={selectedCR} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -240,6 +274,15 @@ export default function DashboardPage() {
                   />
                 </Badge>
               )}
+              {selectedIndCert && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  {selectedIndCert}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() => handleIndCertSelect(null)}
+                  />
+                </Badge>
+              )}
               {selectedCIDNumber && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   {selectedCIDNumber}
@@ -251,16 +294,16 @@ export default function DashboardPage() {
               )}
               {selectedTopCode && (
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  {selectedTopCode}
+                  {selectedProgram}
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleTopCodeSelect(null)}
+                    onClick={() => handleTopCodeSelect({ code: null, title: null })}
                   />
                 </Badge>
               )}
             </div>
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={handleClearFilters}
               className="whitespace-nowrap"
             >

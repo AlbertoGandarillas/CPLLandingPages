@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { ViewCPLArticulations } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { File } from "lucide-react";
+import { SquareArrowOutUpRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import { RubricItemsTable } from "@/components/shared/RubricItemsTable";
 import { EvidenceCompetenciesTable } from "@/components/shared/EvidenceCompetenciesTable";
 import { ExhibitDocumentsTable } from "@/components/shared/ExhibitDocuments";
 import { ExhibitArticulatedCoursesTable } from "@/components/shared/ExhibitArticulatedCoursesTable";
+import { Badge } from "@/components/ui/badge";
 
 interface ArticulationListProps {
   articulations: ViewCPLArticulations[];
@@ -31,6 +32,7 @@ export default function ArticulationList({
 }: ArticulationListProps) {
   const [selectedExhibitId, setSelectedExhibitId] = useState<string | null>(null);
   const [selectedArticulation, setSelectedArticulation] = useState<ViewCPLArticulations | null>(null);
+  const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
   return (
     <>
       <Table>
@@ -61,14 +63,27 @@ export default function ArticulationList({
             <TableRow key={index}>
               <TableCell>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => {
+                  onClick={async () => {
+                    const buttonId = articulation.ArticulationID.toString();
+                    setLoadingButtonId(buttonId);
+                    // Add small delay to show loading state
+                    await new Promise((resolve) => setTimeout(resolve, 1));
                     setSelectedExhibitId(articulation.ExhibitID.toString());
                     setSelectedArticulation(articulation);
+                    setLoadingButtonId(null);
                   }}
+                  disabled={
+                    loadingButtonId === articulation.ArticulationID.toString()
+                  }
                 >
-                  <File className="h-4 w-4" />
+                  {loadingButtonId ===
+                  articulation.ArticulationID.toString() ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
+                  ) : (
+                    <SquareArrowOutUpRight className="h-4 w-4" />
+                  )}
                 </Button>
               </TableCell>
               <TableCell>{articulation.CPLTypeDescription}</TableCell>
@@ -109,17 +124,30 @@ export default function ArticulationList({
       >
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Articulation Details</DialogTitle>
+            <DialogTitle className="flex justify-between items-center">
+              <div>
+              Exhibit: {selectedArticulation?.AceID} -{" "}
+                {selectedArticulation?.IndustryCertification}{" "}
+              </div>
+
+              <div className="pr-8">
+                {selectedArticulation && selectedArticulation?.VersionNumber?.toString().trim() !== "" ? (
+                  <Badge variant="default">Version : {selectedArticulation?.VersionNumber}</Badge>
+                ) : null}
+              </div>
+            </DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-3 gap-4 bg-muted p-4 rounded-md">
-            <p className="font-semibold">College: {selectedArticulation?.College}</p>
-            <p className="font-semibold">Exhibit: {selectedArticulation?.AceID}</p>
-            {selectedArticulation?.VersionNumber && (
-              <p className="font-semibold">Version: {selectedArticulation?.VersionNumber}</p>
-            )}
+          <div className="flex items-center py-2">     
+            <Badge variant="secondary">
+              Originating College:{" "}{selectedArticulation?.College}
+            </Badge>
           </div>
           {selectedExhibitId && (
-            <ExhibitArticulatedCoursesTable exhibitId={selectedExhibitId} criteriaId={selectedArticulation?.CriteriaID} outlineId={selectedArticulation?.OutlineID} />
+            <ExhibitArticulatedCoursesTable
+              exhibitId={selectedExhibitId}
+              criteriaId={selectedArticulation?.CriteriaID}
+              outlineId={selectedArticulation?.OutlineID}
+            />
           )}
           {selectedExhibitId && (
             <RubricItemsTable exhibitId={selectedExhibitId} />

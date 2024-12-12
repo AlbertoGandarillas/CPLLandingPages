@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const topCode = url.searchParams.get("topCode");
   const cidNumber = url.searchParams.get("cidNumber");
   const searchTerm = url.searchParams.get("searchTerm");
-
+  const indCert = url.searchParams.get("indCert");
   try {
     const where: Prisma.ViewCPLArticulationsWhereInput = {};
 
@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
     }
     if (criteria) {
       where.Criteria = criteria;
+    }
+    if (indCert) {
+      where.IndustryCertification = indCert;
     }
     if (topCode) {
       where.TopCode = parseInt(topCode);

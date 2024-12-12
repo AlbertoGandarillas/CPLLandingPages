@@ -10,6 +10,7 @@ interface ActionItem {
   name: string;
   icon: React.ElementType;
   href: string;
+  primary: boolean;
 }
 
 interface HeaderProps {
@@ -34,7 +35,7 @@ export function Header({ actionItems }: HeaderProps) {
             <nav className="flex flex-col space-y-4 mt-8">
               {actionItems.map((item) => (
                 <Link key={item.name} href={item.href} target="_blank" passHref>
-                  <Button className="w-full justify-start">
+                  <Button className="w-full justify-start" variant={item.primary ? "default" : "secondary"}>
                     {React.createElement(item.icon, {
                       className: "w-4 h-4 mr-2",
                     })}
@@ -56,7 +57,7 @@ export function Header({ actionItems }: HeaderProps) {
       <nav className="hidden md:flex items-center space-x-4">
         {actionItems.map((item) => (
           <Link key={item.name} href={item.href} passHref>
-            <Button variant="secondary">
+            <Button variant={item.primary ? "default" : "secondary"}>
               {React.createElement(item.icon, { className: "w-4 h-4 mr-2" })}
               {item.name}
             </Button>

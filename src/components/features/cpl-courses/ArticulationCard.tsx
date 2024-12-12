@@ -167,7 +167,7 @@ export default function ArticulationCard({
                                   className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
-                              <TooltipContent>
+                              <TooltipContent side="right">
                                 <p>
                                   Type of evidence required to receive credit
                                 </p>

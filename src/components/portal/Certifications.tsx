@@ -1,20 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import SearchBar from "../shared/SearchBar";
+import React, { useEffect, useRef } from "react";
 import { useCertifications } from "@/hooks/useCertifications";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
-import SelectCPLType from "./SelectCPLType";
 import CertificationCard from "./CertificationCard";
 
-export const Certifications = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [cplType, setCplType] = useState("all");
+interface CertificationsProps {
+  searchTerm: string;
+  cplType?: string;
+  learningMode?: string;
+}
 
-  const handleSearch = useCallback((term: string) => {
-    if (term.length >= 3 || term.length === 0) {
-      setSearchTerm(term);
-    }
-  }, []);
-  
+export const Certifications = ({ searchTerm, cplType, learningMode }: CertificationsProps) => {
   const { 
     data,
     fetchNextPage,
@@ -22,7 +17,7 @@ export const Certifications = () => {
     isFetchingNextPage,
     isLoading,
     error 
-  } = useCertifications(searchTerm, cplType);
+  } = useCertifications(searchTerm, cplType, learningMode);
 
   const allCertifications = data?.pages.flatMap(page => page.items) ?? [];
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -60,19 +55,7 @@ export const Certifications = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center gap-4 pb-4">
-        <div className="w-96">
-          <SelectCPLType selectedType={cplType} setSelectedType={setCplType} />
-        </div>
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder="Search CPL Certifications by name..."
-          className="w-full"
-          value={searchTerm}
-        />
-      </div>
- 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {allCertifications?.map((certification, index) => (
           <React.Fragment
             key={`${certification.CollegeViews[0].College}-${index}`}

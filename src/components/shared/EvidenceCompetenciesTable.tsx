@@ -20,6 +20,10 @@ export function EvidenceCompetenciesTable({ exhibitId }: EvidenceCompetenciesTab
     return <div>Loading...</div>;
   }
 
+  if (!data || data.length === 0) {
+    return null;
+  }
+
   // Transform the data to flatten the nested structure
   const transformedData = data?.map(item => ({
     ...item,

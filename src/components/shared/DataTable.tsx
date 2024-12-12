@@ -13,6 +13,8 @@ import { ArrowUpDown } from "lucide-react";
 interface Column {
   key: string;
   label: string;
+  headerAlign?: string; // Add alignment for header
+  cellAlign?: string;  // Add alignment for cells
 }
 
 interface DataTableProps {
@@ -51,12 +53,12 @@ export function DataTable({
       {/* Header Table */}
       <div className="overflow-hidden">
         <Table>
-          <TableHeader className="sticky top-0 bg-white z-10">
+          <TableHeader className="sticky top-0 bg-muted z-10">
             <TableRow>
               {columns.map((column) => (
                 <TableHead 
                   key={column.key}
-                  className="font-bold text-black"
+                  className={`font-bold text-black ${column.headerAlign || ''}`}
                 >
                   <Button
                     variant="ghost"
@@ -90,11 +92,12 @@ export function DataTable({
                 <TableRow
                   key={index}
                   onClick={() => onRowClick && onRowClick(row)}
-                  className="cursor-pointer hover:bg-gray-100"
+                  className="cursor-pointer hover:bg-muted"
                 >
                   {columns.map((column) => (
                     <TableCell 
                       key={column.key}
+                      className={column.cellAlign || ''}
                     >
                       {row[column.key]}
                     </TableCell>

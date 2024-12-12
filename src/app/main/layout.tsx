@@ -104,7 +104,7 @@ function Options() {
       ];
   return (
     <>
-      {options.map((item, index) => (
+      { /*options.map((item, index) => (
         <Link
           key={index}
           href={item.href}
@@ -121,7 +121,7 @@ function Options() {
             </div>
           </Button>
         </Link>
-      ))}
+      )) */}
       <Separator className="my-4" />
       <div data-intro="cccapply-fafsa">
         {additionalOptions.map((option, index) => (
