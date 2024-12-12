@@ -1,13 +1,30 @@
 "use client";
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import dynamic from "next/dynamic";
 import { LookupColleges, ViewCPLCertificationsByCollege } from "@prisma/client";
 import { defaultIcon, selectedIcon } from "@/lib/leaflet-icons";
 import type { LatLngTuple } from "leaflet";
-import "leaflet/dist/leaflet.css";
 import "@/styles/map-overrides.css";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+
+// Dynamically import Leaflet components
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  { ssr: false }
+);
+const Popup = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Popup),
+  { ssr: false }
+);
 
 interface CollegeMapProps {
   colleges: (LookupColleges & {
@@ -32,7 +49,7 @@ export default function CollegeMap({ colleges, onSelectCollege }: CollegeMapProp
 
   useEffect(() => {
     setMounted(true);
-  }, [colleges]);
+  }, []);
 
   const validColleges = colleges.filter(
     (college): college is CollegeWithCoordinates => {
@@ -58,7 +75,13 @@ export default function CollegeMap({ colleges, onSelectCollege }: CollegeMapProp
     }
   );
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="w-full h-[600px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <MapContainer

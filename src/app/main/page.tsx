@@ -17,7 +17,6 @@ import { tourSteps } from "@/components/shared/OnBoarding";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import SearchBar from "@/components/shared/SearchBar";
-import CollegeMap from "@/components/portal/CollegeMap";
 import { useFindColleges } from "@/hooks/useFindColleges";
 import { LookupColleges, ViewCPLCertificationsByCollege } from "@prisma/client";
 import { createQueryString } from "@/lib/createQueryString";
@@ -33,6 +32,18 @@ interface TopCodeSelection {
   title: string | null;
 }
 
+// Dynamically import CollegeMap with SSR disabled
+const CollegeMap = dynamic(
+  () => import("@/components/portal/CollegeMap"),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[600px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    )
+  }
+);
 
 export default function Homepage() {
   const [searchQuery, setSearchQuery] = useState("");
