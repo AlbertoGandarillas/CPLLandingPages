@@ -48,10 +48,10 @@ export const DropdownTopCodes = ({
       onSelect={handleSelect}
       getDisplayValue={(item) => item.Program_Title ?? ""}
       getId={(item) => item.TopCode?.toString() ?? ""}
-      placeholder="Select Top Code..."
-      searchPlaceholder={searchPlaceholder || "Search Top Code..."}
-      noResultsText="No Top Code found."
-      allItemsText="All Top Codes"
+      placeholder="Filter by Program..."
+      searchPlaceholder={searchPlaceholder || "Filter by Program..."}
+      noResultsText="No Programs found."
+      allItemsText="All Programs"
       wrapWithSkeleton={false}
       selectedValue={value}
     />

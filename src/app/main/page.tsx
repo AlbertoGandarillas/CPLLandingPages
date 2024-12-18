@@ -1,18 +1,12 @@
 "use client";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
-import dynamic from 'next/dynamic';
-import 'intro.js/minified/introjs.min.css';
-import {
-  FileText,
-  Award,
-  CheckCircle,
-  ExternalLink,
-  X,
-} from "lucide-react";
+import dynamic from "next/dynamic";
+import "intro.js/minified/introjs.min.css";
+import { FileText, Award, CheckCircle, ExternalLink, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Certifications } from "@/components/portal/Certifications";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 import { tourSteps } from "@/components/shared/OnBoarding";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
@@ -33,25 +27,22 @@ interface TopCodeSelection {
 }
 
 // Dynamically import CollegeMap with SSR disabled
-const CollegeMap = dynamic(
-  () => import("@/components/portal/CollegeMap"),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-[600px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-      </div>
-    )
-  }
-);
+const CollegeMap = dynamic(() => import("@/components/portal/CollegeMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[600px] flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+    </div>
+  ),
+});
 
 export default function Homepage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = React.useState<string>("");
-  const [selectedTopCode, setSelectedTopCode] = useState<TopCodeSelection>({ 
-    code: null, 
-    title: null 
+  const [selectedTopCode, setSelectedTopCode] = useState<TopCodeSelection>({
+    code: null,
+    title: null,
   });
   const [cplType, setCplType] = useState("all");
   const [learningMode, setLearningMode] = useState("all");
@@ -80,16 +71,42 @@ export default function Homepage() {
     college: selectedCollege?.toString() ?? undefined,
     searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
   })}`;
-    
+
   const [hasShownIntro, setHasShownIntro] = useState(false);
   const pathname = usePathname();
+  const localStorageKey = `onboardingEnabled-${pathname}`;
 
   useEffect(() => {
-    if ( !hasShownIntro) {
-      import('intro.js').then((introJs) => {
+    if (!hasShownIntro) {
+      import("intro.js").then((introJs) => {
         const intro = introJs.default();
         intro.setOptions({
           steps: tourSteps["/main"],
+          doneLabel: "Finish",
+          exitOnOverlayClick: false,
+          exitOnEsc: false,
+          showStepNumbers: false,
+        });
+        intro.oncomplete(() => {
+            localStorage.setItem(localStorageKey, "false");
+        });
+        intro.onbeforechange(async function () {
+          const currentStep = intro._currentStep;
+          if (currentStep === 5) {
+            const courseTab = document.querySelector(
+              ".courseTab"
+            ) as HTMLElement;
+            if (courseTab) {
+              courseTab.click();
+              await new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve(true);
+                }, 1000);
+              });
+              return true;
+            }
+          }
+          return true;
         });
         intro.start();
         setHasShownIntro(true);
@@ -111,8 +128,8 @@ export default function Homepage() {
 
   return (
     <>
-      <section className="grid md:grid-cols-2 gap-6" data-intro="basic-info">
-        <Card className="bg-muted">
+      <section className="grid md:grid-cols-2 gap-6">
+        <Card className="bg-muted" data-intro="basic-info">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Award className="mr-2 h-5 w-5" />
@@ -128,7 +145,7 @@ export default function Homepage() {
             experience into recognized credit.
           </CardContent>
         </Card>
-        <Card className="bg-muted">
+        <Card className="bg-muted" data-intro="why-cpl-portfolio">
           <CardHeader>
             <CardTitle className="flex items-center">
               <CheckCircle className="mr-2 h-5 w-5" />
@@ -218,16 +235,25 @@ export default function Homepage() {
                   className="w-full"
                   value={searchTerm}
                 />
-                <DropdownTopCodes
-                  onTopCodeSelect={(selection) => setSelectedTopCode(selection)}
-                  selectedTopCode={selectedTopCode}
-                  searchPlaceholder="Filter by Program"
-                />
+                <div data-intro="filter-by-program">
+                  <DropdownTopCodes
+                    onTopCodeSelect={(selection) =>
+                      setSelectedTopCode(selection)
+                    }
+                    selectedTopCode={selectedTopCode}
+                    searchPlaceholder="Filter by Program"
+                  />
+                </div>
               </div>
               <Tabs defaultValue="exhibit" className="w-full mt-2">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList
+                  className="grid w-full grid-cols-2"
+                  data-intro="exhibit-course-views"
+                >
                   <TabsTrigger value="exhibit">Exhibit View</TabsTrigger>
-                  <TabsTrigger value="course">Course View</TabsTrigger>
+                  <TabsTrigger value="course" className="courseTab">
+                    Course View
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="exhibit">
                   <Certifications
@@ -238,7 +264,10 @@ export default function Homepage() {
                 </TabsContent>
                 <TabsContent value="course">
                   <SelectedCoursesProvider>
-                    <div className="w-full mx-auto p-6 space-y-6">
+                    <div
+                      className="w-full mx-auto p-6 space-y-6"
+                      data-intro="college-finder-course-view"
+                    >
                       <h2 className="text-2xl">
                         Find CPL Opportunities at California Community Colleges
                       </h2>
@@ -278,7 +307,7 @@ export default function Homepage() {
                                   }`
                                 : ""}
                             </div>
-                            <div>
+                            <div data-intro="get-cpl-at-your-college">
                               {selectedCollege && (
                                 <Link
                                   target="_blank"
