@@ -9,6 +9,7 @@ import CPLRequestModal from "./CPLRequestModal";
 import { Button } from "@/components/ui/button";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
+import { ViewCPLCoursesExport } from "@prisma/client";
 import { ContactForm } from "@/components/shared/ContactForm";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PaginatedResponse } from "@/types/PaginatedResponse";
@@ -292,42 +293,59 @@ export default function ArticulationsTable({
 }
 
 const exportToExcel = (
-  articulations: ExtendedViewCPLCourses[],
+  articulations: ExtendedViewCPLCourses[] | ViewCPLCoursesExport[],
   fileName: string
 ): void => {
-  const flattenedRows = articulations.flatMap((articulation) => {
+  const flattenedRows = articulations.map((articulation) => {
+    if ('SuggestedEvidence' in articulation) {
+      const creditRecommendations = articulation.CreditRecommendations?.split('|') || [''];
+      const suggestedEvidences = articulation.SuggestedEvidence?.split('|') || [''];
+      
+      const maxLength = Math.max(creditRecommendations.length, suggestedEvidences.length);
+      
+      const rows = [];
+      for (let i = 0; i < maxLength; i++) {
+        rows.push({
+          College: articulation.College ?? "",
+          Subject: articulation.Subject ?? "",
+          "Course Number": articulation.CourseNumber ?? "",
+          "Course Title": articulation.Course ?? "",
+          Units: articulation.Units ?? "",
+          Source: articulation.CPLTypeDescription ?? "",
+          "Possible Qualifications": articulation.IndustryCertification ?? "",
+          "Credit Recommendation": creditRecommendations[i] ?? "",
+          "Suggested Evidence": suggestedEvidences[i] ?? "",
+        });
+      }
+      
+      return rows;
+    }
+
     const industrycerts = articulation.IndustryCertifications || [];
     return industrycerts.flatMap((ic) => {
       const evidences = ic.Evidences || [];
       const recommendations = ic.CreditRecommendations || [];
+      
       if (evidences.length === 0 && recommendations.length === 0) {
-        return [
-          {
-            Subject: articulation.Subject ?? "",
-            "Course Number": articulation.CourseNumber ?? "",
-            "Course Title": articulation.CourseTitle ?? "",
-            Units: articulation.Units ?? "",
-            Source: ic.CPLTypeDescription ?? "",
-            "Possible Qualifications": ic.IndustryCertification ?? "",
-            "Credit Recommendation": "",
-            "Suggested Evidence": "",
-          },
-        ];
+        return [{
+          College: articulation.College ?? "",
+          Subject: articulation.Subject ?? "",
+          "Course Number": articulation.CourseNumber ?? "",
+          "Course Title": articulation.CourseTitle ?? "",
+          Units: articulation.Units ?? "",
+          Source: ic.CPLTypeDescription ?? "",
+          "Possible Qualifications": ic.IndustryCertification ?? "",
+          "Credit Recommendation": "",
+          "Suggested Evidence": "",
+        }];
       }
+
       const maxRows = Math.max(recommendations.length, evidences.length);
-      const rows: Array<{
-        Subject: string;
-        "Course Number": string;
-        "Course Title": string;
-        Units: string;
-        Source: string;
-        "Possible Qualifications": string;
-        "Credit Recommendation": string;
-        "Suggested Evidence": string;
-      }> = [];
+      const rows = [];
 
       for (let i = 0; i < maxRows; i++) {
         rows.push({
+          College: articulation.College ?? "",
           Subject: articulation.Subject ?? "",
           "Course Number": articulation.CourseNumber ?? "",
           "Course Title": articulation.CourseTitle ?? "",
@@ -341,7 +359,8 @@ const exportToExcel = (
 
       return rows;
     });
-  });
+  }).flat();
+
   const ws = XLSX.utils.json_to_sheet(flattenedRows);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Eligible Courses Sheet");

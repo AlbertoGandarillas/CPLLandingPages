@@ -12,23 +12,25 @@ export async function GET(request: NextRequest) {
   const searchTerm = url.searchParams.get("searchTerm");
   const outlineIds = url.searchParams.get("outlineIds");
   const page = parseInt(url.searchParams.get("page") || "1");
-  const limit = isExport ? undefined : parseInt(url.searchParams.get("limit") || "20");
+  const limit = parseInt(url.searchParams.get("limit") || "20");
 
   try {
-    const where: Prisma.ViewCPLCoursesWhereInput = {};
+    const baseWhere: any = {};
+    const exportBaseWhere: any = {};
 
     if (college && college !== "0") {
-      where.CollegeID = parseInt(college);
+      baseWhere.CollegeID = parseInt(college);
+      exportBaseWhere.CollegeID = parseInt(college);
     }
 
     // Handle outline IDs for selected courses
     if (outlineIds) {
-      where.OutlineID = {
+      baseWhere.OutlineID = {
         in: outlineIds.split(",").map((id) => parseInt(id)),
       };
-      // When fetching specific courses, ignore pagination
+
       const selectedCourses = await db.viewCPLCourses.findMany({
-        where,
+        where: baseWhere,
         include: {
           IndustryCertifications: {
             include: {
@@ -53,7 +55,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (industryCertification || cplType || learningMode) {
-      where.IndustryCertifications = {
+      baseWhere.IndustryCertifications = {
         some: {
           ...(industryCertification && {
             IndustryCertification: { contains: industryCertification },
@@ -64,14 +66,24 @@ export async function GET(request: NextRequest) {
           }),
         },
       };
+
+      // Direct filtering for export view
+      if (industryCertification) {
+        exportBaseWhere.IndustryCertification = { contains: industryCertification };
+      }
+      if (cplType) {
+        exportBaseWhere.CPLType = parseInt(cplType);
+      }
+      if (learningMode) {
+        exportBaseWhere.ModelOfLearning = parseInt(learningMode);
+      }
     }
 
     if (searchTerm) {
-      where.OR = [
+      baseWhere.OR = [
         { Course: { contains: searchTerm } },
         { Subject: { contains: searchTerm } },
         { College: { contains: searchTerm } },
-        { CourseTitle: { contains: searchTerm } },
         {
           IndustryCertifications: {
             some: {
@@ -84,33 +96,59 @@ export async function GET(request: NextRequest) {
           }
         }
       ];
+
+      exportBaseWhere.OR = [
+        { Course: { contains: searchTerm } },
+        { Subject: { contains: searchTerm } },
+        { College: { contains: searchTerm } },
+        { IndustryCertification: { contains: searchTerm } },
+        { CPLTypeDescription: { contains: searchTerm } },
+        { CPLModeofLearningDescription: { contains: searchTerm } }
+      ];
     }
 
-    const [totalCount, commonCourses] = await Promise.all([
-      db.viewCPLCourses.count({ where }),
-      db.viewCPLCourses.findMany({
-        where,
-        include: {
-          IndustryCertifications: {
-            include: {
-              Evidences: true,
-              CreditRecommendations: true,
+    if (isExport) {
+      const exportCourses = await db.viewCPLCoursesExport.findMany({
+        where: exportBaseWhere,
+        orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }]
+      });
+
+      if (exportCourses.length === 0) {
+        return new NextResponse(null, {
+          status: 404,
+          statusText: "No articulations found",
+        });
+      }
+
+      return NextResponse.json(exportCourses);
+    } else {
+      const [totalCount, commonCourses] = await Promise.all([
+        db.viewCPLCourses.count({ where: baseWhere }),
+        db.viewCPLCourses.findMany({
+          where: baseWhere,
+          include: {
+            IndustryCertifications: {
+              include: {
+                Evidences: true,
+                CreditRecommendations: true,
+              },
             },
           },
-        },
-        orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
-        ...(!isExport && limit !== undefined && { skip: (page - 1) * limit, take: limit }),
-      }),
-    ]);
+          orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+      ]);
 
-    if (commonCourses.length === 0) {
-      return new NextResponse(null, {
-        status: 404,
-        statusText: "No articulations found",
-      });
+      if (commonCourses.length === 0) {
+        return new NextResponse(null, {
+          status: 404,
+          statusText: "No articulations found",
+        });
+      }
+
+      return NextResponse.json(commonCourses);
     }
-
-    return NextResponse.json(commonCourses);
   } catch (error: any) {
     if (error?.message?.includes("maximum of 2100 parameters")) {
       return NextResponse.json(
