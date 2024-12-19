@@ -2,13 +2,13 @@
 import { CircleHelp } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger 
+  DialogTrigger,
 } from "../ui/dialog";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
@@ -32,27 +32,57 @@ export const tourSteps: TourSteps = {
     {
       title: "Basic CPL Information",
       element: '[data-intro="basic-info"]',
-      intro: "Here you can learn the basics of what CPL is...",
+      intro:
+        "Start here to understand what Credit for Prior Learning (CPL) is and how it can help you earn credit for your experiences.",
       position: "bottom",
+    },
+    {
+      title: "Why is a CPL Portfolio Important?",
+      element: '[data-intro="why-cpl-portfolio"]',
+      intro:
+        "Learn why building a CPL portfolio is essential for demonstrating your prior learning and experiences to colleges.",
+      position: "left",
     },
     {
       title: "Most Common CPL Opportunities",
       element: '[data-intro="most-common-cpl-opportunities"]',
       intro:
-        "Here you can browse or search for available CPL credits offered by college or course.",
+        "Explore CPL opportunities by filtering for Military, Apprentice, or Non-Military CPL, or search by program or keyword to find courses matching your interests.",
       position: "left",
     },
     {
-      title: "Find a CPL Opportunity",
-      element: '[data-intro="find-map-college"]',
-      intro: "Click here to find a MAP College near you.",
+      title: "Filter by Program",
+      element: '[data-intro="filter-by-program"]',
+      intro:
+        "Narrow your search by selecting a program from this dropdown. Programs shown have CPL available at some MAP Colleges.",
       position: "right",
     },
     {
-      title: "Additional Resources",
+      title: "Exhibit and Course Views",
+      element: '[data-intro="exhibit-course-views"]',
+      intro:
+        "Switch between Exhibit View and Course View to explore CPL options by course or college. The Course View includes a map and college list for easy navigation.",
+      position: "right",
+    },
+    {
+      title: "College Finder in Course View",
+      element: '[data-intro="college-finder-course-view"]',
+      intro:
+        "In Course View, specific colleges can be found using a map and list to browse college specific CPL courses.",
+      position: "right",
+    },
+    {
+      title: "Get CPL at your College",
+      element: '[data-intro="get-cpl-at-your-college"]',
+      intro:
+        "Once you've selected a college, click here to visit their CPL page and get more details about their opportunities.",
+      position: "right",
+    },
+    {
+      title: "CCCApply and FAFSA Links",
       element: '[data-intro="cccapply-fafsa"]',
       intro:
-        "If you are ready to set up CCCApply, or already applied and need to apply for FAFSA, click the appropriate link here.",
+        "Ready to apply? Use these links to start your CCCApply application or complete your FAFSA.",
       position: "right",
     },
   ],
@@ -61,7 +91,7 @@ export const tourSteps: TourSteps = {
       title: "Search for Colleges",
       element: '[data-intro="search-colleges"]',
       intro:
-        "Use the search to find colleges in your area. To see specific opportunities at a college or to request a CPL review from a college, click the icon to view that colleges CPL page. To view some opportunities on this page, click the college name to filter the table of CPL Opportunities at the bottom of the page.",
+        "Use the search to find colleges in your area. To see specific opportunities at a college or to request a CPL review from a college, click the icon to view that college's CPL page. To view some opportunities on this page, click the college name to filter the table of CPL Opportunities at the bottom of the page.",
       position: "bottom",
     },
     {
@@ -84,14 +114,18 @@ export const tourSteps: TourSteps = {
 export default function OnBoarding() {
   const pathname = usePathname();
   const localStorageKey = `onboardingEnabled-${pathname}`;
-
-  const [onboardingEnabled, setOnboardingEnabled] = React.useState(false);
+  const [onboardingEnabled, setOnboardingEnabled] = React.useState(true);
   const [isOpen, setIsOpen] = React.useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedValue = localStorage.getItem(localStorageKey);
-      setOnboardingEnabled(storedValue !== "false");
+      if (storedValue === null) {
+        localStorage.setItem(localStorageKey, "true");
+        setOnboardingEnabled(true);
+      } else {
+        setOnboardingEnabled(storedValue !== "false");
+      }
     }
   }, [localStorageKey]);
 
@@ -102,11 +136,9 @@ export default function OnBoarding() {
       intro.setOptions({
         steps,
         doneLabel: "Finish",
-      });
-
-      intro.oncomplete(() => {
-        setOnboardingEnabled(false);
-        localStorage.setItem(localStorageKey, "false");
+        exitOnOverlayClick: false,
+        exitOnEsc: false,
+        showStepNumbers: false,
       });
 
       intro.start();
@@ -121,7 +153,7 @@ export default function OnBoarding() {
       startTour();
     } else {
       const intro = introJs();
-      intro.exit(true); 
+      intro.exit(true);
     }
     setIsOpen(false);
   };
@@ -147,7 +179,7 @@ export default function OnBoarding() {
             </TooltipContent>
           </div>
         </Tooltip>
-        
+
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Guided Tour</DialogTitle>

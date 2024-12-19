@@ -15,9 +15,9 @@ interface CertificationResponse {
   currentPage: number;
 }
 
-export function useCertifications(searchTerm?: string, cplType?: string) {
+export function useCertifications(searchTerm?: string, cplType?: string, learningMode?: string) {
   return useInfiniteQuery<CertificationResponse>({
-    queryKey: ["Certifications", searchTerm, cplType],
+    queryKey: ["Certifications", searchTerm, cplType, learningMode],
     queryFn: async ({ pageParam }) => {
       const page = pageParam as number ?? 1;
       const params = new URLSearchParams({
@@ -31,6 +31,10 @@ export function useCertifications(searchTerm?: string, cplType?: string) {
       
       if (cplType && cplType !== 'all') {
         params.append('cplType', cplType);
+        }
+      
+      if (learningMode && learningMode !== 'all') {
+        params.append('learningMode', learningMode);
       }
       
       const response = await fetch(`/api/cpl-certifications?${params}`);

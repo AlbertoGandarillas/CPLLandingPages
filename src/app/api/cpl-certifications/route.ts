@@ -8,12 +8,16 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(url.searchParams.get("limit") || "10");
   const searchTerm = url.searchParams.get("searchTerm");
   const cplType = url.searchParams.get("cplType");
-  
+  const learningMode = url.searchParams.get("learningMode");
   try {
     const where: Prisma.ViewCPLCertificationsWhereInput = {};
     
     if (cplType && cplType !== 'all') {
       where.CPLType = cplType;
+    }
+
+    if (learningMode && learningMode !== "all") {
+      where.LearningMode = learningMode;
     }
     
     if (searchTerm && searchTerm.length >= 3) {

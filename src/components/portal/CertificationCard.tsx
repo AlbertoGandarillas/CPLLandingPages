@@ -16,7 +16,9 @@ import { useState } from "react";
 interface CertificationCardProps {
   certification: {
     IndustryCertification: string;
-    CPLType: string;
+    CPLType: string | null;
+    LearningMode: string | null;
+    ModelOfLearning: number | null;
     TotalUnits: number;
     CollegeViews: {
       College: string;
@@ -46,7 +48,7 @@ export default function CertificationCard({
       <CardContent className="flex-grow">
         <div className="flex justify-between py-3">
           <Badge variant="outline" className="mb-2">
-            {certification.CPLType}
+            {certification.LearningMode}
           </Badge>
           <Badge variant="secondary" className="mb-2">
             Avg {Math.round(certification.TotalUnits / certification.CollegeViews.length)}{" "}

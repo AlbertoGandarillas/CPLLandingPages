@@ -4,8 +4,13 @@ import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import { DataTable } from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 
+interface TopCodeSelection {
+  code: string | null;
+  title: string | null;
+}
+
 interface MostCommonTopCodesProps {
-  onSelect: (TopCode: string | null) => void;
+  onSelect: (selection: TopCodeSelection) => void;
 }
 
 export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
@@ -14,7 +19,7 @@ export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
 
   const columns = [
     { key: "Program_Title", label: "Tops Code" },
-    { key: "Count", label: "Count" },
+    { key: "Count", label: "Count", headerAlign: "flex justify-end" },
   ];
 
   const filteredData =
@@ -25,15 +30,20 @@ export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
     ) || [];
 
   if (isLoading) {
-    return (
-      <SkeletonWrapper isLoading={true} fullWidth={true} variant="table" />
-    );
+    return <SkeletonWrapper isLoading={true} fullWidth={true} variant="table" />;
   }
 
   if (error) {
     console.error("Error loading Most Common CRs:", error);
     return <div>Error loading Most Common CRs</div>;
   }
+
+  const handleRowClick = (row: any) => {
+    onSelect({
+      code: row.TopCode?.toString() ?? null,
+      title: row.Program_Title ?? null
+    });
+  };
 
   return (
     <div>
@@ -49,7 +59,7 @@ export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
         <DataTable
           data={filteredData}
           columns={columns}
-          onRowClick={(row) => onSelect(row.TopCode)}
+          onRowClick={handleRowClick}
           maxHeight="300px"
         />
       </div>

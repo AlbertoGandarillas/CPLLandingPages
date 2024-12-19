@@ -8,6 +8,7 @@ export interface QueryParams {
   cidNumber?: string | null;
   searchTerm?: string | null;
   page?: string | null;
+  indCert?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

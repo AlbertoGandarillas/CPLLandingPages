@@ -579,7 +579,9 @@ model ViewCPLMos {
 
 model ViewCPLCertifications {
     IndustryCertification   String
-    CPLType                 String
+    CPLType                 String?
+    LearningMode            String?
+    ModelOfLearning         Int?
     TotalUnits              Float
     CollegeViews            ViewCPLCertificationsByCollege[]
     @@unique([IndustryCertification])
@@ -626,5 +628,36 @@ model ViewCPLExhibitCourses {
   Criteria    String?
   Course      String?
   CatalogDescription String?
+  College            String?
   @@id([ExhibitID, outline_id, CriteriaID])
+}
+
+model GetIndustryCertifications {
+  Title String 
+  CPLType String
+  StudentsCount Int
+  ArticulationsCount Int
+  SortOrder Int
+  Colleges String?
+  @@id([Title, CPLType])
+  @@map("_GetIndustryCertifications")
+}
+
+model ViewCPLCoursesExport {
+  CollegeID                      Int
+  College                        String?
+  OutlineID                      Int
+  Subject                        String?
+  CourseNumber                   String?
+  Course                         String?
+  Units                          String?
+  IndustryCertification          String?
+  CPLType                        Int?
+  CPLModeofLearningDescription   String?
+  CPLTypeDescription             String?
+  ModelOfLearning                Int?
+  CreditRecommendations          String?
+  SuggestedEvidence              String?
+
+  @@id([CollegeID, OutlineID])
 }

@@ -54,6 +54,10 @@ export function ExhibitDocumentsTable({ exhibitId }: ExhibitDocumentsProps) {
     );
   }
 
+  if (!documents || documents.length === 0) {
+    return null;
+  }
+
   if (error) {
     return (
       <div className="text-red-500 text-center p-4">
@@ -97,7 +101,7 @@ export function ExhibitDocumentsTable({ exhibitId }: ExhibitDocumentsProps) {
                   </div>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="default"
                   size="sm"
                   onClick={() => handleDownload(doc)}
                   className="flex items-center space-x-2"
