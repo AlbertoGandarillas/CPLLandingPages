@@ -1,5 +1,6 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type SearchBarRef } from "@/components/shared/SearchBar";
 import { useQuery } from "@tanstack/react-query";
 import { createQueryString } from "@/lib/createQueryString";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
@@ -18,10 +19,17 @@ import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import NotFoundPage from "../not-found";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import { useTheme } from "next-themes";
+import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
+import { Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home({ params }: any) {
   const { setTheme } = useTheme();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedLearningMode, setSelectedLearningMode] = useState<
+    string | null
+  >(null);
+  const searchBarRef = useRef<SearchBarRef>(null);
   const [open, setOpen] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<string | undefined>(
     undefined
@@ -54,20 +62,32 @@ export default function Home({ params }: any) {
       }),
   });
 
-    const fetchUrl = `/api/cpl-courses?${createQueryString({
-      college: selectedCollege,
-      industryCertification: selectedIndustryCertification,
-      searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
-    })}`;
+  const fetchUrl = `/api/cpl-courses?${createQueryString({
+    college: selectedCollege,
+    industryCertification: selectedIndustryCertification,
+    learningMode: selectedLearningMode,
+    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+  })}`;
 
   const settingsObject = settings && settings.length > 0 ? settings[0] : null;
 
-     const handleSearch = useCallback((term: string) => {
-       if (term.length >= 3 || term.length === 0) {
-         setSearchTerm(term);
-       }
-     }, []);
-   
+  const handleSearch = useCallback((term: string) => {
+    if (term.length >= 3 || term.length === 0) {
+      setSearchTerm(term);
+    }
+  }, []);
+
+  const handleLerningModeSelect = (learningMode: string | null) => {
+    setSelectedLearningMode(learningMode);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCollege(undefined);
+    setSelectedLearningMode(null);
+    setSelectedIndustryCertification(null);
+    setSearchTerm("");
+    searchBarRef.current?.clear();
+  };
 
   useEffect(() => {
     if (settingsObject && settingsObject.College?.College) {
@@ -75,10 +95,18 @@ export default function Home({ params }: any) {
     }
   }, [settingsObject]);
 
-  if (settingsLoading) return <SkeletonWrapper isLoading={settingsLoading} count={2} variant="table" fullWidth />;
+  if (settingsLoading)
+    return (
+      <SkeletonWrapper
+        isLoading={settingsLoading}
+        count={2}
+        variant="table"
+        fullWidth
+      />
+    );
   if (settingsError) return <div>Error loading settings</div>;
   if (!settingsObject) {
-    return <NotFoundPage/>;
+    return <NotFoundPage />;
   }
   const appName = `${process.env.NEXT_PUBLIC_APP_NAME}`;
   const appCopyright = `${process.env.NEXT_PUBLIC_APP_COPYRIGHT}`;
@@ -98,9 +126,7 @@ export default function Home({ params }: any) {
             onIndustryCertificationSelect={handleIndustryCertificationSelect}
             className=""
           >
-            <SelectedCoursesList
-              CollegeID={selectedCollege || ""}
-            />
+            <SelectedCoursesList CollegeID={selectedCollege || ""} />
           </Sidebar>
           <main className="flex-1 p-4">
             <Accordion
@@ -139,18 +165,31 @@ export default function Home({ params }: any) {
                     <SearchBar
                       className="w-full lg:w-96"
                       onSearch={handleSearch}
+                      ref={searchBarRef}
                     />
                     <DropdownIndustryCertifications
                       onIndustryCertificationSelect={
                         handleIndustryCertificationSelect
                       }
                       collegeId={selectedCollege}
+                      selectedIndustryCertification={selectedIndustryCertification}
                     />
+                    <DropdownLearningModes
+                      onLearningModeSelect={setSelectedLearningMode}
+                      selectedMode={selectedLearningMode}
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={handleClearFilters}
+                      className="whitespace-nowrap"
+                    >
+                      <Trash className="h-4 w-4" /> Clear Filters
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ArticulationsTable
-                    articulations={ []}
+                    articulations={[]}
                     loading={false}
                     error={null}
                     searchTerm={searchTerm}
