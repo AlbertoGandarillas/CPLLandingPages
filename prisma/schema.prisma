@@ -438,6 +438,7 @@ model ViewCPLIndustryCertifications {
     ModelOfLearning               Int?
     CPLTypeDescription            String?
     CPLModeofLearningDescription  String?
+    ModeofLearningCode           String?
     ArticulationCreditRecommendations String?
     Evidences                     ViewCPLEvidenceCompetency[]
     CreditRecommendations         ViewCPLCreditRecommendations[]
@@ -556,6 +557,7 @@ model ViewCPLArticulations {
   ModelOfLearning             Int?
   CPLTypeDescription          String?
   CPLModeofLearningDescription String?
+  ModeofLearningCode          String?
   CriteriaID                  Int
   Criteria                    String?
   IssuedFormID                Int?

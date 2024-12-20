@@ -32,6 +32,7 @@ import { ExtendedViewCPLCourses } from "@/types/ExtendedViewCPLCourses";
 import CertificationHoverCard from "./CertificationHoverCard";
 import { useToast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
+import LearningModesTable from "@/components/shared/LearningModesTable";
 
 interface ArticulationCardProps {
   articulation: ExtendedViewCPLCourses;
@@ -158,7 +159,7 @@ export default function ArticulationCard({
                     <TableRow>
                       <TableHead className="pl-2 text-sm">
                         <div className="flex text-left justify-start">
-                          Source
+                          CPL Type
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger>
@@ -171,6 +172,24 @@ export default function ArticulationCard({
                                 <p>
                                   Type of evidence required to receive credit
                                 </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </TableHead>
+                      <TableHead className="pl-2 text-sm">
+                        <div className="flex text-left justify-start">
+                          Learning Mode
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info
+                                  size={16}
+                                  className="ml-1 text-gray-400 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent side="right">
+                                <LearningModesTable />
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -227,6 +246,9 @@ export default function ArticulationCard({
                         <TableCell className="text-sm text-left align-top">
                           {cert.CPLTypeDescription}
                         </TableCell>
+                        <TableCell className="text-sm text-left align-top">
+                          {cert.ModeofLearningCode}
+                        </TableCell>
                         <TableCell className="align-top">
                           <CertificationHoverCard
                             industryCertification={
@@ -238,7 +260,9 @@ export default function ArticulationCard({
                             }
                             evidences={cert.Evidences || []}
                             crs={cert.CreditRecommendations || []}
-                            articulationCreditRecommendations={cert.ArticulationCreditRecommendations || null}
+                            articulationCreditRecommendations={
+                              cert.ArticulationCreditRecommendations || null
+                            }
                           />
                         </TableCell>
                         <TableCell className="align-top">
