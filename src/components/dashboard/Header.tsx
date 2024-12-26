@@ -35,7 +35,10 @@ export function Header({ actionItems }: HeaderProps) {
             <nav className="flex flex-col space-y-4 mt-8">
               {actionItems.map((item) => (
                 <Link key={item.name} href={item.href} target="_blank" passHref>
-                  <Button className="w-full justify-start" variant={item.primary ? "default" : "secondary"}>
+                  <Button
+                    className="w-full justify-start"
+                    variant={item.primary ? "default" : "secondary"}
+                  >
                     {React.createElement(item.icon, {
                       className: "w-4 h-4 mr-2",
                     })}
@@ -46,25 +49,26 @@ export function Header({ actionItems }: HeaderProps) {
             </nav>
           </SheetContent>
         </Sheet>
-        <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Link
+          href="https://map.rccd.edu/" target="_blank"
+          className="flex items-center gap-2 font-semibold"
+        >
           <MAPLogo />
         </Link>
-        <h2 className="text-sm font-bold lg:text-lg">
-          MAP CPL Inventory
-        </h2>
+        <h2 className="text-sm font-bold lg:text-lg">MAP CPL Inventory</h2>
       </div>
       <div className="flex items-center space-x-4">
-      <nav className="hidden md:flex items-center space-x-4">
-        {actionItems.map((item) => (
-          <Link key={item.name} href={item.href} passHref>
-            <Button variant={item.primary ? "default" : "secondary"}>
-              {React.createElement(item.icon, { className: "w-4 h-4 mr-2" })}
-              {item.name}
-            </Button>
-          </Link>
-        ))}
-      </nav>
-      <ModeToggle />
+        <nav className="hidden md:flex items-center space-x-4">
+          {actionItems.map((item) => (
+            <Link key={item.name} href={item.href} passHref>
+              <Button variant={item.primary ? "default" : "secondary"}>
+                {React.createElement(item.icon, { className: "w-4 h-4 mr-2" })}
+                {item.name}
+              </Button>
+            </Link>
+          ))}
+        </nav>
+        <ModeToggle />
       </div>
     </header>
   );
