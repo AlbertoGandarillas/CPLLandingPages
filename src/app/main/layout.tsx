@@ -24,7 +24,7 @@ export default function MainLayout({
                 href="/main"
                 className="flex items-center gap-2 font-semibold"
               >
-                <img
+                <Image
                   src="/images/map-logo-white.png"
                   alt="Map Logo"
                   style={{ width: "100px", height: "auto" }} // maintain aspect ratio

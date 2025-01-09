@@ -8,7 +8,7 @@ import { useIndustryCertifications } from "@/hooks/useIndustryCertifications";
 
 interface IndustryCertificationsTableProps {
   onIndustryCertificationSelect: (industryCertification: string) => void;
-  collegeId?: string | null; 
+  collegeId?: string | null;
 }
 
 export default function IndustryCertificationsTable({
@@ -35,14 +35,17 @@ export default function IndustryCertificationsTable({
     onIndustryCertificationSelect("");
   };
 
-  const debouncedSetFilterText = useCallback(debounce(setFilterText, 300), []);
+  const debouncedSetFilterText = useCallback((value: string) => {
+    debounce((text: string) => {
+      setFilterText(text);
+    }, 300)(value);
+  }, []);
 
   useEffect(() => {
-    debouncedSetFilterText(filterText);
+    setFilterText(filterText);
     return () => {
-      debouncedSetFilterText.cancel();
     };
-  }, [filterText, debouncedSetFilterText]);
+  }, [filterText]);
 
   return (
     <div className="h-[350px] overflow-auto">
