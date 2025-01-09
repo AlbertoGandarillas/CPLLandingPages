@@ -88,7 +88,7 @@ export default function Homepage() {
           showStepNumbers: false,
         });
         intro.oncomplete(() => {
-            localStorage.setItem(localStorageKey, "false");
+          localStorage.setItem(localStorageKey, "false");
         });
         intro.onbeforechange(async function () {
           const currentStep = intro._currentStep;
@@ -112,7 +112,7 @@ export default function Homepage() {
         setHasShownIntro(true);
       });
     }
-  }, [hasShownIntro]);
+  }, [hasShownIntro, localStorageKey]);
 
   const handleSearch = useCallback((term: string) => {
     if (term.length >= 3 || term.length === 0) {

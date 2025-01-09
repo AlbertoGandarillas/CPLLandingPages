@@ -44,7 +44,7 @@ export default function ArticulationsTable({
   settingsObject,
   fetchUrl,
 }: ArticulationsTableProps) {
-  const [selectedArticulation, setSelectedArticulation] = 
+  const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
   const [viewMode, setViewMode] = React.useState("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,7 +96,8 @@ export default function ArticulationsTable({
     },
   });
 
-  const allArticulations = infiniteData?.pages.flatMap((page) => page.data) ?? initialArticulations;
+  const allArticulations =
+    infiniteData?.pages.flatMap((page) => page.data) ?? initialArticulations;
 
   const isLoading = initialLoading || isLoadingMore;
   const error = infiniteError || initialError;
@@ -120,20 +121,20 @@ export default function ArticulationsTable({
   const handleExport = async () => {
     try {
       if (fetchUrl) {
-        const baseUrl = fetchUrl.split('?')[0];
-        const params = new URLSearchParams(fetchUrl.split('?')[1]);
-        params.append('export', 'true');
-        
+        const baseUrl = fetchUrl.split("?")[0];
+        const params = new URLSearchParams(fetchUrl.split("?")[1]);
+        params.append("export", "true");
+
         const res = await fetch(`${baseUrl}?${params.toString()}`);
-        if (!res.ok) throw new Error('Export failed');
-        
+        if (!res.ok) throw new Error("Export failed");
+
         const allData = await res.json();
         exportToExcel(allData, "EligibleCourses");
       } else {
         exportToExcel(allArticulations, "EligibleCourses");
       }
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error("Export failed:", error);
       toast({
         title: "Export to Excel",
         description: `Please adjust your search criteria to narrow down the results.`,
@@ -226,20 +227,26 @@ export default function ArticulationsTable({
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
                   {!isLoading &&
                     !error &&
-                    allArticulations.map((articulation: ExtendedViewCPLCourses) => (
-                      <ArticulationCard
-                        key={articulation.OutlineID}
-                        articulation={articulation}
-                        showCollegeName={showCollegeName}
-                        showFavoriteStar={CollegeID ? true : false}
-                        CardBackgroundColor={settingsObject?.PanelBackgroundColor}
-                        CardFontColor={settingsObject?.PanelFontColor}
-                        PrimaryBackgroundColor={settingsObject?.CompBackgroundColor}
-                        PrimaryFontColor={settingsObject?.CompFontColor}
-                        collegeId={CollegeID ? CollegeID.toString() : ""}
-                        CPLAssistantEmail={CPLAssistantEmail}
-                      />
-                    ))}
+                    allArticulations.map(
+                      (articulation: ExtendedViewCPLCourses) => (
+                        <ArticulationCard
+                          key={articulation.OutlineID}
+                          articulation={articulation}
+                          showCollegeName={showCollegeName}
+                          showFavoriteStar={CollegeID ? true : false}
+                          CardBackgroundColor={
+                            settingsObject?.PanelBackgroundColor
+                          }
+                          CardFontColor={settingsObject?.PanelFontColor}
+                          PrimaryBackgroundColor={
+                            settingsObject?.CompBackgroundColor
+                          }
+                          PrimaryFontColor={settingsObject?.CompFontColor}
+                          collegeId={CollegeID ? CollegeID.toString() : ""}
+                          CPLAssistantEmail={CPLAssistantEmail}
+                        />
+                      )
+                    )}
                 </div>
               </div>
             ) : (
@@ -256,16 +263,13 @@ export default function ArticulationsTable({
 
             {!isLoading && !error && allArticulations.length > 0 && (
               <>
-                <div 
-                  ref={observerTarget} 
-                  className="h-20 w-full mt-4"
-                />
+                <div ref={observerTarget} className="h-20 w-full mt-4" />
                 {isFetchingNextPage && (
                   <div className="mt-4">
-                    <SkeletonWrapper 
-                      isLoading={true} 
-                      fullWidth={true} 
-                      variant="loading" 
+                    <SkeletonWrapper
+                      isLoading={true}
+                      fullWidth={true}
+                      variant="loading"
                     />
                   </div>
                 )}
@@ -296,70 +300,26 @@ const exportToExcel = (
   articulations: ExtendedViewCPLCourses[] | ViewCPLCoursesExport[],
   fileName: string
 ): void => {
-  const flattenedRows = articulations.map((articulation) => {
-    if ('SuggestedEvidence' in articulation) {
-      const creditRecommendations = articulation.CreditRecommendations?.split('|') || [''];
-      const suggestedEvidences = articulation.SuggestedEvidence?.split('|') || [''];
-      
-      const maxLength = Math.max(creditRecommendations.length, suggestedEvidences.length);
-      
-      const rows = [];
-      for (let i = 0; i < maxLength; i++) {
-        rows.push({
+  const flattenedRows = articulations
+    .flatMap((articulation) => {
+      if ("SuggestedEvidence" in articulation) {
+        const creditRecommendations = (articulation.CreditRecommendations ?? "").split("|");
+        
+        return creditRecommendations.map(recommendation => ({
           College: articulation.College ?? "",
+          "Possible Qualifications": articulation.IndustryCertification ?? "",
+          "CPL Type": articulation.CPLTypeDescription ?? "",
+          "CPL Mode": articulation.CPLModeofLearningDescription ?? "",
+          "Credit Recommendation": recommendation.trim(),
           Subject: articulation.Subject ?? "",
           "Course Number": articulation.CourseNumber ?? "",
           "Course Title": articulation.Course ?? "",
           Units: articulation.Units ?? "",
-          Source: articulation.CPLTypeDescription ?? "",
-          "Possible Qualifications": articulation.IndustryCertification ?? "",
-          "Credit Recommendation": creditRecommendations[i] ?? "",
-          "Suggested Evidence": suggestedEvidences[i] ?? "",
-        });
+          "Suggested Evidence": (articulation.SuggestedEvidence ?? "").replace(/\|/g, ", "),
+        }));
       }
-      
-      return rows;
-    }
-
-    const industrycerts = articulation.IndustryCertifications || [];
-    return industrycerts.flatMap((ic) => {
-      const evidences = ic.Evidences || [];
-      const recommendations = ic.CreditRecommendations || [];
-      
-      if (evidences.length === 0 && recommendations.length === 0) {
-        return [{
-          College: articulation.College ?? "",
-          Subject: articulation.Subject ?? "",
-          "Course Number": articulation.CourseNumber ?? "",
-          "Course Title": articulation.CourseTitle ?? "",
-          Units: articulation.Units ?? "",
-          Source: ic.CPLTypeDescription ?? "",
-          "Possible Qualifications": ic.IndustryCertification ?? "",
-          "Credit Recommendation": "",
-          "Suggested Evidence": "",
-        }];
-      }
-
-      const maxRows = Math.max(recommendations.length, evidences.length);
-      const rows = [];
-
-      for (let i = 0; i < maxRows; i++) {
-        rows.push({
-          College: articulation.College ?? "",
-          Subject: articulation.Subject ?? "",
-          "Course Number": articulation.CourseNumber ?? "",
-          "Course Title": articulation.CourseTitle ?? "",
-          Units: articulation.Units ?? "",
-          Source: ic.CPLTypeDescription ?? "",
-          "Possible Qualifications": ic.IndustryCertification ?? "",
-          "Credit Recommendation": recommendations[i]?.Criteria ?? "",
-          "Suggested Evidence": evidences[i]?.EvidenCompetency ?? "",
-        });
-      }
-
-      return rows;
+      return [];
     });
-  }).flat();
 
   const ws = XLSX.utils.json_to_sheet(flattenedRows);
   const wb = XLSX.utils.book_new();
