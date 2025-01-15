@@ -646,6 +646,7 @@ model GetIndustryCertifications {
 }
 
 model ViewCPLCoursesExport {
+  AceID                          String?
   CollegeID                      Int
   College                        String?
   OutlineID                      Int

@@ -172,7 +172,9 @@ export default function Home({ params }: any) {
                         handleIndustryCertificationSelect
                       }
                       collegeId={selectedCollege}
-                      selectedIndustryCertification={selectedIndustryCertification}
+                      selectedIndustryCertification={
+                        selectedIndustryCertification
+                      }
                     />
                     <DropdownLearningModes
                       onLearningModeSelect={setSelectedLearningMode}
@@ -197,6 +199,7 @@ export default function Home({ params }: any) {
                     CollegeID={settingsObject.CollegeID}
                     settingsObject={settingsObject}
                     fetchUrl={fetchUrl}
+                    columnsToHide={["College"]}
                   ></ArticulationsTable>
                 </CardContent>
               </Card>
