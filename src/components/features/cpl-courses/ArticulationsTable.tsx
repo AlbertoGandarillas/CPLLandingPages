@@ -31,6 +31,7 @@ interface ArticulationsTableProps {
     PanelFontColor: string;
   } | null;
   fetchUrl?: string;
+  columnsToHide?: string[];
 }
 
 export default function ArticulationsTable({
@@ -43,6 +44,7 @@ export default function ArticulationsTable({
   CollegeID,
   settingsObject,
   fetchUrl,
+  columnsToHide,
 }: ArticulationsTableProps) {
   const [selectedArticulation, setSelectedArticulation] =
     useState<ExtendedViewCPLCourses | null>(null);
@@ -129,9 +131,9 @@ export default function ArticulationsTable({
         if (!res.ok) throw new Error("Export failed");
 
         const allData = await res.json();
-        exportToExcel(allData, "EligibleCourses");
+        exportToExcel(allData, "EligibleCourses", columnsToHide);
       } else {
-        exportToExcel(allArticulations, "EligibleCourses");
+        exportToExcel(allArticulations, "EligibleCourses", columnsToHide);
       }
     } catch (error) {
       console.error("Export failed:", error);
@@ -295,31 +297,51 @@ export default function ArticulationsTable({
     </>
   );
 }
-
 const exportToExcel = (
   articulations: ExtendedViewCPLCourses[] | ViewCPLCoursesExport[],
-  fileName: string
+  fileName: string,
+  columnsToHide?: string[]
 ): void => {
-  const flattenedRows = articulations
-    .flatMap((articulation) => {
-      if ("SuggestedEvidence" in articulation) {
-        const creditRecommendations = (articulation.CreditRecommendations ?? "").split("|");
-        
-        return creditRecommendations.map(recommendation => ({
-          College: articulation.College ?? "",
-          "Possible Qualifications": articulation.IndustryCertification ?? "",
-          "CPL Type": articulation.CPLTypeDescription ?? "",
-          "CPL Mode": articulation.CPLModeofLearningDescription ?? "",
+  const flattenedRows = articulations.flatMap((articulation) => {
+    if ("SuggestedEvidence" in articulation) {
+      const creditRecommendations = (
+        articulation.CreditRecommendations ?? ""
+      ).split("|");
+
+      const fullRow = {
+        "Exhibit ID": articulation.AceID ?? "",
+        "Possible Qualifications": articulation.IndustryCertification ?? "",
+        "CPL Type": articulation.CPLTypeDescription ?? "",
+        "CPL Mode": articulation.CPLModeofLearningDescription ?? "",
+        "Credit Recommendation": "",
+        College: articulation.College ?? "",
+        Subject: articulation.Subject ?? "",
+        "Course Number": articulation.CourseNumber ?? "",
+        "Course Title": articulation.Course ?? "",
+        Units: articulation.Units ?? "",
+        "Suggested Evidence":
+          articulation.CPLTypeDescription === "Military" &&
+          !articulation.SuggestedEvidence
+            ? "JST"
+            : (articulation.SuggestedEvidence ?? "").replace(/\|/g, ", "),
+      };
+
+      return creditRecommendations.map((recommendation) => {
+        const row = {
+          ...fullRow,
           "Credit Recommendation": recommendation.trim(),
-          Subject: articulation.Subject ?? "",
-          "Course Number": articulation.CourseNumber ?? "",
-          "Course Title": articulation.Course ?? "",
-          Units: articulation.Units ?? "",
-          "Suggested Evidence": (articulation.SuggestedEvidence ?? "").replace(/\|/g, ", "),
-        }));
-      }
-      return [];
-    });
+        };
+        return columnsToHide?.length
+          ? Object.fromEntries(
+              Object.entries(row).filter(
+                ([key]) => !columnsToHide.includes(key)
+              )
+            )
+          : row;
+      });
+    }
+    return [];
+  });
 
   const ws = XLSX.utils.json_to_sheet(flattenedRows);
   const wb = XLSX.utils.book_new();

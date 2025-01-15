@@ -347,13 +347,16 @@ export default function Homepage() {
                               {selectedCollege ? (
                                 <ArticulationsTable
                                   articulations={[]}
-                                  loading={isLoading}
-                                  error={error}
+                                  loading={false}
+                                  error={null}
                                   searchTerm={searchTerm}
                                   showCollegeName={true}
-                                  CollegeID={selectedCollege}
+                                  CollegeID={
+                                    selectedCollege ? selectedCollege : 1
+                                  }
                                   settingsObject={null}
                                   fetchUrl={fetchUrl}
+                                  columnsToHide={["College"]}
                                 />
                               ) : (
                                 <div className="text-center py-8 text-muted-foreground">
