@@ -341,7 +341,7 @@ export const PotentialSavingsTable = ({
               </ToggleGroup>
             </div>
             <div className="lg:col-span-2">
-              <div className="flex gap-2">
+              <div className="flex gap-2 p-1">
                 <Input
                   placeholder="Filter Colleges..."
                   value={filterValue}

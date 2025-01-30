@@ -234,12 +234,12 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
       <CardContent className="relative overflow-visible">
         {/* Sticky header */}
         <div className="sticky top-0 bg-white z-10 h-12 border-b">
-          <div style={{ marginLeft: "140px", width: "calc(100% - 140px)" }}>
+          <div style={{ marginLeft: "70px", width: "calc(100% - 100px)" }}>
             <ResponsiveContainer width="100%" height={48}>
               <BarChart
                 data={transformedData}
                 layout="vertical"
-                margin={{ top: 15, right: 35, left: 140, bottom: 0 }}
+                margin={{ top: 15, right: 35, left: 30, bottom: 0 }}
               >
                 <XAxis
                   type="number"
@@ -283,7 +283,7 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
                 margin={{
                   top: 0,
                   right: 20,
-                  left: 140,
+                  left: 30,
                   bottom: 20,
                 }}
               >
@@ -292,23 +292,29 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
                 <YAxis
                   dataKey="name"
                   type="category"
-                  width={140}
-                  tick={(props: any) => (
-                    <g transform={`translate(${props.x},${props.y})`}>
-                      <text
-                        x={0}
-                        y={0}
-                        dy={4}
-                        textAnchor="end"
-                        fill="#666"
-                        fontSize={12}
-                      >{`${props.payload.value} (${
-                        transformedData.find(
-                          (d) => d.name === props.payload.value
-                        )?.impactScore ?? 0
-                      })`}</text>
-                    </g>
-                  )}
+                  width={100}
+                  tick={(props: any) => {
+                    const value = props.payload.value;
+                    const score = transformedData.find(
+                      (d) => d.name === value
+                    )?.impactScore ?? 0;
+                    // Truncate college name if too long
+                    const truncatedName = value.length > 15 
+                      ? value.substring(0, 15) + '...'
+                      : value;
+                    return (
+                      <g transform={`translate(${props.x},${props.y})`}>
+                        <text
+                          x={0}
+                          y={0}
+                          dy={4}
+                          textAnchor="end"
+                          fill="#666"
+                          fontSize={11}
+                        >{`${truncatedName} (${score})`}</text>
+                      </g>
+                    );
+                  }}
                 />
                 <Bar
                   dataKey="impactScore"
