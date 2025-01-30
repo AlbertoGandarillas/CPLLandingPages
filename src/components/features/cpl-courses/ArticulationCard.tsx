@@ -104,7 +104,7 @@ export default function ArticulationCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="grid flex-grow">
-        <div className="">
+        <div className="overflow-x-auto">
           <div className="py-4 flex justify-between items-center w-full">
             <Badge
               className={`font-bold flex justify-center text-sm w-[100px]`}
