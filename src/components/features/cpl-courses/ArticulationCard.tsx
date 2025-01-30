@@ -121,7 +121,7 @@ export default function ArticulationCard({
               </h4>
             )}
             {showFavoriteStar && CPLAssistantEmail && (
-              <div className="cursor-pointer" onClick={handleToggleSelection}>
+              <div className="cursor-pointer pointer-events-auto" onClick={handleToggleSelection}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
