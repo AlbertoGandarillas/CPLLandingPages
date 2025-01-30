@@ -121,7 +121,7 @@ export default function ArticulationCard({
               </h4>
             )}
             {showFavoriteStar && CPLAssistantEmail && (
-              <div className="cursor-pointer" onClick={handleToggleSelection}>
+              <div className="cursor-pointer pointer-events-auto" onClick={handleToggleSelection}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -156,8 +156,8 @@ export default function ArticulationCard({
               articulation.IndustryCertifications.length > 0 && (
                 <Table className="w-full">
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="pl-2 text-sm">
+                    <TableRow className="pointer-events-none">
+                      <TableHead className="pl-2 text-sm pointer-events-auto">
                         <div className="flex text-left justify-start">
                           CPL Type
                           <TooltipProvider>
@@ -177,7 +177,7 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="pl-2 text-sm">
+                      <TableHead className="pl-2 text-sm pointer-events-auto">
                         <div className="flex text-left justify-start">
                           Learning Mode
                           <TooltipProvider>
@@ -195,7 +195,7 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="text-sm text-left">
+                      <TableHead className="text-sm text-left pointer-events-auto">
                         <div className="flex items-center justify-start">
                           Possible Qualifications
                           <TooltipProvider>
@@ -217,7 +217,7 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="pl-0 text-sm">
+                      <TableHead className="pl-0 text-sm pointer-events-auto">
                         <div className="flex items-center justify-start">
                           Suggested Evidence
                           <TooltipProvider>
@@ -242,14 +242,14 @@ export default function ArticulationCard({
                   </TableHeader>
                   <TableBody>
                     {articulation.IndustryCertifications.map((cert, index) => (
-                      <TableRow key={index} className="py-2">
-                        <TableCell className="text-sm text-left align-top">
+                      <TableRow key={index} className="py-2 pointer-events-none">
+                        <TableCell className="text-sm text-left align-top pointer-events-auto">
                           {cert.CPLTypeDescription}
                         </TableCell>
-                        <TableCell className="text-sm text-left align-top">
+                        <TableCell className="text-sm text-left align-top pointer-events-auto">
                           {cert.ModeofLearningCode}
                         </TableCell>
-                        <TableCell className="align-top">
+                        <TableCell className="align-top pointer-events-auto">
                           <CertificationHoverCard
                             industryCertification={
                               cert.IndustryCertification || undefined
@@ -265,7 +265,7 @@ export default function ArticulationCard({
                             }
                           />
                         </TableCell>
-                        <TableCell className="align-top">
+                        <TableCell className="align-top pointer-events-auto">
                           {cert.Evidences && cert.Evidences.length > 0 ? (
                             <ul className="ml-4">
                               {cert.Evidences.map((evidence, evidenceIndex) => (
