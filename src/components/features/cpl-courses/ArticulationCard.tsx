@@ -158,18 +158,18 @@ export default function ArticulationCard({
           <div className="overflow-y-auto max-h-56">
             {articulation.IndustryCertifications &&
               articulation.IndustryCertifications.length > 0 && (
-                <table className="w-full select-none">
-                  <thead>
-                    <tr className="select-none">
-                      <th className="pl-2 text-sm text-left p-1">
+                <Table className="w-full select-none">
+                  <TableHeader>
+                    <TableRow className="select-none">
+                      <TableHead className="pl-2 text-sm">
                         <div className="flex text-left items-center justify-start">
-                          <div>CPL Type</div>
+                          CPL Type
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 mr-1 text-gray-400 cursor-help"
+                                  className="ml-1 text-gray-400 cursor-help z-50"
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -180,16 +180,16 @@ export default function ArticulationCard({
                             </Tooltip>
                           </TooltipProvider>
                         </div>
-                      </th>
-                      <th className="pl-2 text-sm text-left p-1">
-                        <div className="flex text-center items-center justify-start">
-                          <div>Learning Mode</div>
+                      </TableHead>
+                      <TableHead className="pl-2 text-sm">
+                        <div className="flex text-left items-center justify-start">
+                          Learning Mode
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 mr-1 text-gray-400 cursor-help"
+                                  className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -198,16 +198,16 @@ export default function ArticulationCard({
                             </Tooltip>
                           </TooltipProvider>
                         </div>
-                      </th>
-                      <th className="text-sm text-left p-1">
+                      </TableHead>
+                      <TableHead className="text-sm text-left">
                         <div className="flex items-center justify-start">
-                          <div>Possible Qualifications</div>
+                          Possible Qualifications
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 mr-2 text-gray-400 cursor-help"
+                                  className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
                               <TooltipContent>
@@ -220,16 +220,16 @@ export default function ArticulationCard({
                             </Tooltip>
                           </TooltipProvider>
                         </div>
-                      </th>
-                      <th className="pl-0 text-sm text-left p-1">
-                        <div className="flex items-center justify-around">
-                          <div>Suggested Evidence</div>
+                      </TableHead>
+                      <TableHead className="pl-0 text-sm">
+                        <div className="flex items-center justify-start">
+                          Suggested Evidence
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 mr-2 text-gray-400 cursor-help"
+                                  className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
                               <TooltipContent>
@@ -241,27 +241,22 @@ export default function ArticulationCard({
                             </Tooltip>
                           </TooltipProvider>
                         </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {articulation.IndustryCertifications.map((cert, index) => (
-                      <tr
+                      <TableRow
                         key={index}
-                        className={`py-2 select-none ${
-                          index !==
-                          (articulation.IndustryCertifications?.length ?? 0) - 1
-                            ? "border-b border-gray-200"
-                            : ""
-                        }`}
+                        className="py-2 select-none"
                       >
-                        <td className="text-sm text-left align-top py-2">
+                        <TableCell className="text-sm text-left align-top">
                           {cert.CPLTypeDescription}
-                        </td>
-                        <td className="text-sm text-center align-top py-2">
+                        </TableCell>
+                        <TableCell className="text-sm text-left align-top">
                           {cert.ModeofLearningCode}
-                        </td>
-                        <td className="align-top py-2">
+                        </TableCell>
+                        <TableCell className="align-top">
                           <CertificationHoverCard
                             industryCertification={
                               cert.IndustryCertification || undefined
@@ -276,8 +271,8 @@ export default function ArticulationCard({
                               cert.ArticulationCreditRecommendations || null
                             }
                           />
-                        </td>
-                        <td className="align-top py-2">
+                        </TableCell>
+                        <TableCell className="align-top">
                           {cert.Evidences && cert.Evidences.length > 0 ? (
                             <ul className="ml-4">
                               {cert.Evidences.map((evidence, evidenceIndex) => (
@@ -296,11 +291,11 @@ export default function ArticulationCard({
                               )}
                             </>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               )}
           </div>
         </div>
