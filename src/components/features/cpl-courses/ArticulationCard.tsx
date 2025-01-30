@@ -169,7 +169,7 @@ export default function ArticulationCard({
                               <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 text-gray-400 cursor-help z-50"
+                                  className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="right">

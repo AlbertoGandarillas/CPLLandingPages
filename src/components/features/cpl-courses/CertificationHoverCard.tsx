@@ -24,7 +24,7 @@ export default function CertificationHoverCard ({
       <HoverCardTrigger className="cursor-pointer ">
         <li className="flex items-start">
           <span className="mr-[0.5em] flex-shrink-0"></span>
-          <a className="text-sm font-semibold -mt-[0.1em] underline z-50">
+          <a className="text-sm font-semibold -mt-[0.1em] underline">
             {industryCertification || "N/A"}
           </a>
         </li>
