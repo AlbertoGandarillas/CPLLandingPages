@@ -158,18 +158,18 @@ export default function ArticulationCard({
           <div className="overflow-y-auto max-h-56">
             {articulation.IndustryCertifications &&
               articulation.IndustryCertifications.length > 0 && (
-                <Table className="w-full">
+                <Table className="w-full select-none">
                   <TableHeader>
-                    <TableRow className="pointer-events-none">
-                      <TableHead className="pl-2 text-sm pointer-events-auto">
+                    <TableRow className="select-none">
+                      <TableHead className="pl-2 text-sm">
                         <div className="flex text-left justify-start">
                           CPL Type
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
+                              <TooltipTrigger asChild>
                                 <Info
                                   size={16}
-                                  className="ml-1 text-gray-400 cursor-help pointer-events-auto"
+                                  className="ml-1 text-gray-400 cursor-help"
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -181,12 +181,12 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="pl-2 text-sm pointer-events-auto">
+                      <TableHead className="pl-2 text-sm">
                         <div className="flex text-left justify-start">
                           Learning Mode
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
+                              <TooltipTrigger asChild>
                                 <Info
                                   size={16}
                                   className="ml-1 text-gray-400 cursor-help"
@@ -199,12 +199,12 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="text-sm text-left pointer-events-auto">
+                      <TableHead className="text-sm text-left">
                         <div className="flex items-center justify-start">
                           Possible Qualifications
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
+                              <TooltipTrigger asChild>
                                 <Info
                                   size={16}
                                   className="ml-1 text-gray-400 cursor-help"
@@ -221,12 +221,12 @@ export default function ArticulationCard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                      <TableHead className="pl-0 text-sm pointer-events-auto">
+                      <TableHead className="pl-0 text-sm">
                         <div className="flex items-center justify-start">
                           Suggested Evidence
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
+                              <TooltipTrigger asChild>
                                 <Info
                                   size={16}
                                   className="ml-1 text-gray-400 cursor-help"
@@ -248,15 +248,15 @@ export default function ArticulationCard({
                     {articulation.IndustryCertifications.map((cert, index) => (
                       <TableRow
                         key={index}
-                        className="py-2 pointer-events-none"
+                        className="py-2 select-none"
                       >
-                        <TableCell className="text-sm text-left align-top pointer-events-auto">
+                        <TableCell className="text-sm text-left align-top">
                           {cert.CPLTypeDescription}
                         </TableCell>
-                        <TableCell className="text-sm text-left align-top pointer-events-auto">
+                        <TableCell className="text-sm text-left align-top">
                           {cert.ModeofLearningCode}
                         </TableCell>
-                        <TableCell className="align-top pointer-events-auto">
+                        <TableCell className="align-top">
                           <CertificationHoverCard
                             industryCertification={
                               cert.IndustryCertification || undefined
@@ -272,7 +272,7 @@ export default function ArticulationCard({
                             }
                           />
                         </TableCell>
-                        <TableCell className="align-top pointer-events-auto">
+                        <TableCell className="align-top">
                           {cert.Evidences && cert.Evidences.length > 0 ? (
                             <ul className="ml-4">
                               {cert.Evidences.map((evidence, evidenceIndex) => (
