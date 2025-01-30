@@ -58,7 +58,8 @@ export default function ArticulationCard({
   CPLAssistantEmail,
 }: ArticulationCardProps) {
   const { toast } = useToast();
-  const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } = useSelectedCourses();
+  const { selectedCourses, toggleCourse, getSelectedCoursesForCollege } =
+    useSelectedCourses();
   const collegeSelectedCourses = getSelectedCoursesForCollege(collegeId);
   const isSelected = collegeSelectedCourses.includes(
     articulation.OutlineID.toString()
@@ -121,7 +122,10 @@ export default function ArticulationCard({
               </h4>
             )}
             {showFavoriteStar && CPLAssistantEmail && (
-              <div className="cursor-pointer pointer-events-auto" onClick={handleToggleSelection}>
+              <div
+                className="cursor-pointer pointer-events-auto"
+                onClick={handleToggleSelection}
+              >
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -165,7 +169,7 @@ export default function ArticulationCard({
                               <TooltipTrigger>
                                 <Info
                                   size={16}
-                                  className="ml-1 text-gray-400 cursor-help"
+                                  className="ml-1 text-gray-400 cursor-help pointer-events-auto"
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -242,7 +246,10 @@ export default function ArticulationCard({
                   </TableHeader>
                   <TableBody>
                     {articulation.IndustryCertifications.map((cert, index) => (
-                      <TableRow key={index} className="py-2 pointer-events-none">
+                      <TableRow
+                        key={index}
+                        className="py-2 pointer-events-none"
+                      >
                         <TableCell className="text-sm text-left align-top pointer-events-auto">
                           {cert.CPLTypeDescription}
                         </TableCell>
