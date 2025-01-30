@@ -189,7 +189,7 @@ export default function Home({ params }: any) {
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <ArticulationsTable
                     articulations={[]}
                     loading={false}

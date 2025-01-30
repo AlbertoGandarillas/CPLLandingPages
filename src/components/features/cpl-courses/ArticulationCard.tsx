@@ -107,7 +107,7 @@ export default function ArticulationCard({
         <div className="overflow-x-auto">
           <div className="py-4 flex justify-between items-center w-full">
             <Badge
-              className={`font-bold flex justify-center text-sm w-[100px]`}
+              className={`font-bold flex justify-center text-sm`}
               style={{
                 backgroundColor: PrimaryBackgroundColor || "#f3f4f6",
                 color: PrimaryFontColor || "#1e40af",
