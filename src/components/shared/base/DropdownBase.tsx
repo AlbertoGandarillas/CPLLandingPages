@@ -27,6 +27,7 @@ interface DropdownBaseProps<T> {
   allItemsText?: string;
   showAllOption?: boolean;
   wrapWithSkeleton?: boolean;
+  className?: string;
 }
 
 export function DropdownBase<T>({
@@ -43,6 +44,7 @@ export function DropdownBase<T>({
   allItemsText = "All",
   showAllOption = true,
   wrapWithSkeleton = false,
+  className,
 }: DropdownBaseProps<T>) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -83,7 +85,7 @@ export function DropdownBase<T>({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[auto] p-0">
-        <Command>
+        <Command className={className}>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{noResultsText}</CommandEmpty>

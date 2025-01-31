@@ -46,27 +46,13 @@ export default function Sidebar({
   onIndustryCertificationSelect,
   className
 }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleSidebar = () => setIsOpen(!isOpen);
   const logoUrl = `${process.env.NEXT_PUBLIC_LOGO_BASE_URL}${settingsObject.LogoUrl}`;
   return (
     <>
-      {/* Mobile icon */}
-      <div className="block lg:hidden fixed top-4 left-4 z-50 ">
-        <button
-          onClick={toggleSidebar}
-          className="p-2 rounded-full bg-white bg-opacity-80 shadow-lg hover:bg-opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          aria-label="Toggle menu"
-        >
-          <Menu className="w-6 h-6 text-gray-800" />
-        </button>
-      </div>
 
       {/* Sidebar content */}
       <aside
-        className={`${
-          isOpen ? "block" : "hidden"
-        } lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start overflow-y-auto`}
+        className={`lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start overflow-y-auto`}
       >
         {
           <>
