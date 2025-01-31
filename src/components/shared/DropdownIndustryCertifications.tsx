@@ -7,12 +7,14 @@ interface DropdownIndustryCertificationsProps {
   onIndustryCertificationSelect: (industryCertification: string | null) => void;
   collegeId?: string | null;
   selectedIndustryCertification?: string | null;
+  className?: string;
 }
 
 export const DropdownIndustryCertifications = ({
   onIndustryCertificationSelect,
   collegeId,
   selectedIndustryCertification,
+  className
 }: DropdownIndustryCertificationsProps) => {
   const { data, isLoading, error } = useIndustryCertifications(collegeId);
   const [value, setValue] = useState("");
@@ -40,6 +42,7 @@ export const DropdownIndustryCertifications = ({
       noResultsText="No Industry Certification found."
       allItemsText="All Industry Certifications"
       wrapWithSkeleton={false}
+      className={className}
     />
   );
 };

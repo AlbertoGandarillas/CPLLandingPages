@@ -5,11 +5,13 @@ import { useLearningModes } from "@/hooks/useLearningModes";
 interface DropdownLearningModesProps {
   onLearningModeSelect: (learningMode: string | null) => void;
   selectedMode?: string | null;
+  className?: string;
 }
 
 export const DropdownLearningModes = ({
   onLearningModeSelect,
   selectedMode,
+  className
 }: DropdownLearningModesProps) => {
   const { data, isLoading, error } = useLearningModes();
   const [value, setValue] = useState("");
@@ -37,6 +39,7 @@ export const DropdownLearningModes = ({
       allItemsText="All Learning Modes"
       wrapWithSkeleton={false}
       selectedValue={value}
+      className={className}
     />
   );
 };

@@ -20,8 +20,9 @@ import NotFoundPage from "../not-found";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import { useTheme } from "next-themes";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
-import { Trash } from "lucide-react";
+import { Link, Menu, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Home({ params }: any) {
   const { setTheme } = useTheme();
@@ -114,6 +115,31 @@ export default function Home({ params }: any) {
   return (
     <SelectedCoursesProvider>
       <div className="flex flex-col min-h-screen">
+        <div className="md:hidden fixed top-4 left-4 z-50">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-[#9f9fa0] text-white hover:bg-[#8a8a8a]"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0">
+              <Sidebar
+                settingsObject={settingsObject}
+                onIndustryCertificationSelect={
+                  handleIndustryCertificationSelect
+                }
+                className="h-full"
+              >
+                <SelectedCoursesList CollegeID={selectedCollege || ""} />
+              </Sidebar>
+            </SheetContent>
+          </Sheet>
+        </div>
+
         <div
           className="flex flex-1"
           style={{
@@ -121,13 +147,15 @@ export default function Home({ params }: any) {
             color: settingsObject.BodyFontColor,
           }}
         >
-          <Sidebar
-            settingsObject={settingsObject}
-            onIndustryCertificationSelect={handleIndustryCertificationSelect}
-            className=""
-          >
-            <SelectedCoursesList CollegeID={selectedCollege || ""} />
-          </Sidebar>
+          <div className="hidden md:block">
+            <Sidebar
+              settingsObject={settingsObject}
+              onIndustryCertificationSelect={handleIndustryCertificationSelect}
+              className=""
+            >
+              <SelectedCoursesList CollegeID={selectedCollege || ""} />
+            </Sidebar>
+          </div>
           <main className="flex-1 p-4">
             <Accordion
               type="single"
@@ -157,36 +185,40 @@ export default function Home({ params }: any) {
             <div className="mt-4">
               <Card>
                 <CardHeader className="bg-gray-100">
-                  <CardTitle className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
-                    <div className="text-md text-center lg:text-left text-lg">
+                  <CardTitle className="flex flex-col space-y-4">
+                    <div className="text-sm sm:text-md md:text-lg text-center">
                       Courses below are approved for credit based on prior
                       learning
                     </div>
-                    <SearchBar
-                      className="w-full lg:w-96"
-                      onSearch={handleSearch}
-                      ref={searchBarRef}
-                    />
-                    <DropdownIndustryCertifications
-                      onIndustryCertificationSelect={
-                        handleIndustryCertificationSelect
-                      }
-                      collegeId={selectedCollege}
-                      selectedIndustryCertification={
-                        selectedIndustryCertification
-                      }
-                    />
-                    <DropdownLearningModes
-                      onLearningModeSelect={setSelectedLearningMode}
-                      selectedMode={selectedLearningMode}
-                    />
-                    <Button
-                      variant="secondary"
-                      onClick={handleClearFilters}
-                      className="whitespace-nowrap"
-                    >
-                      <Trash className="h-4 w-4" /> Clear Filters
-                    </Button>
+                    <div className="flex flex-col lg:flex-row gap-4">
+                      <SearchBar
+                        className="w-full lg:flex-1" 
+                        onSearch={handleSearch}
+                        ref={searchBarRef}
+                      />
+                      <DropdownIndustryCertifications
+                        onIndustryCertificationSelect={
+                          handleIndustryCertificationSelect
+                        }
+                        collegeId={selectedCollege}
+                        selectedIndustryCertification={
+                          selectedIndustryCertification
+                        }
+                        className="w-full lg:flex-1"
+                      />
+                      <DropdownLearningModes
+                        onLearningModeSelect={setSelectedLearningMode}
+                        selectedMode={selectedLearningMode}
+                        className="w-full lg:flex-1"
+                      />
+                      <Button
+                        variant="secondary"
+                        onClick={handleClearFilters}
+                        className="w-full lg:flex-1"
+                      >
+                        <Trash className="h-4 w-4 mr-2" /> Clear Filters
+                      </Button>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
