@@ -37,6 +37,7 @@ export default function Home() {
     cplType: selectedCPLType ?? undefined,
     learningMode: selectedLearningMode,
     searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+    excludeColleges: "120",
   })}`;
 
 

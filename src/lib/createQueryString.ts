@@ -4,6 +4,7 @@ export interface QueryParams {
   cplType?: string | null;
   learningMode?: string | null;
   searchTerm?: string | null;
+  excludeColleges?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

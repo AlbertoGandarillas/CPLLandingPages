@@ -6,9 +6,9 @@ interface CertificationHoverCardProps {
   industryCertification: string | null | undefined;
   cplType?: string | null;
   learningMode?: string | null;
-  articulationCreditRecommendations?: string | null;
-  evidences: ViewCPLEvidenceCompetency[];
-  crs: ViewCPLCreditRecommendations[];
+  articulationCreditRecommendations?: string | null | undefined;
+  evidences: string | null | undefined;
+  crs?: string | null | undefined;
 }
 
 export default function CertificationHoverCard ({
@@ -40,42 +40,32 @@ export default function CertificationHoverCard ({
           {learningMode}
         </p>
         <div
-          className={`grid gap-x-4 ${evidences.length > 0 && "grid-cols-2"} `}
+          className={`grid gap-x-4 ${evidences && evidences.length > 0 && "grid-cols-2"} `}
         >
           {crs && crs.length > 0 && (
             <div>
               <p className="font-bold text-sm my-2">Credit Recommendations:</p>
               <ul className="list-disc list-inside ml-4 overflow-y-auto max-h-[150px]">
-                {crs
-                  .sort((a, b) => {
-                    const aMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === (a.Criteria ?? '').trim()
-                    );
-                    const bMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === (b.Criteria ?? '').trim()
-                    );
-                    return bMatched ? 1 : aMatched ? -1 : 0;
-                  })
-                  .map((cr, crIndex) => {
-                    const isMatched = articulationCreditRecommendations?.split('|').some(
-                      recommendation => recommendation.trim() === (cr.Criteria ?? '').trim()
-                    );
-                    return (
-                      <li key={crIndex} className={`text-sm ${isMatched ? 'bg-blue-100 py-2' : ''}`}>
-                        <span>{cr.Criteria ?? ''}</span>
-                      </li>
-                    );
-                  })}
+                {crs.split('|').map((criteria, crIndex) => {
+                  const isMatched = articulationCreditRecommendations?.split('|').some(
+                    recommendation => recommendation.trim() === criteria.trim()
+                  );
+                  return (
+                    <li key={crIndex} className={`text-sm ${isMatched ? 'bg-blue-100 py-2' : ''}`}>
+                      <span>{criteria.trim()}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
-          {evidences && evidences.length > 0 && (
+          {evidences && (
             <div>
               <p className="font-bold text-sm my-2">Possible Evidence:</p>
               <ul className="list-disc list-inside ml-4">
-                {evidences.map((evidence, evidenceIndex) => (
+                {evidences.split('|').map((evidence, evidenceIndex) => (
                   <li key={evidenceIndex} className="text-sm">
-                    {evidence.EvidenCompetency || "No competency specified"}
+                    {evidence.trim() || "No evidence specified"}
                   </li>
                 ))}
               </ul>

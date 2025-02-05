@@ -135,17 +135,20 @@ export default function ArticulationList({
               <div className="overflow-y-auto max-h-[200px]">
                 {articulation.IndustryCertifications?.map((cert, index) => (
                   <div key={index}>
-                    {cert.CreditRecommendations &&
-                      cert.CreditRecommendations.length > 0 && (
+                    {cert.ArticulationCreditRecommendations && (
+                      <>
                         <p className="text-sm font-semibold">
                           {cert.IndustryCertification}
                         </p>
-                      )}
-                    {cert.CreditRecommendations?.map((credit, creditIndex) => (
-                      <p key={creditIndex} className="text-xs">
-                        {credit.Criteria}
-                      </p>
-                    ))}
+                        <ul className="list-disc list-inside ml-4">
+                          {cert.ArticulationCreditRecommendations.split(',').map((credit, creditIndex) => (
+                            <li key={creditIndex} className="text-xs">
+                              {credit.trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
@@ -154,19 +157,29 @@ export default function ArticulationList({
               <div className="overflow-y-auto max-h-[200px]">
                 {articulation.IndustryCertifications?.map((cert, index) => (
                   <div key={index}>
-                    {cert.Evidences && cert.Evidences.length > 0 && (
-                      <p className="text-sm font-semibold">
-                        {cert.IndustryCertification}
-                      </p>
+                    {cert.EvidenceCompetency && (
+                      <>
+                        <p className="text-sm font-semibold">
+                          {cert.IndustryCertification}
+                        </p>
+                        <ul className="list-disc list-inside ml-4">
+                          {cert.EvidenceCompetency.split(',').map((evidence, evidenceIndex) => (
+                            <li key={evidenceIndex} className="text-xs">
+                              {evidence.trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
                     )}
-                    {cert.Evidences && cert.Evidences.length > 0 && (
-                      <ul className="list-disc list-inside ml-4">
-                        {cert.Evidences.map((evidence, evidenceIndex) => (
-                          <li key={evidenceIndex} className="text-xs">
-                            {evidence.EvidenCompetency}
-                          </li>
-                        ))}
-                      </ul>
+                    {!cert.EvidenceCompetency && cert.CPLTypeDescription === "Military" && (
+                      <>
+                        <p className="text-sm font-semibold">
+                          {cert.IndustryCertification}
+                        </p>
+                        <ul className="list-disc list-inside ml-4">
+                          <li className="text-xs">JST</li>
+                        </ul>
+                      </>
                     )}
                   </div>
                 ))}

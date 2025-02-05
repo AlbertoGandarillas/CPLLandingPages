@@ -265,22 +265,23 @@ export default function ArticulationCard({
                             learningMode={
                               cert.CPLModeofLearningDescription || null
                             }
-                            evidences={cert.Evidences || []}
-                            crs={cert.CreditRecommendations || []}
+                            evidences={cert.EvidenceCompetency || undefined}
+                            crs={cert.ExhibitCreditRecommendations || undefined}
                             articulationCreditRecommendations={
                               cert.ArticulationCreditRecommendations || null
                             }
                           />
                         </TableCell>
                         <TableCell className="align-top">
-                          {cert.Evidences && cert.Evidences.length > 0 ? (
+                          {
+                          cert.EvidenceCompetency ? (
                             <ul className="ml-4">
-                              {cert.Evidences.map((evidence, evidenceIndex) => (
+                              {cert.EvidenceCompetency.split('|').map((evidence, evidenceIndex) => (
                                 <li
                                   key={evidenceIndex}
                                   className="text-sm list-disc"
                                 >
-                                  {evidence.EvidenCompetency}
+                                  {evidence.trim()}
                                 </li>
                               ))}
                             </ul>
