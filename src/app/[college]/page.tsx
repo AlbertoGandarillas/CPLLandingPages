@@ -67,7 +67,7 @@ export default function Home({ params }: any) {
     college: selectedCollege,
     industryCertification: selectedIndustryCertification,
     learningMode: selectedLearningMode,
-    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined
   })}`;
 
   const settingsObject = settings && settings.length > 0 ? settings[0] : null;

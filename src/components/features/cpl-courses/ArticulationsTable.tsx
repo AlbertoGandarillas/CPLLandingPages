@@ -51,7 +51,7 @@ export default function ArticulationsTable({
   const [viewMode, setViewMode] = React.useState("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
-
+  const [pageSize, setPageSize] = useState(18);
   const {
     data: infiniteData,
     fetchNextPage,
@@ -64,7 +64,7 @@ export default function ArticulationsTable({
     enabled: !!fetchUrl,
     initialPageParam: 1,
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await fetch(`${fetchUrl}&page=${pageParam}&limit=20`);
+      const res = await fetch(`${fetchUrl}&page=${pageParam}&limit=${pageSize}`);
       if (!res.ok) {
         if (res.status === 404) {
           return {
@@ -73,7 +73,7 @@ export default function ArticulationsTable({
               hasMore: false,
               currentPage: pageParam as number,
               totalCount: 0,
-              pageSize: 20,
+              pageSize: pageSize,
               totalPages: 0,
             },
           } as PaginatedResponse;
@@ -84,11 +84,11 @@ export default function ArticulationsTable({
       return {
         data: data as ExtendedViewCPLCourses[],
         metadata: {
-          hasMore: data.length === 20,
+          hasMore: data.length === pageSize,
           currentPage: pageParam as number,
           totalCount: data.length,
-          pageSize: 20,
-          totalPages: Math.ceil(data.length / 20),
+          pageSize: pageSize,
+          totalPages: Math.ceil(data.length / pageSize),
         },
       } as PaginatedResponse;
     },

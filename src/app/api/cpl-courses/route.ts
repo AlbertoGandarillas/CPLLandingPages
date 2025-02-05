@@ -6,13 +6,14 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   const isExport = url.searchParams.get("export") === "true";
   const college = url.searchParams.get("college");
+  const excludeColleges = url.searchParams.get("excludeColleges");
   const industryCertification = url.searchParams.get("industryCertification");
   const cplType = url.searchParams.get("cplType");
   const learningMode = url.searchParams.get("learningMode");
   const searchTerm = url.searchParams.get("searchTerm");
   const outlineIds = url.searchParams.get("outlineIds");
   const page = parseInt(url.searchParams.get("page") || "1");
-  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const limit = parseInt(url.searchParams.get("limit") || "10");
 
   try {
     const baseWhere: any = {};
@@ -21,6 +22,10 @@ export async function GET(request: NextRequest) {
     if (college && college !== "0") {
       baseWhere.CollegeID = parseInt(college);
       exportBaseWhere.CollegeID = parseInt(college);
+    } else if (excludeColleges) {
+      const excludedIds = excludeColleges.split(",").map(id => parseInt(id));
+      baseWhere.CollegeID = { notIn: excludedIds };
+      exportBaseWhere.CollegeID = { notIn: excludedIds };
     }
 
     // Handle outline IDs for selected courses
@@ -32,13 +37,8 @@ export async function GET(request: NextRequest) {
       const selectedCourses = await db.viewCPLCourses.findMany({
         where: baseWhere,
         include: {
-          IndustryCertifications: {
-            include: {
-              Evidences: true,
-              CreditRecommendations: true,
-            },
+          IndustryCertifications:true,
           },
-        },
         orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
       });
 
@@ -127,12 +127,7 @@ export async function GET(request: NextRequest) {
         db.viewCPLCourses.findMany({
           where: baseWhere,
           include: {
-            IndustryCertifications: {
-              include: {
-                Evidences: true,
-                CreditRecommendations: true,
-              },
-            },
+            IndustryCertifications: true,
           },
           orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
           skip: (page - 1) * limit,

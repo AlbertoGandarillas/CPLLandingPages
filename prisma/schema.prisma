@@ -440,8 +440,8 @@ model ViewCPLIndustryCertifications {
     CPLModeofLearningDescription  String?
     ModeofLearningCode           String?
     ArticulationCreditRecommendations String?
-    Evidences                     ViewCPLEvidenceCompetency[]
-    CreditRecommendations         ViewCPLCreditRecommendations[]
+    EvidenceCompetency            String?
+    ExhibitCreditRecommendations   String?
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
     @@id([OutlineID, IndustryCertification])
     @@unique([OutlineID, IndustryCertification])
@@ -451,16 +451,14 @@ model ViewCPLEvidenceCompetency {
     OutlineID                Int
     IndustryCertification    String
     EvidenCompetency         String
-    Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
-     @@id([OutlineID, IndustryCertification, EvidenCompetency])
+    @@id([OutlineID, IndustryCertification, EvidenCompetency])
 }
 
 model ViewCPLCreditRecommendations {
     OutlineID                Int
     IndustryCertification    String
     Criteria                 String?
-    Exhibit                  ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
-     @@id([OutlineID, IndustryCertification])
+    @@id([OutlineID, IndustryCertification])
 }
 
 model CPLModeofLearning {
