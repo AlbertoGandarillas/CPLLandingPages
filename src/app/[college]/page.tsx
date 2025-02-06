@@ -83,7 +83,6 @@ export default function Home({ params }: any) {
   };
 
   const handleClearFilters = () => {
-    setSelectedCollege(undefined);
     setSelectedLearningMode(null);
     setSelectedIndustryCertification(null);
     setSearchTerm("");
