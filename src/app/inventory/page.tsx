@@ -31,7 +31,7 @@ interface TopCodeSelection {
   title: string | null;
 }
 
-export default function DashboardPage() {
+export default function InventoryPage() {
   const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
   const [selectedLearningMode, setSelectedLearningMode] = useState<
     string | null
