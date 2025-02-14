@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { ViewCPLMostCommonCIDs } from "@prisma/client";
+import { GetCPLMostCommonCIDs } from "@prisma/client";
 
-export function useMostCommonCIDs() {
-  return useQuery<ViewCPLMostCommonCIDs[], Error>({
-    queryKey: ["MostCommonCIDs"],
+export function useMostCommonCIDs(catalogYearId?: string | null) {
+  return useQuery<GetCPLMostCommonCIDs[], Error>({
+    queryKey: ["MostCommonCIDs", catalogYearId],
     queryFn: async () => {
-      const url = "/api/most-common-cids";
+      const params = new URLSearchParams();
+      if (catalogYearId) {
+        params.append("catalogYearId", catalogYearId);
+      }
+      const url = `/api/most-common-cids${
+        params.toString() ? `?${params.toString()}` : ""
+      }`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Network response was not ok");

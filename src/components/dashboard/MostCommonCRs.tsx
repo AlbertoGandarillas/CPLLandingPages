@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input";
 
 interface MostCommonCRsProps {
   onSelect: (Criteria: string | null) => void;
+  catalogYearId?: string | null;
 }
 
 export const MostCommonCRs = ({
   onSelect,
+  catalogYearId,
 }: MostCommonCRsProps) => {
   const [filterValue, setFilterValue] = useState("");
-  const { data, isLoading, error } = useMostCommonCRs();
+  const { data, isLoading, error } = useMostCommonCRs(catalogYearId);
 
   const columns = [
     { key: "Criteria", label: "Credit Recommendation" },

@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { ViewCPLMostCommonTopCodes } from "@prisma/client";
+import { GetCPLMostCommonTopCodes } from "@prisma/client";
 
-export function useMostCommonTopcodes() {
-  return useQuery<ViewCPLMostCommonTopCodes[], Error>({
-    queryKey: ["MostCommonTopcodes"],
+export function useMostCommonTopcodes(catalogYearId?: string | null) {
+  return useQuery<GetCPLMostCommonTopCodes[], Error>({
+    queryKey: ["MostCommonTopcodes", catalogYearId],
     queryFn: async () => {
-      const url = "/api/most-common-topcodes";
+      const params = new URLSearchParams();
+      if (catalogYearId) {
+        params.append("catalogYearId", catalogYearId);
+      }
+      const url = `/api/most-common-topcodes${
+        params.toString() ? `?${params.toString()}` : ""
+      }`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Network response was not ok");

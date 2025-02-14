@@ -16,13 +16,15 @@ import { ScrollArea } from "../ui/scroll-area";
 interface MostCommonIndustryCertificationsProps {
   creditRecommendation?: string | null;
   className?: string;
+  catalogYearId?: string | null;
 }
 export const MostCommonIndustryCertifications = ({
   creditRecommendation,
   className,
+  catalogYearId
 }: MostCommonIndustryCertificationsProps) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const { data, isLoading, error } = useGetIndustryCertifications(selectedType);
+  const { data, isLoading, error } = useGetIndustryCertifications(creditRecommendation ?? null, catalogYearId ?? null);
   return (
           <ScrollArea className="h-[350px]">
             <div className="rounded-md border">
@@ -35,35 +37,15 @@ export const MostCommonIndustryCertifications = ({
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-left">Title</TableHead>
-                      <TableHead className="text-center">Type</TableHead>
                       <TableHead className="text-center">Students</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {data?.map((row, index) => (
-                      <TableRow key={`${row.SortOrder}-${index}`}>
+                      <TableRow key={`${index}`}>
                         <TableCell className="text-left">
-                          {row.Colleges && (
-                            <TooltipProvider>
-                              <Tooltip delayDuration={0}>
-                                <TooltipTrigger>
-                                  <HelpCircle className={`h-4 w-4`} />
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  side="right"
-                                  align="start"
-                                  sideOffset={5}
-                                >
-                                  <p className="max-w-xs">{row.Colleges}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
                           {row.Title}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {row.CPLType}
-                        </TableCell>
+                        </TableCell>                                             
                         <TableCell className="text-center">
                           {row.StudentsCount}
                         </TableCell>

@@ -5,19 +5,22 @@ import { PotentialCPLSavings, Prisma } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 async function getPotentialCPLSavings(
-  cplType: number | null
+  cplType: number | null,
+  catalogYear: string | null
 ): Promise<PotentialCPLSavings[]> {
   return db.$queryRaw<PotentialCPLSavings[]>`
-    EXEC GetPotentialCPLSavings @cpltype = ${
-      cplType === null ? Prisma.sql`NULL` : cplType
-    }
+    EXEC GetPotentialCPLSavings 
+      @cpltype = ${cplType === null ? Prisma.sql`NULL` : cplType},
+      @catalogyear = ${catalogYear === null ? Prisma.sql`NULL` : catalogYear}
   `;
 }
 
 export async function GET(request: NextRequest) {
   try {
     const cplTypeParam = request.nextUrl.searchParams.get("cpltype");
+    const catalogYearParam = request.nextUrl.searchParams.get("catalogyear");
     let cplType: number | null = null;
+    let catalogYear: string | null = null;
 
     if (cplTypeParam !== null) {
       cplType = parseInt(cplTypeParam, 10);
@@ -29,8 +32,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log("Executing GetPotentialCPLSavings with cplType:", cplType);
-    const result = await getPotentialCPLSavings(cplType);
+    if (catalogYearParam !== null) {
+      catalogYear = catalogYearParam;
+    }
+
+    console.log("Executing GetPotentialCPLSavings with cplType:", cplType, "and catalogYear:", catalogYear);
+    const result = await getPotentialCPLSavings(cplType, catalogYear);
 
     if (result.length === 0) {
       return NextResponse.json({ message: "No data found" }, { status: 404 });
