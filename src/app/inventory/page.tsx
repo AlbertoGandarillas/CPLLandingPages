@@ -46,6 +46,14 @@ export default function InventoryPage() {
   );
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchBarRef = useRef<SearchBarRef>(null);
+  const [selectedCatalogYear, setSelectedCatalogYear] = useState<string | null>(
+    null
+  );
+
+  const handleCatalogYearSelect = useCallback((yearId: string | null) => {
+    console.log("Page - Selected Year:", yearId);
+    setSelectedCatalogYear(yearId);
+  }, []);
 
   const {
     data: articulations,
@@ -62,8 +70,10 @@ export default function InventoryPage() {
       selectedCIDNumber,
       searchTerm,
       selectedIndCert,
+      selectedCatalogYear,
     ],
     queryFn: async () => {
+      console.log("Fetching with catalogYearId:", selectedCatalogYear);
       const response = await fetch(
         `/api/cpl-articulations?${createQueryString({
           college: selectedCollege ?? undefined,
@@ -74,6 +84,7 @@ export default function InventoryPage() {
           cidNumber: selectedCIDNumber ?? undefined,
           searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
           indCert: selectedIndCert ?? undefined,
+          catalogYearId: selectedCatalogYear ?? undefined,
         })}`
       );
 
@@ -127,6 +138,7 @@ export default function InventoryPage() {
     setSelectedIndCert(null);
     setSearchTerm("");
     searchBarRef.current?.clear();
+    setSelectedCatalogYear(null);
   };
 
   return (
@@ -136,6 +148,8 @@ export default function InventoryPage() {
           <PotentialSavingsTable
             hideCPLImpactChart={true}
             setSelectedCollege={handleCollegeSelect}
+            onCatalogYearSelect={setSelectedCatalogYear}
+            selectedCatalogYear={selectedCatalogYear}
           />
         </div>
         <div className="w-full lg:w-[550px] lg:flex-none">
@@ -144,10 +158,16 @@ export default function InventoryPage() {
               <TabsTrigger value="crs" className="text-xs whitespace-nowrap">
                 Credit Recommendations
               </TabsTrigger>
-              <TabsTrigger value="industry" className="text-xs whitespace-nowrap">
+              <TabsTrigger
+                value="industry"
+                className="text-xs whitespace-nowrap"
+              >
                 Industry Certifications
               </TabsTrigger>
-              <TabsTrigger value="topcodes" className="text-xs whitespace-nowrap">
+              <TabsTrigger
+                value="topcodes"
+                className="text-xs whitespace-nowrap"
+              >
                 Top Codes
               </TabsTrigger>
               <TabsTrigger value="cids" className="text-xs whitespace-nowrap">
@@ -167,7 +187,10 @@ export default function InventoryPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <MostCommonCRs onSelect={handleCRSelect} />
+                  <MostCommonCRs
+                    onSelect={handleCRSelect}
+                    catalogYearId={selectedCatalogYear}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -179,11 +202,16 @@ export default function InventoryPage() {
                   </CardTitle>
                   <CardDescription>
                     Note: List reflects all industry certifications currently in
-                    MAP. Not all are articulated with a course at a college...yet.
+                    MAP. Not all are articulated with a course at a
+                    college...yet.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <MostCommonIndCertifications onSelect={handleIndCertSelect} creditRecommendation={selectedCR} />
+                  <MostCommonIndCertifications
+                    onSelect={handleIndCertSelect}
+                    creditRecommendation={selectedCR}
+                    catalogYearId={selectedCatalogYear}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -201,7 +229,10 @@ export default function InventoryPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <MostCommonTopCodes onSelect={handleTopCodeSelect} />
+                  <MostCommonTopCodes
+                    onSelect={handleTopCodeSelect}
+                    catalogYearId={selectedCatalogYear}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -219,7 +250,10 @@ export default function InventoryPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <MostCommonCIDs onSelect={handleCIDNumberSelect} />
+                  <MostCommonCIDs
+                    onSelect={handleCIDNumberSelect}
+                    catalogYearId={selectedCatalogYear}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -297,7 +331,9 @@ export default function InventoryPage() {
                   {selectedProgram}
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleTopCodeSelect({ code: null, title: null })}
+                    onClick={() =>
+                      handleTopCodeSelect({ code: null, title: null })
+                    }
                   />
                 </Badge>
               )}

@@ -11,11 +11,17 @@ interface TopCodeSelection {
 
 interface MostCommonTopCodesProps {
   onSelect: (selection: TopCodeSelection) => void;
+  catalogYearId?: string | null;
 }
 
-export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
+export const MostCommonTopCodes = ({
+  onSelect,
+  catalogYearId,
+}: MostCommonTopCodesProps) => {
   const [filterValue, setFilterValue] = useState("");
-  const { data, isLoading, error } = useMostCommonTopcodes();
+  const { data, isLoading, error } = useMostCommonTopcodes(catalogYearId);
+
+  console.log("MostCommonTopCodes - Data:", data);
 
   const columns = [
     { key: "Program_Title", label: "Tops Code" },
@@ -29,19 +35,23 @@ export const MostCommonTopCodes = ({ onSelect }: MostCommonTopCodesProps) => {
         item.Program_Title.toLowerCase().includes(filterValue.toLowerCase())
     ) || [];
 
+  console.log("MostCommonTopCodes - Filtered Data:", filteredData);
+
   if (isLoading) {
-    return <SkeletonWrapper isLoading={true} fullWidth={true} variant="table" />;
+    return (
+      <SkeletonWrapper isLoading={true} fullWidth={true} variant="table" />
+    );
   }
 
   if (error) {
-    console.error("Error loading Most Common CRs:", error);
-    return <div>Error loading Most Common CRs</div>;
+    console.error("Error loading Most Common Top Codes:", error);
+    return <div>Error loading Most Common Top Codes</div>;
   }
 
   const handleRowClick = (row: any) => {
     onSelect({
       code: row.TopCode?.toString() ?? null,
-      title: row.Program_Title ?? null
+      title: row.Program_Title ?? null,
     });
   };
 

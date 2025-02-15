@@ -6,11 +6,15 @@ import { Input } from "@/components/ui/input";
 
 interface MostCommonCIDsProps {
   onSelect: (CIDNumber: string | null) => void;
+  catalogYearId?: string | null;
 }
 
-export const MostCommonCIDs = ({ onSelect }: MostCommonCIDsProps) => {
+export const MostCommonCIDs = ({
+  onSelect,
+  catalogYearId,
+}: MostCommonCIDsProps) => {
   const [filterValue, setFilterValue] = useState("");
-  const { data, isLoading, error } = useMostCommonCIDs();
+  const { data, isLoading, error } = useMostCommonCIDs(catalogYearId);
 
   const columns = [
     { key: "CIDNumber", label: "CID Number" },

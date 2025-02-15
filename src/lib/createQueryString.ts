@@ -5,6 +5,7 @@ export interface QueryParams {
   learningMode?: string | null;
   searchTerm?: string | null;
   excludeColleges?: string | null;
+  catalogYearId?: string | null;
 }
 
 export function createQueryString(params: QueryParams): string {

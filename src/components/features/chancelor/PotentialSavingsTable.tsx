@@ -24,19 +24,43 @@ import {
 } from "@tanstack/react-table";
 import { SummaryStats } from "./SummaryStats";
 import CPLChart from "./CPLChart";
+import { DropdownCatalogYear } from "@/components/shared/DropdownCatalogYear";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string | null) => void;
   hideCPLImpactChart?: boolean;
+  onCatalogYearSelect?: (catalogYear: string | null) => void;
+  selectedCatalogYear?: string | null;
 }
 
 export const PotentialSavingsTable = ({
   setSelectedCollege,
   hideCPLImpactChart = false,
+  onCatalogYearSelect,
+  selectedCatalogYear: externalSelectedCatalogYear,
 }: PotentialSavingsTableProps) => {
   const [filterValue, setFilterValue] = useState("");
   const [selectedType, setSelectedType] = useState<string>("0");
-  const { data, isLoading, error } = usePotentialSavings(selectedType);
+  const [selectedCatalogYear, setSelectedCatalogYear] = useState<string | null>(
+    null
+  );
+  const { data, isLoading, error } = usePotentialSavings(
+    selectedType,
+    selectedCatalogYear
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
+  useEffect(() => {
+    if (externalSelectedCatalogYear !== undefined) {
+      setSelectedCatalogYear(externalSelectedCatalogYear);
+    }
+  }, [externalSelectedCatalogYear]);
+
+  const handleCatalogYearSelect = (yearId: string | null) => {
+    console.log("PotentialSavingsTable - Selected Year:", yearId);
+    setSelectedCatalogYear(yearId);
+    if (onCatalogYearSelect) {
+      onCatalogYearSelect(yearId);
+    }
+  };
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value == null || value === undefined) return "";
@@ -308,7 +332,11 @@ export const PotentialSavingsTable = ({
     <>
       <div className="flex flex-col sm:flex-row items-center sm:justify-between "></div>
       <div className="flex flex-col xl:flex-row gap-4">
-        <div className={`w-full ${hideCPLImpactChart ? 'xl:w-full 2xl:w-full' : 'xl:w-1/2 2xl:w-3/4'}`}>
+        <div
+          className={`w-full ${
+            hideCPLImpactChart ? "xl:w-full 2xl:w-full" : "xl:w-1/2 2xl:w-3/4"
+          }`}
+        >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             <div className="lg:col-span-1">
               <ToggleGroup
@@ -340,7 +368,7 @@ export const PotentialSavingsTable = ({
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-1">
               <div className="flex gap-2 p-1">
                 <Input
                   placeholder="Filter Colleges..."
@@ -349,6 +377,14 @@ export const PotentialSavingsTable = ({
                   className="w-full"
                 />
               </div>
+            </div>
+            <div className="lg:col-span-1">
+              <span className="text-xs font-bold pr-2">Academic Year </span>
+              <DropdownCatalogYear
+                selectedCatalogYear={selectedCatalogYear}
+                onCatalogYearSelect={handleCatalogYearSelect}
+                className="w-full"
+              />
             </div>
             <div className="lg:col-span-1">
               <Button
@@ -437,8 +473,8 @@ export const PotentialSavingsTable = ({
           </div>
         </div>
         {!hideCPLImpactChart && (
-        <div className="w-full xl:w-1/2 2xl:w-1/3">
-          <CPLChart data={getCPLImpactData} />
+          <div className="w-full xl:w-1/2 2xl:w-1/3">
+            <CPLChart data={getCPLImpactData} />
           </div>
         )}
       </div>

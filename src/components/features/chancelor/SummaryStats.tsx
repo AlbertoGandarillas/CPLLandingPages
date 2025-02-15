@@ -21,22 +21,22 @@ export const SummaryStats = ({ data, formatCurrency }: SummaryStatsProps) => {
           <React.Fragment key={index}>
             <StatCard
               title="Savings & PoF"
-              value={formatCurrency(item.Savings)}
+              value={item.Savings ? formatCurrency(item.Savings) : "0"}
               icon={<DollarSign className="h-6 w-6" />}
             />
             <StatCard
               title="20-Year Impact"
-              value={formatCurrency(item.YearImpact)}
+              value={item.YearImpact ? formatCurrency(item.YearImpact) : "0"}
               icon={<BarChart2 className="h-6 w-6" />}
             />
             <StatCard
               title="Combined"
-              value={formatCurrency(item.Combined)}
+              value={item.Combined ? formatCurrency(item.Combined) : "0"}
               icon={<Layers className="h-6 w-6" />}
             />
             <StatCard
               title="Students"
-              value={item.Students.toLocaleString()}
+              value={item.Students ? item.Students.toLocaleString() : "0"}
               icon={<Users className="h-6 w-6" />}
             />
           </React.Fragment>

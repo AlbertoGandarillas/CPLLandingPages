@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { ViewCPLMostCommonCreditRecommendations } from "@prisma/client";
+import { GetCPLMostCommonCRs } from "@prisma/client";
 
-export function useMostCommonCRs() {
-  return useQuery<ViewCPLMostCommonCreditRecommendations[], Error>({
-    queryKey: ["MostCommonCreditRecommendations"],
+export function useMostCommonCRs(catalogYearId?: string | null) {
+  return useQuery<GetCPLMostCommonCRs[], Error>({
+    queryKey: ["MostCommonCRs", catalogYearId],
     queryFn: async () => {
-      const url = "/api/most-common-crs";
+      const params = new URLSearchParams();
+      if (catalogYearId) {
+        params.append("catalogYearId", catalogYearId);
+      }
+      const url = `/api/most-common-crs${
+        params.toString() ? `?${params.toString()}` : ""
+      }`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Network response was not ok");

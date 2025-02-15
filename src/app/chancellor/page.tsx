@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import ArticulationsTable from "@/components/features/cpl-courses/ArticulationsTable";
 import SearchBar from "@/components/shared/SearchBar";
 import {
@@ -30,16 +30,21 @@ export default function Home() {
   const [selectedLearningMode, setSelectedLearningMode] = useState<
     string | null
   >(null);
+  const [catalogYearId, setCatalogYearId] = useState<string | null>(null);
+  const [fetchUrl, setFetchUrl] = useState("");
 
-  const fetchUrl = `/api/cpl-courses?${createQueryString({
-    college: selectedCollege ?? undefined,
-    industryCertification: selectedIndustryCertification,
-    cplType: selectedCPLType ?? undefined,
-    learningMode: selectedLearningMode,
-    searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
-    excludeColleges: "120",
-  })}`;
-
+  useEffect(() => {
+    const newUrl = `/api/cpl-courses?${createQueryString({
+      college: selectedCollege ?? undefined,
+      industryCertification: selectedIndustryCertification,
+      cplType: selectedCPLType ?? undefined,
+      learningMode: selectedLearningMode,
+      searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+      excludeColleges: "120",
+      catalogYearId: catalogYearId ?? undefined,
+    })}`;
+    setFetchUrl(newUrl);
+  }, [selectedCollege, selectedIndustryCertification, selectedCPLType, selectedLearningMode, searchTerm, catalogYearId]);
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId === "0" ? null : collegeId);
@@ -177,6 +182,8 @@ export default function Home() {
                 <div className="w-full overflow-x-auto">
                   <PotentialSavingsTable
                     setSelectedCollege={handleCollegeSelect}
+                    onCatalogYearSelect={setCatalogYearId}
+                    selectedCatalogYear={catalogYearId}
                   />
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "../../../../prisma/db";
 import { Prisma } from "@prisma/client";
+import { CatalogYearService } from "@/utils/CatalogYear";
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
@@ -12,8 +13,23 @@ export async function GET(request: NextRequest) {
   const cidNumber = url.searchParams.get("cidNumber");
   const searchTerm = url.searchParams.get("searchTerm");
   const indCert = url.searchParams.get("indCert");
+  const catalogYearId = url.searchParams.get("catalogYearId");
+
   try {
     const where: Prisma.ViewCPLArticulationsWhereInput = {};
+
+    if (catalogYearId) {
+        const { startDate, endDate } = await CatalogYearService.getDateRange(
+          catalogYearId,
+          url.origin
+        );
+        if (startDate && endDate) {
+          where.LastSubmittedOn = {
+            gte: startDate,
+            lte: endDate,
+          };
+        }
+    }
 
     if (college) {
       where.CollegeID = parseInt(college);

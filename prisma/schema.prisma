@@ -442,6 +442,7 @@ model ViewCPLIndustryCertifications {
     ArticulationCreditRecommendations String?
     EvidenceCompetency            String?
     ExhibitCreditRecommendations   String?
+    LastSubmittedOn               DateTime?
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
     @@id([OutlineID, IndustryCertification])
     @@unique([OutlineID, IndustryCertification])
@@ -567,6 +568,7 @@ model ViewCPLArticulations {
   CRUnits                     Decimal?
   Course                      String? 
   Exhibit                     ACEExhibit? @relation(fields: [ExhibitID], references: [ID])
+  LastSubmittedOn             DateTime? 
   @@id([OutlineID, ExhibitID, CriteriaID])
 }
 
@@ -605,12 +607,30 @@ model ViewCPLMostCommonCreditRecommendations {
   @@id([ID])
 }
 
+model GetCPLMostCommonCRs {
+  ID Int 
+  Criteria              String?
+  Count                 Int?
+  @@id([ID])
+}
+
 model ViewCPLMostCommonTopCodes {
   ID Int 
   TopCode               Int?
   Program_Title         String?
   Count                 Int?
+  LastSubmittedOn       DateTime?
   @@id([ID])
+}
+
+model GetCPLMostCommonTopCodes {
+  ID Int 
+  TopCode               Int?
+  Program_Title         String?
+  Count                 Int?
+  LastSubmittedOn       DateTime?
+  @@id([ID])
+  @@map("_GetCPLMostCommonTopCodes")
 }
 
 model ViewCPLMostCommonCIDs {
@@ -618,6 +638,16 @@ model ViewCPLMostCommonCIDs {
   CIDNumber               String?
   CIDDescriptor           String?
   Count                   Int?
+  LastSubmittedOn         DateTime?
+  @@id([ID])
+}
+
+model GetCPLMostCommonCIDs {
+  ID Int 
+  CIDNumber               String?
+  CIDDescriptor           String?
+  Count                   Int?
+  LastSubmittedOn         DateTime?
   @@id([ID])
 }
 
@@ -634,12 +664,9 @@ model ViewCPLExhibitCourses {
 
 model GetIndustryCertifications {
   Title String 
-  CPLType String
   StudentsCount Int
-  ArticulationsCount Int
-  SortOrder Int
-  Colleges String?
-  @@id([Title, CPLType])
+  CreditRecommendation String?
+  @@id([Title])
   @@map("_GetIndustryCertifications")
 }
 
@@ -661,4 +688,11 @@ model ViewCPLCoursesExport {
   SuggestedEvidence              String?
 
   @@id([CollegeID, OutlineID])
+}
+model LookupCatalogYear {
+  ID               Int       @id @default(autoincrement())
+  CatalogYear      String 
+  CatalogYearShort String  
+  StartDate        DateTime? 
+  EndDate          DateTime? 
 }

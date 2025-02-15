@@ -7,15 +7,17 @@ import { Input } from "@/components/ui/input";
 interface MostCommonIndCertificationsProps {
   onSelect: (creditRecommendation: string | null) => void;
   creditRecommendation?: string | null;
+  catalogYearId?: string | null;
 }
 
 export const MostCommonIndCertifications = ({ 
   onSelect, 
-  creditRecommendation 
+  creditRecommendation,
+  catalogYearId
 }: MostCommonIndCertificationsProps) => {
   const [filterValue, setFilterValue] = useState("");
-  const { data, isLoading, error } = useGetIndustryCertifications(creditRecommendation ?? null);
-
+  const { data, isLoading, error } = useGetIndustryCertifications(creditRecommendation ?? null, catalogYearId ?? null);
+  console.log(data);
   const columns = [
     { key: "Title", label: "Title" },
     { key: "StudentsCount", label: "Students Count", headerAlign: "flex justify-end" },
@@ -25,7 +27,6 @@ export const MostCommonIndCertifications = ({
     data?.filter(
       (item) =>
         item.Title &&
-        item.Colleges &&
         (!filterValue || 
           item.Title.toLowerCase().includes(filterValue.toLowerCase()))
     ) || [];

@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "../../../../prisma/db";
 import { Prisma } from "@prisma/client";
+import { CatalogYearService } from "@/utils/CatalogYear";
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
@@ -14,10 +15,31 @@ export async function GET(request: NextRequest) {
   const outlineIds = url.searchParams.get("outlineIds");
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = parseInt(url.searchParams.get("limit") || "10");
-
+  const catalogYearId = url.searchParams.get("catalogYearId");
   try {
     const baseWhere: any = {};
     const exportBaseWhere: any = {};
+
+    if (catalogYearId) {
+      const { startDate, endDate } = await CatalogYearService.getDateRange(
+      catalogYearId,
+      url.origin
+      );
+      if (startDate && endDate) {
+        baseWhere.IndustryCertifications = {
+          some: {
+            LastSubmittedOn: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+        };
+        exportBaseWhere.LastSubmittedOn = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+    }  
 
     if (college && college !== "0") {
       baseWhere.CollegeID = parseInt(college);
