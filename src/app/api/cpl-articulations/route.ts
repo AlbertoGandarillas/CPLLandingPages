@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   const searchTerm = url.searchParams.get("searchTerm");
   const indCert = url.searchParams.get("indCert");
   const catalogYearId = url.searchParams.get("catalogYearId");
+  const excludeColleges = url.searchParams.get("excludeColleges");
 
   try {
     const where: Prisma.ViewCPLArticulationsWhereInput = {};
@@ -34,6 +35,11 @@ export async function GET(request: NextRequest) {
     if (college) {
       where.CollegeID = parseInt(college);
     }
+    if (excludeColleges) {
+      const excludedIds = excludeColleges.split(",").map(id => parseInt(id));
+      where.CollegeID = { notIn: excludedIds };
+    }
+
     if (cplType) {
       where.CPLType = parseInt(cplType);
     }

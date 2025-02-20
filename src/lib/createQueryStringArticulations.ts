@@ -9,6 +9,7 @@ export interface QueryParams {
   searchTerm?: string | null;
   page?: string | null;
   indCert?: string | null;
+  excludeColleges?: string | null;
   catalogYearId?: string | null;
 }
 

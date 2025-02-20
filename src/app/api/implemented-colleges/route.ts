@@ -5,6 +5,11 @@ export async function GET(request: NextRequest) {
   try {
     const implementedColleges = await db.viewCPLImplementedColleges.findMany({
       orderBy: { College: "asc" },
+      where: {
+        CollegeID: {
+            notIn: [4,5,63,120]
+        }
+      },
     });
     if (implementedColleges.length === 0) {
       return new NextResponse(null, {
