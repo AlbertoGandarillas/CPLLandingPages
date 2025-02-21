@@ -5,26 +5,12 @@ import { usePotentialSavings } from "@/hooks/usePotentialSavings";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, FileSpreadsheet } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+import { FileSpreadsheet } from "lucide-react";
 import { SummaryStats } from "./SummaryStats";
 import CPLChart from "./CPLChart";
 import { DropdownCatalogYear } from "@/components/shared/DropdownCatalogYear";
+import PotentialSavings from "@/components/shared/PotentialSavings";
+import { formatCurrency } from "@/lib/utils";
 interface PotentialSavingsTableProps {
   setSelectedCollege?: (CollegeID: string | null) => void;
   hideCPLImpactChart?: boolean;
@@ -47,7 +33,6 @@ export const PotentialSavingsTable = ({
     selectedType,
     selectedCatalogYear
   );
-  const [sorting, setSorting] = useState<SortingState>([]);
   useEffect(() => {
     if (externalSelectedCatalogYear !== undefined) {
       setSelectedCatalogYear(externalSelectedCatalogYear);
@@ -61,167 +46,6 @@ export const PotentialSavingsTable = ({
       onCatalogYearSelect(yearId);
     }
   };
-
-  const formatCurrency = (value: number | null | undefined) => {
-    if (value == null || value === undefined) return "";
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "CollegeID",
-      enableHiding: true,
-      enableSorting: false,
-      header: "College ID",
-      size: 0,
-      enableColumnFilter: false,
-      enableGlobalFilter: false,
-    },
-    {
-      accessorKey: "College",
-      size: 200,
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            College
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-left w-[200px]">{row.getValue("College")}</div>
-      ),
-    },
-    {
-      accessorKey: "Savings",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Savings & PoF
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("Savings"))}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "YearImpact",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            20-Year Impact
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("YearImpact"))}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "Combined",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Combined
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {formatCurrency(row.getValue("Combined"))}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "Students",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Students
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Math.round(row.getValue("Students")).toLocaleString()}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "Units",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Eligible CPL *
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Math.round(row.getValue("Units")).toLocaleString()}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "AverageUnits",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-transparent"
-          >
-            Avg
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="text-center">
-          {Number(row.getValue("AverageUnits")).toFixed(1)}
-        </div>
-      ),
-    },
-  ];
 
   const getSummaryStatsData = React.useMemo(() => {
     if (!data) return [];
@@ -290,22 +114,6 @@ export const PotentialSavingsTable = ({
       ) || [],
     [data, filterValue]
   );
-
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-    },
-    initialState: {
-      columnVisibility: {
-        CollegeID: false,
-      },
-    },
-  });
 
   const handleTypeChange = (value: string) => {
     setSelectedType(value || "0");
@@ -406,69 +214,7 @@ export const PotentialSavingsTable = ({
           </div>
           <div>
             <div className="rounded-md border">
-              <div className="overflow-hidden">
-                <Table>
-                  <TableHeader className="sticky top-0  z-10">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <TableHead
-                            key={header.id}
-                            className="font-bold"
-                            style={{ width: header.getSize() }}
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                </Table>
-              </div>
-              <div className="overflow-y-auto max-h-[405px]">
-                <Table>
-                  <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && "selected"}
-                          className="cursor-pointer hover:bg-muted/50"
-                          onClick={() =>
-                            handleRowClick(row.getValue("CollegeID"))
-                          }
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                              key={cell.id}
-                              style={{ width: cell.column.getSize() }}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
-                          No results.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              <PotentialSavings setSelectedCollege={handleRowClick} potentialSavingsData={filteredData ?? []} />
             </div>
           </div>
         </div>

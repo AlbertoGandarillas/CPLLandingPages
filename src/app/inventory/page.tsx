@@ -25,7 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
 import { MostCommonIndCertifications } from "@/components/dashboard/MostCommonIndCertifications";
-
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -146,8 +145,10 @@ export default function InventoryPage() {
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="w-full lg:min-w-0 lg:flex-1">
-          <PotentialSavingsTable
-            hideCPLImpactChart={true}
+          <div className="mb-4">
+          </div>
+            <PotentialSavingsTable
+              hideCPLImpactChart={true}
             setSelectedCollege={handleCollegeSelect}
             onCatalogYearSelect={setSelectedCatalogYear}
             selectedCatalogYear={selectedCatalogYear}

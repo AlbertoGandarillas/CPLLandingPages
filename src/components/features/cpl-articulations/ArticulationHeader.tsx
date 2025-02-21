@@ -42,7 +42,7 @@ export default function ArticulationHeader({
             >
               <Grid className="h-4 w-4" />
             </ToggleGroupItem>
-            <ToggleGroupItem value="list" aria-label="List view">
+            <ToggleGroupItem value="list" aria-label="List view" className="hidden">
               <List className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>

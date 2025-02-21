@@ -30,15 +30,18 @@ interface ArticulationListProps {
 export default function ArticulationList({
   articulations,
 }: ArticulationListProps) {
-  const [selectedExhibitId, setSelectedExhibitId] = useState<string | null>(null);
-  const [selectedArticulation, setSelectedArticulation] = useState<ViewCPLArticulations | null>(null);
+  const [selectedExhibitId, setSelectedExhibitId] = useState<string | null>(
+    null
+  );
+  const [selectedArticulation, setSelectedArticulation] =
+    useState<ViewCPLArticulations | null>(null);
   const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow className="">
-            <TableHead className="font-bold w-10">Actions</TableHead>
+            <TableHead className="font-bold w-10">Details</TableHead>
             <TableHead className="font-bold">CPL TYpe</TableHead>
             <TableHead className="font-bold">College</TableHead>
             <TableHead className="font-bold">Subject</TableHead>
@@ -126,20 +129,24 @@ export default function ArticulationList({
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               <div>
-              Exhibit: {selectedArticulation?.AceID} -{" "}
+                Exhibit: {selectedArticulation?.AceID} -{" "}
                 {selectedArticulation?.IndustryCertification}{" "}
               </div>
 
               <div className="pr-8">
-                {selectedArticulation && selectedArticulation?.VersionNumber?.toString().trim() !== "" ? (
-                  <Badge variant="default">Version : {selectedArticulation?.VersionNumber}</Badge>
+                {selectedArticulation &&
+                selectedArticulation?.VersionNumber?.toString().trim() !==
+                  "" ? (
+                  <Badge variant="default">
+                    Version : {selectedArticulation?.VersionNumber}
+                  </Badge>
                 ) : null}
               </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex items-center py-2">     
+          <div className="flex items-center py-2">
             <Badge variant="secondary">
-              Originating College:{" "}{selectedArticulation?.College}
+              Originating College: {selectedArticulation?.College}
             </Badge>
           </div>
           {selectedExhibitId && (
