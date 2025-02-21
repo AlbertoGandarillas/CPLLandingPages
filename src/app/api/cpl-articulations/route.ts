@@ -32,12 +32,25 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    if (college) {
-      where.CollegeID = parseInt(college);
-    }
+    // Handle college filtering with exclusions
     if (excludeColleges) {
       const excludedIds = excludeColleges.split(",").map(id => parseInt(id));
-      where.CollegeID = { notIn: excludedIds };
+      if (college) {
+        // If specific college is requested, check it's not in excluded list
+        const collegeId = parseInt(college);
+        where.CollegeID = {
+          equals: collegeId,
+          notIn: excludedIds
+        };
+      } else {
+        // Just exclude the colleges if no specific college requested
+        where.CollegeID = {
+          notIn: excludedIds
+        };
+      }
+    } else if (college) {
+      // If no exclusions but college specified
+      where.CollegeID = parseInt(college);
     }
 
     if (cplType) {
