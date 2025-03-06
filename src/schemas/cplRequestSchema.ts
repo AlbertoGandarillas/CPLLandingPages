@@ -18,6 +18,7 @@ export const cplRequestSchema = z.object({
   files: z.array(fileSchema).optional(),
   unlistedQualifications: z.string().optional(),
   cccApplyId: z.string().optional(),
+  collegeId: z.string().optional(),
 });
 
 export type CPLRequestData = z.infer<typeof cplRequestSchema>;

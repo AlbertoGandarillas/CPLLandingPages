@@ -16,6 +16,7 @@ export async function POST(request: Request) {
       files,
       unlistedQualifications,
       cccApplyId,
+      collegeId,
     } = validatedData;
 
     const attachments =
@@ -59,9 +60,7 @@ export async function POST(request: Request) {
       `,
       html: `
         <p>Hello,</p>
-        <p>My name is ${firstName} ${lastName}${
-        cccApplyId ? `, and I have a CCCApply ID: ${cccApplyId}` : ""
-      }. I am interested in receiving a CPL review for the following courses:</p>
+        <p>My name is ${firstName} ${lastName} and I am interested in receiving a CPL review for the following courses:</p>
         <ul>
           ${coursesHtml}
         </ul>
@@ -81,6 +80,7 @@ export async function POST(request: Request) {
         <p>Thanks,</p>
         <p>${firstName} ${lastName}</p>
         <p>${email}</p>
+        <p>${cccApplyId ? `Student ID or CCCApply ID: ${cccApplyId}` : ""}</p>
       `,
       attachments,
       unlistedQualifications,
