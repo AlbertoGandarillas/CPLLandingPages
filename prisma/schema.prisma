@@ -696,3 +696,10 @@ model LookupCatalogYear {
   StartDate        DateTime? 
   EndDate          DateTime? 
 }
+
+model ViewCPLEvidenceCompetencyNotes {
+  title String
+  Type String
+  Notes String
+  @@id([title,Type])
+}
