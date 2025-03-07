@@ -285,7 +285,10 @@ export default function ArticulationCard({
                                       <TooltipContent>
                                         <EvidenceNotes
                                           evidence={evidence.trim()}
-                                          title={cert.IndustryCertification?.trim() || ""}
+                                          title={
+                                            cert.IndustryCertification?.trim() ||
+                                            ""
+                                          }
                                         />
                                       </TooltipContent>
                                     </Tooltip>
