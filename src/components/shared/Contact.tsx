@@ -43,7 +43,7 @@ function EmptyContactsCard({ className }: { className?: string }) {
     <Card className={`w-full ${className}`}>
       <CardContent>
         <p className="text-sm text-muted-foreground">
-          No contact information available.
+
         </p>
       </CardContent>
     </Card>
