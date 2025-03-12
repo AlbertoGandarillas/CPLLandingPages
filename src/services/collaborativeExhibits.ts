@@ -9,7 +9,6 @@ interface CollaborativeExhibit {
   college: string;
   Course: string;
   VersionNumber: string;
-  CollaborativeID: number;
   CollegeID: number;
   articulations: Array<{
     id: number;

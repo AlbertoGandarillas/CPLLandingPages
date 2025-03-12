@@ -32,7 +32,7 @@ export function CollabArticulationsDataTable({
   }
 
   return (
-    <div className="h-[300px] overflow-auto">
+    <div className="max-h-[300px] overflow-auto">
       <Table className="w-full">
         <TableHeader className="sticky top-0 bg-white z-10">
           <TableRow className="bg-muted text-gray-800">

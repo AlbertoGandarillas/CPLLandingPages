@@ -9,6 +9,7 @@ interface FlattenedExhibit {
   ArticulationStatus: string;
   ArticulationCollege: string;
   Course: string;
+  CollaborativeType: string;
 }
 
 export const exportCollaborativeExhibits = async (
@@ -47,6 +48,7 @@ export const exportCollaborativeExhibits = async (
             Status: "",
             "Articulation College": "",
             Course: "",
+            "Collaborative Type": (exhibit.CollaborativeType || "").split("|").join(","),
           },
         ];
       }
@@ -61,6 +63,7 @@ export const exportCollaborativeExhibits = async (
         Status: articulation.Status || "",
         "Articulation College": articulation.college || "",
         Course: articulation.Course || "",
+        "Collaborative Type": (exhibit.CollaborativeType || "").split("|").join(","),
       }));
     });
 

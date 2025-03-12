@@ -703,8 +703,7 @@ model ViewCPLCollaborativeExhibits {
   id Int
   college String?
   CollegeID Int?
-  CollaborativeID Int?
-  value Int?
+  CollaborativeType String?
   VersionNumber String?
   articulations ViewCPLCollaborativeArticulations[]
   @@id([id])

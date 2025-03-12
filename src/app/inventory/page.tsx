@@ -345,7 +345,7 @@ export default function InventoryPage() {
               onCheckedChange={handleCCCChange}
             />
             <Label htmlFor="cccc-filter">
-              CCCC State Wide Credit Recommendations
+              CCC Statewide Recommendations
             </Label>
           </div>
 

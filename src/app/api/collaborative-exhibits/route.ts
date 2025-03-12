@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // Handle CCC parameter
     if (ccc !== null && ccc === "1") {
-      exhibitsWhere.CollaborativeID = 1;
+      exhibitsWhere.CollaborativeType = { contains: "CCC" };
     }
     // When ccc is "0", don't filter by CollaborativeID to include all records
 

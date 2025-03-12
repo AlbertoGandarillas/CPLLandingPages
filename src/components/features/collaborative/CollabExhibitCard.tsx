@@ -20,7 +20,7 @@ interface Articulation {
 interface Exhibit {
   id: number;
   Title: string | null;
-  CollaborativeID: number;
+  CollaborativeType: string | null;
   AceID: string | null;
   college: string | null;
   VersionNumber: string | null;
@@ -37,12 +37,15 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
       <CardHeader>
         <CardTitle className="text-lg flex items-start justify-between gap-2">
           {exhibit.Title || "Untitled Exhibit"}
-          <Badge className="w-[150px] text-center"
-            variant={exhibit.CollaborativeID === 1 ? "default" : "outline"}
+          <Badge
+            className="w-[150px] text-center"
+            variant={
+              exhibit.CollaborativeType?.includes("CCC") ? "default" : "outline"
+            }
           >
-            {exhibit.CollaborativeID === 1
-              ? "CCCC State Wide CR"
-              : "Non-CCCC State Wide CR"}
+            {exhibit.CollaborativeType?.includes("CCC")
+              ? "CCC Statewide"
+              : "Non-CCC Statewide"}
           </Badge>
         </CardTitle>
         <CardDescription>
