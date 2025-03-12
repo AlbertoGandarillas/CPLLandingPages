@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
     const searchTerm = searchParams.get("searchTerm");
     const isExport = searchParams.get("export") === "true";
     const collegeID = searchParams.get("collegeID");
+    const modelOfLearning = searchParams.get("modelOfLearning");
+    const cplType = searchParams.get("cplType");
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
@@ -28,9 +30,19 @@ export async function GET(request: NextRequest) {
 
     // Handle CCC parameter
     if (ccc !== null && ccc === "1") {
-      exhibitsWhere.CollaborativeType = { contains: "CCC" };
+      exhibitsWhere.collaborativeTypes = {
+        some: {
+          CollaborativeID: 1
+        }
+      };
     }
     // When ccc is "0", don't filter by CollaborativeID to include all records
+    if (modelOfLearning) {
+      exhibitsWhere.ModelOfLearning = parseInt(modelOfLearning);
+    }
+    if (cplType) {
+      exhibitsWhere.CPLType = parseInt(cplType);
+    }
 
     // Handle collegeID parameter
     if (collegeID) {
@@ -79,6 +91,7 @@ export async function GET(request: NextRequest) {
           where: articulationsWhere,
           orderBy: [{ CreditRecommendation: "asc" }, { Course: "asc" }],
         },
+        collaborativeTypes: true,
       },
       orderBy: {
         Title: "asc",
@@ -97,10 +110,11 @@ export async function GET(request: NextRequest) {
 
     // Format the response with type safety
     const formattedExhibits = exhibits.map((exhibit) => {
-      const { articulations, ...rest } = exhibit;
+      const { articulations, collaborativeTypes, ...rest } = exhibit;
       return {
         ...rest,
         articulations: articulations || [],
+        collaborativeTypes: collaborativeTypes || [],
       };
     });
 

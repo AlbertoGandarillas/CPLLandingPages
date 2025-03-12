@@ -1,7 +1,6 @@
 "use client";
 import { type SearchBarRef } from "@/components/shared/SearchBar";
 import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
-import { DropdownImplementedColleges } from "@/components/shared/DropdownImplementedColleges";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
 import { MostCommonCRs } from "@/components/dashboard/MostCommonCRs";
 import SearchBar from "@/components/shared/SearchBar";
@@ -86,6 +85,8 @@ export default function InventoryPage() {
         status: selectedStatus,
         searchTerm,
         collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+        modelOfLearning: selectedLearningMode,
+        cplType: selectedCPLType,
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
@@ -93,6 +94,8 @@ export default function InventoryPage() {
         ccc: isCCCChecked ? "1" : "0",
         status: selectedStatus || undefined,
         searchTerm: searchTerm || undefined,
+        modelOfLearning: selectedLearningMode ? parseInt(selectedLearningMode) : undefined,
+        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
         page: pageParam,
         pageSize: 9,
         collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
@@ -344,13 +347,11 @@ export default function InventoryPage() {
               checked={isCCCChecked}
               onCheckedChange={handleCCCChange}
             />
-            <Label htmlFor="cccc-filter">
-              CCC Statewide Recommendations
-            </Label>
+            <Label htmlFor="cccc-filter">CCC Statewide Recommendations</Label>
           </div>
 
-          <div className="flex gap-2 w-[400px] items-center">
-            <Label htmlFor="status-filter">Articulation Status :</Label>
+          <div className="flex gap-2 items-center">
+            <Label htmlFor="status-filter">Status :</Label>
             <Select
               value={selectedStatus || "all"}
               onValueChange={handleStatusChange}
@@ -365,6 +366,14 @@ export default function InventoryPage() {
               </SelectContent>
             </Select>
           </div>
+          <DropdownLearningModes
+            onLearningModeSelect={setSelectedLearningMode}
+            selectedMode={selectedLearningMode}
+          />
+          <DropdownCPLTypes
+            onCPLTypeSelect={setSelectedCPLType}
+            selectedType={selectedCPLType}
+          />
           <Button
             variant="secondary"
             onClick={handleClearFilters}
@@ -383,24 +392,32 @@ export default function InventoryPage() {
           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-          {exhibitsResponse?.pages.map((page) =>
-            page.data.map((exhibit: any) => (
-              <ExhibitCard key={exhibit.id} exhibit={exhibit} />
-            ))
+          {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+            <div className="col-span-full flex justify-center p-4">
+              <div className="text-gray-500">No results found</div>
+            </div>
+          ) : (
+            <>
+              {exhibitsResponse?.pages.map((page) =>
+                page.data.map((exhibit: any) => (
+                  <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                ))
+              )}
+              <div ref={ref} className="col-span-full flex justify-center p-4">
+                {isFetchingNextPage ? (
+                  <SkeletonWrapper
+                    isLoading={true}
+                    fullWidth={true}
+                    variant="loading"
+                  />
+                ) : hasNextPage ? (
+                  <div className="text-gray-500">Scroll to load more</div>
+                ) : (
+                  <div className="text-gray-500">No more exhibits to load</div>
+                )}
+              </div>
+            </>
           )}
-          <div ref={ref} className="col-span-full flex justify-center p-4">
-            {isFetchingNextPage ? (
-              <SkeletonWrapper
-                isLoading={true}
-                fullWidth={true}
-                variant="loading"
-              />
-            ) : hasNextPage ? (
-              <div className="text-gray-500">Scroll to load more</div>
-            ) : (
-              <div className="text-gray-500">No more exhibits to load</div>
-            )}
-          </div>
         </div>
       </div>
     </div>

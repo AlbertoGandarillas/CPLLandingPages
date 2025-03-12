@@ -25,6 +25,13 @@ interface Exhibit {
   college: string | null;
   VersionNumber: string | null;
   articulations: Articulation[];
+  collaborativeTypes: CollaborativeType[];
+}
+
+interface CollaborativeType {
+  id: number;
+  Description: string;
+  CollaborativeID: number;
 }
 
 interface ExhibitCardProps {
@@ -37,16 +44,21 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
       <CardHeader>
         <CardTitle className="text-lg flex items-start justify-between gap-2">
           {exhibit.Title || "Untitled Exhibit"}
-          <Badge
-            className="w-[150px] text-center"
-            variant={
-              exhibit.CollaborativeType?.includes("CCC") ? "default" : "outline"
-            }
-          >
-            {exhibit.CollaborativeType?.includes("CCC")
-              ? "CCC Statewide"
-              : "Non-CCC Statewide"}
-          </Badge>
+          <div className="flex gap-2">
+            {exhibit.collaborativeTypes?.map((type) => (
+              <Badge
+                key={type.id}
+                className="text-center whitespace-nowrap"
+                variant={
+                  (type.CollaborativeID === 1) 
+                    ? "secondary"
+                    : "outline"
+                }
+              >
+                {(type.CollaborativeID === 1) ? "CCC Statewide" : type.Description}
+              </Badge>
+            ))}
+          </div>
         </CardTitle>
         <CardDescription>
           <div className="grid grid-cols-3 gap-2">

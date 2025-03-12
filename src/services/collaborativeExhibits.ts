@@ -10,6 +10,8 @@ interface CollaborativeExhibit {
   Course: string;
   VersionNumber: string;
   CollegeID: number;
+  ModelOfLearning: number;
+  CPLType: number;
   articulations: Array<{
     id: number;
     Status: string;
@@ -18,6 +20,11 @@ interface CollaborativeExhibit {
     college: string;
     Slug: string;
   }>;
+  collaborativeTypes: Array<{
+    id: number;
+    Description: string;
+    CollaborativeID: number;
+  }>;
 }
 
 interface FetchExhibitsParams {
@@ -25,6 +32,8 @@ interface FetchExhibitsParams {
   status?: "Not Articulated" | "Articulated" | "Inprogress";
   searchTerm?: string;
   collegeID?: number;
+  modelOfLearning?: number;
+  cplType?: number;
   page?: number;
   pageSize?: number;
 }
@@ -47,6 +56,8 @@ export const collaborativeExhibitsApi = {
     status,
     searchTerm,
     collegeID,
+    modelOfLearning,
+    cplType,
     page = 1,
     pageSize = 9,
   }: FetchExhibitsParams = {}): Promise<ExhibitsResponse> => {
@@ -66,6 +77,12 @@ export const collaborativeExhibitsApi = {
       }
       if (collegeID) {
         params.append("collegeID", collegeID.toString());
+      }
+      if (modelOfLearning) {
+        params.append("modelOfLearning", modelOfLearning.toString());
+      }
+      if (cplType) {
+        params.append("cplType", cplType.toString());
       }
 
       params.append("page", page.toString());
