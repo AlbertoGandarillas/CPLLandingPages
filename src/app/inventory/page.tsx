@@ -330,95 +330,114 @@ export default function InventoryPage() {
             </AlertDescription>
           </Alert>
         )}
-        <div className="flex items-center justify-between gap-4 mb-4 ">
-          <div className="flex items-center space-x-4">
-            <SearchBar
-              ref={searchBarRef}
-              onSearch={handleSearch}
-              placeholder="Search..."
-              className="w-full sm:w-auto lg:w-96"
-            />
-            <DropdownColleges
-              onCollegeSelect={setSelectedCollege}
-              selectedCollege={selectedCollege}
-            />
-            <Switch
-              id="cccc-filter"
-              checked={isCCCChecked}
-              onCheckedChange={handleCCCChange}
-            />
-            <Label htmlFor="cccc-filter">CCC Statewide Recommendations</Label>
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <Label htmlFor="status-filter">Status :</Label>
-            <Select
-              value={selectedStatus || "all"}
-              onValueChange={handleStatusChange}
-            >
-              <SelectTrigger id="status-filter" className="w-[180px]">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="Articulated">Articulated</SelectItem>
-                <SelectItem value="Inprogress">In Progress</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <DropdownLearningModes
-            onLearningModeSelect={setSelectedLearningMode}
-            selectedMode={selectedLearningMode}
-          />
-          <DropdownCPLTypes
-            onCPLTypeSelect={setSelectedCPLType}
-            selectedType={selectedCPLType}
-          />
-          <Button
-            variant="secondary"
-            onClick={handleClearFilters}
-            className="whitespace-nowrap"
-          >
-            <Trash className="h-4 w-4" /> Clear Filters
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={handleExport}
-            className="w-full sm:w-auto"
-          >
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Export to Excel
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-          {exhibitsResponse?.pages[0]?.data.length === 0 ? (
-            <div className="col-span-full flex justify-center p-4">
-              <div className="text-gray-500">No results found</div>
-            </div>
-          ) : (
-            <>
-              {exhibitsResponse?.pages.map((page) =>
-                page.data.map((exhibit: any) => (
-                  <ExhibitCard key={exhibit.id} exhibit={exhibit} />
-                ))
-              )}
-              <div ref={ref} className="col-span-full flex justify-center p-4">
-                {isFetchingNextPage ? (
-                  <SkeletonWrapper
-                    isLoading={true}
-                    fullWidth={true}
-                    variant="loading"
-                  />
-                ) : hasNextPage ? (
-                  <div className="text-gray-500">Scroll to load more</div>
-                ) : (
-                  <div className="text-gray-500">No more exhibits to load</div>
-                )}
+        <Card className="w-full">
+          <CardHeader className="bg-muted p-4">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
+            </CardTitle>
+            <div className="flex items-center justify-between gap-4 mb-4 ">
+              <div className="flex items-center space-x-4">
+                <SearchBar
+                  ref={searchBarRef}
+                  onSearch={handleSearch}
+                  placeholder="Search..."
+                  inputClassName="bg-blue-100"
+                  className="w-full sm:w-auto lg:w-96"
+                />
+                <DropdownColleges
+                  onCollegeSelect={setSelectedCollege}
+                  selectedCollege={selectedCollege}
+                />
+                <Switch
+                  id="cccc-filter"
+                  checked={isCCCChecked}
+                  onCheckedChange={handleCCCChange}
+                />
+                <Label htmlFor="cccc-filter">
+                  {isCCCChecked
+                    ? "CCCStatewide Recommendations only"
+                    : "All Recommendations"}
+                </Label>
               </div>
-            </>
-          )}
-        </div>
+
+              <div className="flex gap-2 items-center">
+                <Label htmlFor="status-filter">Status :</Label>
+                <Select
+                  value={selectedStatus || "all"}
+                  onValueChange={handleStatusChange}
+                >
+                  <SelectTrigger id="status-filter" className="w-[180px]">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="Articulated">Articulated</SelectItem>
+                    <SelectItem value="Inprogress">In Progress</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DropdownLearningModes
+                onLearningModeSelect={setSelectedLearningMode}
+                selectedMode={selectedLearningMode}
+              />
+              <DropdownCPLTypes
+                onCPLTypeSelect={setSelectedCPLType}
+                selectedType={selectedCPLType}
+              />
+              <Button
+                variant="secondary"
+                onClick={handleClearFilters}
+                className="whitespace-nowrap shadow-md"
+              >
+                <Trash className="h-4 w-4" /> Clear Filters
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleExport}
+                className="w-full sm:w-auto shadow-md"
+              >
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                Export to Excel
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="mt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+              {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                <div className="col-span-full flex justify-center p-4">
+                  <div className="text-gray-500">No results found</div>
+                </div>
+              ) : (
+                <>
+                  {exhibitsResponse?.pages.map((page) =>
+                    page.data.map((exhibit: any) => (
+                      <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                    ))
+                  )}
+                  <div
+                    ref={ref}
+                    className="col-span-full flex justify-center p-4"
+                  >
+                    {isFetchingNextPage ? (
+                      <SkeletonWrapper
+                        isLoading={true}
+                        fullWidth={true}
+                        variant="loading"
+                      />
+                    ) : hasNextPage ? (
+                      <div className="text-gray-500">Scroll to load more</div>
+                    ) : (
+                      <div className="text-gray-500">
+                        No more exhibits to load
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

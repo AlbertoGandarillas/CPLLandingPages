@@ -41,7 +41,7 @@ interface ExhibitCardProps {
 export function ExhibitCard({ exhibit }: ExhibitCardProps) {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="bg-muted">
         <CardTitle className="text-lg flex items-start justify-between gap-2">
           {exhibit.Title || "Untitled Exhibit"}
           <div className="flex gap-2">
@@ -49,13 +49,11 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
               <Badge
                 key={type.id}
                 className="text-center whitespace-nowrap"
-                variant={
-                  (type.CollaborativeID === 1) 
-                    ? "secondary"
-                    : "outline"
-                }
+                variant={type.CollaborativeID === 1 ? "default" : "outline"}
               >
-                {(type.CollaborativeID === 1) ? "CCC Statewide" : type.Description}
+                {type.CollaborativeID === 1
+                  ? "CCC Statewide"
+                  : type.Description}
               </Badge>
             ))}
           </div>
@@ -72,7 +70,7 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
           </div>
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="mt-3">
         <CollabArticulationsDataTable
           articulations={exhibit.articulations || []}
         />
