@@ -355,7 +355,7 @@ export default function InventoryPage() {
                 />
                 <Label htmlFor="cccc-filter">
                   {isCCCChecked
-                    ? "CCCStatewide Recommendations only"
+                    ? "CCCStatewide Recommendations Only"
                     : "All Recommendations"}
                 </Label>
               </div>
