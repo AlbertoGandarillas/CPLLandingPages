@@ -94,7 +94,9 @@ export default function InventoryPage() {
         ccc: isCCCChecked ? "1" : "0",
         status: selectedStatus || undefined,
         searchTerm: searchTerm || undefined,
-        modelOfLearning: selectedLearningMode ? parseInt(selectedLearningMode) : undefined,
+        modelOfLearning: selectedLearningMode
+          ? parseInt(selectedLearningMode)
+          : undefined,
         cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
         page: pageParam,
         pageSize: 9,
@@ -335,7 +337,7 @@ export default function InventoryPage() {
             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
             </CardTitle>
-            <div className="flex items-center justify-between gap-4 mb-4 ">
+            <div className="flex items-center justify-between gap-3 mb-4 ">
               <div className="flex items-center space-x-4">
                 <SearchBar
                   ref={searchBarRef}
@@ -355,7 +357,7 @@ export default function InventoryPage() {
                 />
                 <Label htmlFor="cccc-filter">
                   {isCCCChecked
-                    ? "CCCStatewide Recommendations Only"
+                    ? "CCC Statewide Recommendations Only"
                     : "All Recommendations"}
                 </Label>
               </div>
