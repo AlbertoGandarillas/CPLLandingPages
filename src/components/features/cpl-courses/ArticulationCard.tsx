@@ -273,26 +273,33 @@ export default function ArticulationCard({
                         <TableCell className="align-top">
                           {cert.EvidenceCompetency ? (
                             <ul className="ml-4">
-                              {cert.EvidenceCompetency.split("|").map(
+                              {cert.evidenceCompetencies?.map(
                                 (evidence, evidenceIndex) => (
-                                  <TooltipProvider key={evidenceIndex}>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <li className="text-sm list-disc cursor-help">
-                                          {evidence.trim()}
-                                        </li>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <EvidenceNotes
-                                          evidence={evidence.trim()}
-                                          title={
-                                            cert.IndustryCertification?.trim() ||
-                                            ""
-                                          }
-                                        />
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
+                                  evidence.HaveNotes === 1 ? (
+                                    <TooltipProvider key={evidenceIndex}>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <li className="text-sm list-disc cursor-help underline">
+                                            {evidence.EvidenCompetency?.trim()}
+                                          </li>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <EvidenceNotes
+                                            outline_id={articulation.OutlineID}
+                                            evidence={evidence.EvidenCompetency?.trim()}
+                                            title={
+                                              evidence.IndustryCertification?.trim() ||
+                                              ""
+                                            }
+                                          />
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  ) : (
+                                    <li key={evidenceIndex} className="text-sm list-disc">
+                                      {evidence.EvidenCompetency?.trim()}
+                                    </li>
+                                  )
                                 )
                               )}
                             </ul>

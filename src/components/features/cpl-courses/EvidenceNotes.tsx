@@ -3,11 +3,12 @@ import { evidenceNotesApi } from "@/services/evidenceNotes";
 import { ViewCPLEvidenceCompetencyNotes } from "@prisma/client";
 
 interface EvidenceNotesProps {
+  outline_id: number;
   title: string;
   evidence: string;
 }
 
-export function EvidenceNotes({ title, evidence }: EvidenceNotesProps) {
+export function EvidenceNotes({ outline_id, title, evidence }: EvidenceNotesProps) {
   const [notes, setNotes] = useState<ViewCPLEvidenceCompetencyNotes[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +16,7 @@ export function EvidenceNotes({ title, evidence }: EvidenceNotesProps) {
     const fetchNotes = async () => {
       setIsLoading(true);
       try {
-        const response = await evidenceNotesApi.getByTitle(title, evidence);
+        const response = await evidenceNotesApi.getByTitle(outline_id, title, evidence);
         setNotes(response || []);
       } catch (error) {
         console.error("Error fetching notes:", error);
@@ -28,7 +29,7 @@ export function EvidenceNotes({ title, evidence }: EvidenceNotesProps) {
     if (evidence && title) {
       fetchNotes();
     }
-  }, [evidence, title]);
+  }, [evidence, title, outline_id]);
 
 
   if (notes.length === 0) {

@@ -444,6 +444,7 @@ model ViewCPLIndustryCertifications {
     ExhibitCreditRecommendations   String?
     LastSubmittedOn               DateTime?
     CPLCourse                     ViewCPLCourses? @relation(fields: [OutlineID], references: [OutlineID])
+    evidenceCompetencies          ViewCPLEvidenceCompetency[] 
     @@id([OutlineID, IndustryCertification])
     @@unique([OutlineID, IndustryCertification])
 }
@@ -452,6 +453,8 @@ model ViewCPLEvidenceCompetency {
     OutlineID                Int
     IndustryCertification    String
     EvidenCompetency         String
+    HaveNotes                Int?
+    certification            ViewCPLIndustryCertifications @relation(fields: [OutlineID, IndustryCertification], references: [OutlineID, IndustryCertification])
     @@id([OutlineID, IndustryCertification, EvidenCompetency])
 }
 
@@ -698,8 +701,9 @@ model LookupCatalogYear {
 }
 
 model ViewCPLEvidenceCompetencyNotes {
+  outline_id Int
   title String
   Type String
   Notes String
-  @@id([title,Type])
+  @@id([outline_id,title,Type])
 }

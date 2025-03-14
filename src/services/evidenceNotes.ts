@@ -1,10 +1,10 @@
 import { ViewCPLEvidenceCompetencyNotes } from "@prisma/client";
 
 export const evidenceNotesApi = {
-  getByTitle: async (title: string, type: string): Promise<ViewCPLEvidenceCompetencyNotes[]> => {
+    getByTitle: async (outline_id: number, title: string, type: string): Promise<ViewCPLEvidenceCompetencyNotes[]> => {
     try {
       const response = await fetch(
-        `/api/cpl-evidence-notes?title=${encodeURIComponent(title)}&type=${encodeURIComponent(type)}`,
+        `/api/cpl-evidence-notes?outline_id=${outline_id}&title=${encodeURIComponent(title)}&type=${encodeURIComponent(type)}`,
         {
           method: "GET",
           headers: {

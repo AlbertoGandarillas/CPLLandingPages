@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic"; // Makes the route dynamic
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const outline_id = searchParams.get("outline_id");
     const title = searchParams.get("title");
     const type = searchParams.get("type");      
 
@@ -21,6 +22,9 @@ export async function GET(request: NextRequest) {
       where: {
         title: {
           equals: title,
+        },
+        outline_id: {
+          equals: outline_id ? parseInt(outline_id) : undefined,
         },
         Type: {
           equals: type || undefined,
