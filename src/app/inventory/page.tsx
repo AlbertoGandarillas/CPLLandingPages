@@ -422,58 +422,7 @@ export default function InventoryPage() {
         )}
         <Card className="w-full">
           <CardHeader className="bg-muted p-4">
-            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
-            </CardTitle>
-            <div className="flex items-center justify-between gap-3 mb-4 ">
-              <div className="flex items-center space-x-4">
-                <SearchBar
-                  ref={searchBarRef}
-                  onSearch={handleSearch}
-                  placeholder="Search..."
-                  inputClassName="bg-blue-100"
-                  className="w-full sm:w-auto lg:w-64"
-                />
-                <DropdownColleges
-                  onCollegeSelect={setSelectedCollege}
-                  selectedCollege={selectedCollege}
-                />
-                <Switch
-                  id="cccc-filter"
-                  checked={isCCCChecked}
-                  onCheckedChange={handleCCCChange}
-                />
-                <Label htmlFor="cccc-filter">
-                  {isCCCChecked
-                    ? "CCC Statewide Recommendations Only"
-                    : "All Recommendations"}
-                </Label>
-              </div>
-
-              <div className="flex gap-2 items-center">
-                <Label htmlFor="status-filter">Status :</Label>
-                <Select
-                  value={selectedStatus || "all"}
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTrigger id="status-filter" className="w-[180px]">
-                    <SelectValue placeholder="All Statuses" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="Articulated">Articulated</SelectItem>
-                    <SelectItem value="Inprogress">In Progress</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <DropdownLearningModes
-                onLearningModeSelect={setSelectedLearningMode}
-                selectedMode={selectedLearningMode}
-              />
-              <DropdownCPLTypes
-                onCPLTypeSelect={setSelectedCPLType}
-                selectedType={selectedCPLType}
-              />
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
               <ToggleGroup
                 type="single"
                 value={viewMode}
@@ -489,7 +438,10 @@ export default function InventoryPage() {
                   {isViewLoading && viewMode !== "grid" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Grid className="h-4 w-4" />
+                    <div className="flex items-center gap-2">
+                      <Grid className="h-4 w-4" />
+                      <span>Articulated Exhibits</span>
+                    </div>
                   )}
                 </ToggleGroupItem>
                 <ToggleGroupItem
@@ -501,10 +453,70 @@ export default function InventoryPage() {
                   {isViewLoading && viewMode !== "list" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <List className="h-4 w-4" />
+                    <div className="flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                      <span>Articulated Courses</span>
+                    </div>
                   )}
                 </ToggleGroupItem>
               </ToggleGroup>
+            </CardTitle>
+            <div className="flex items-center justify-between gap-3 mb-4 ">
+              <div className="flex items-center space-x-4">
+                <SearchBar
+                  ref={searchBarRef}
+                  onSearch={handleSearch}
+                  placeholder="Search..."
+                  inputClassName="bg-blue-100"
+                  className="w-full sm:w-auto lg:w-64"
+                />
+                <DropdownColleges
+                  onCollegeSelect={setSelectedCollege}
+                  selectedCollege={selectedCollege}
+                />
+                {viewMode === "grid" && (
+                  <>
+                    <Switch
+                      id="cccc-filter"
+                      checked={isCCCChecked}
+                      onCheckedChange={handleCCCChange}
+                    />
+                    <Label htmlFor="cccc-filter">
+                      {isCCCChecked
+                        ? "CCC Statewide Recommendations Only"
+                        : "All Recommendations"}
+                    </Label>
+                  </>
+                )}
+              </div>
+              {viewMode === "grid" && (
+                <>
+                  <div className="flex gap-2 items-center">
+                    <Label htmlFor="status-filter">Status :</Label>
+                    <Select
+                      value={selectedStatus || "all"}
+                      onValueChange={handleStatusChange}
+                    >
+                      <SelectTrigger id="status-filter" className="w-[180px]">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="Articulated">Articulated</SelectItem>
+                        <SelectItem value="Inprogress">In Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+              <DropdownLearningModes
+                onLearningModeSelect={setSelectedLearningMode}
+                selectedMode={selectedLearningMode}
+              />
+              <DropdownCPLTypes
+                onCPLTypeSelect={setSelectedCPLType}
+                selectedType={selectedCPLType}
+              />
               <Button
                 variant="secondary"
                 onClick={handleClearFilters}

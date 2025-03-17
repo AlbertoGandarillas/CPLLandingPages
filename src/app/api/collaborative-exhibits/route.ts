@@ -44,10 +44,8 @@ export async function GET(request: NextRequest) {
       exhibitsWhere.CPLType = parseInt(cplType);
     }
 
-    // Handle collegeID parameter
-    if (collegeID) {
-      exhibitsWhere.CollegeID = parseInt(collegeID);
-    }
+    // Handle collegeID parameter - now part of OR condition
+    const collegeCondition = collegeID ? { CollegeID: parseInt(collegeID) } : {};
 
     // Build the where clause for ViewCPLCollaborativeArticulations
     const articulationsWhere: ArticulationsWhereInput = {};
@@ -69,12 +67,25 @@ export async function GET(request: NextRequest) {
               OR: [
                 { CreditRecommendation: { contains: searchTerm } },
                 { Status: { contains: searchTerm } },
+                { CollegeID: collegeID ? { equals: parseInt(collegeID) } : undefined },
                 { college: { contains: searchTerm } },
                 { Course: { contains: searchTerm } },
               ],
             },
           },
         },
+      ];
+    } else if (collegeID) {
+      // If no search term but collegeID exists, use OR condition
+      exhibitsWhere.OR = [
+        collegeCondition,
+        {
+          articulations: {
+            some: {
+              CollegeID: parseInt(collegeID)
+            }
+          }
+        }
       ];
     }
 

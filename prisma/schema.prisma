@@ -721,6 +721,7 @@ model ViewCPLCollaborativeArticulations {
   outline_id Int
   CriteriaID Int
   college String?
+  CollegeID Int?
   Course String?
   Slug String?
   exhibit ViewCPLCollaborativeExhibits @relation(fields: [id], references: [id])
