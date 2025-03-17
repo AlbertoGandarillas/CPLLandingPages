@@ -4,7 +4,11 @@ import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
 import { MostCommonCRs } from "@/components/dashboard/MostCommonCRs";
 import SearchBar from "@/components/shared/SearchBar";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import {
@@ -18,7 +22,15 @@ import { MostCommonTopCodes } from "@/components/dashboard/MostCommonTopCodes";
 import { MostCommonCIDs } from "@/components/dashboard/MostCommonCIDs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, FileSpreadsheet, Trash, X } from "lucide-react";
+import {
+  AlertCircle,
+  FileSpreadsheet,
+  Grid,
+  List,
+  Trash,
+  Loader2,
+  X,
+} from "lucide-react";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
 import { MostCommonIndCertifications } from "@/components/dashboard/MostCommonIndCertifications";
@@ -36,6 +48,11 @@ import { ExhibitCard } from "@/components/features/collaborative/CollabExhibitCa
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
 import { exportCollaborativeExhibits } from "@/lib/events/exportCollaborativeExhibits";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { createQueryString } from "@/lib/createQueryStringArticulations";
+import ArticulationsTable from "@/components/features/cpl-articulations/ArticulationsTable";
+import { toast } from "@/components/ui/use-toast";
+import { exportToExcel } from "@/lib/events/exportUtils";
 
 interface TopCodeSelection {
   code: string | null;
@@ -64,10 +81,52 @@ export default function InventoryPage() {
   const [selectedStatus, setSelectedStatus] = useState<
     "Not Articulated" | "Articulated" | "Inprogress" | null
   >(null);
-
+  const [viewMode, setViewMode] = useState("grid");
   const { ref, inView } = useInView();
+  const [isViewLoading, setIsViewLoading] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const {
+    data: articulations,
+    error: articulationsError,
+    isLoading: articulationsIsLoading,
+  } = useQuery({
+    queryKey: [
+      "articulations",
+      selectedCollege,
+      selectedCPLType,
+      selectedLearningMode,
+      selectedCR,
+      selectedTopCode,
+      selectedCIDNumber,
+      searchTerm,
+      selectedIndCert,
+    ],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/cpl-articulations?${createQueryString({
+          college: selectedCollege ?? undefined,
+          cplType: selectedCPLType ?? undefined,
+          learningMode: selectedLearningMode,
+          criteria: selectedCR ?? undefined,
+          topCode: selectedTopCode ?? undefined,
+          cidNumber: selectedCIDNumber ?? undefined,
+          searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
+          indCert: selectedIndCert ?? undefined,
+        })}`
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return [];
+        }
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      return response.json();
+    },
+  });
 
   const {
     data: exhibitsResponse,
@@ -189,14 +248,43 @@ export default function InventoryPage() {
 
   const handleExport = async () => {
     try {
-      await exportCollaborativeExhibits(
-        isCCCChecked ? "1" : "0",
-        selectedStatus,
-        searchTerm || null,
-        selectedCollege ? parseInt(selectedCollege) : undefined
-      );
+      if (viewMode === "list") {
+        if (articulations) {
+          exportToExcel(articulations, "Articulations");
+        }
+      } else {
+        await exportCollaborativeExhibits(
+          isCCCChecked ? "1" : "0",
+          selectedStatus,
+          searchTerm || null,
+          selectedCollege ? parseInt(selectedCollege) : undefined
+        );
+      }
     } catch (error) {
       console.error("Export failed:", error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewModeChange = async (value: string) => {
+    if (value) {
+      setIsViewLoading(true);
+      try {
+        if (value === "list") {
+          await queryClient.refetchQueries({ queryKey: ["articulations"] });
+        } else {
+          await queryClient.refetchQueries({
+            queryKey: ["collaborativeExhibits"],
+          });
+        }
+        setViewMode(value);
+      } finally {
+        setIsViewLoading(false);
+      }
     }
   };
 
@@ -344,7 +432,7 @@ export default function InventoryPage() {
                   onSearch={handleSearch}
                   placeholder="Search..."
                   inputClassName="bg-blue-100"
-                  className="w-full sm:w-auto lg:w-96"
+                  className="w-full sm:w-auto lg:w-64"
                 />
                 <DropdownColleges
                   onCollegeSelect={setSelectedCollege}
@@ -386,6 +474,37 @@ export default function InventoryPage() {
                 onCPLTypeSelect={setSelectedCPLType}
                 selectedType={selectedCPLType}
               />
+              <ToggleGroup
+                type="single"
+                value={viewMode}
+                onValueChange={handleViewModeChange}
+                className="mb-2 sm:mb-0"
+              >
+                <ToggleGroupItem
+                  value="grid"
+                  aria-label="Grid view"
+                  className={viewMode === "grid" ? "shadow-md" : ""}
+                  disabled={isViewLoading}
+                >
+                  {isViewLoading && viewMode !== "grid" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Grid className="h-4 w-4" />
+                  )}
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="list"
+                  aria-label="List view"
+                  className={viewMode === "list" ? "shadow-md" : ""}
+                  disabled={isViewLoading}
+                >
+                  {isViewLoading && viewMode !== "list" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <List className="h-4 w-4" />
+                  )}
+                </ToggleGroupItem>
+              </ToggleGroup>
               <Button
                 variant="secondary"
                 onClick={handleClearFilters}
@@ -405,39 +524,49 @@ export default function InventoryPage() {
             </div>
           </CardHeader>
           <CardContent className="mt-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-              {exhibitsResponse?.pages[0]?.data.length === 0 ? (
-                <div className="col-span-full flex justify-center p-4">
-                  <div className="text-gray-500">No results found</div>
-                </div>
-              ) : (
-                <>
-                  {exhibitsResponse?.pages.map((page) =>
-                    page.data.map((exhibit: any) => (
-                      <ExhibitCard key={exhibit.id} exhibit={exhibit} />
-                    ))
-                  )}
-                  <div
-                    ref={ref}
-                    className="col-span-full flex justify-center p-4"
-                  >
-                    {isFetchingNextPage ? (
-                      <SkeletonWrapper
-                        isLoading={true}
-                        fullWidth={true}
-                        variant="loading"
-                      />
-                    ) : hasNextPage ? (
-                      <div className="text-gray-500">Scroll to load more</div>
-                    ) : (
-                      <div className="text-gray-500">
-                        No more exhibits to load
-                      </div>
-                    )}
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <div className="text-gray-500">No results found</div>
                   </div>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    {exhibitsResponse?.pages.map((page) =>
+                      page.data.map((exhibit: any) => (
+                        <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                      ))
+                    )}
+                    <div
+                      ref={ref}
+                      className="col-span-full flex justify-center p-4"
+                    >
+                      {isFetchingNextPage ? (
+                        <SkeletonWrapper
+                          isLoading={true}
+                          fullWidth={true}
+                          variant="loading"
+                        />
+                      ) : hasNextPage ? (
+                        <div className="text-gray-500">Scroll to load more</div>
+                      ) : (
+                        <div className="text-gray-500">
+                          No more exhibits to load
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <ArticulationsTable
+                loading={articulationsIsLoading}
+                error={articulationsError}
+                searchTerm={searchTerm}
+                CollegeID={selectedCollege ? parseInt(selectedCollege, 10) : 1}
+                articulations={articulations}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
