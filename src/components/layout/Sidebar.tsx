@@ -6,9 +6,9 @@ import SidebarButtons from "../shared/SidebarButtons";
 import Contacts from "../shared/Contact";
 import Image from "next/image";
 interface Contact {
-  ContactType: string;
-  Name: string;
-  Email: string;
+  Description: string;
+  ContactName: string;
+  ContactEmail: string;
 }
 interface SidebarProps {
   settingsObject: {

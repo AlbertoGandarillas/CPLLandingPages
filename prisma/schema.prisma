@@ -415,7 +415,7 @@ model CollegeUIConfig {
   CollegeAward               Boolean? @default(false)
   College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
   Links                      CollegeUILinks[]
-  Contacts                   ViewCPLContacts[]
+  Contacts                   CPLContact[]
 }
 
 model ViewCPLCourses {
@@ -503,8 +503,29 @@ model ViewCPLContacts {
     Name                            String? @db.VarChar(100)
     Email                           String? @db.VarChar(100)
 
-    CollegeUI                       CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
 }
+
+model CPLContactType {
+  Id          Int         @id @default(autoincrement())
+  Description String      @db.NVarChar(50)
+  Contacts    CPLContact[]
+}
+
+model CPLContact {
+  Id            Int       @id @default(autoincrement())
+  ContactTypeId Int
+  ContactName   String    @db.NVarChar(200)
+  ContactEmail  String    @db.NVarChar(200) 
+  ContactOrder  Int
+  CreationDate DateTime   @default(now())
+  CreatedBy    Int
+  CollegeID    Int
+  UpdatedBy    Int?
+  UpdatedOn    DateTime?  @default(now())
+  ContactType   CPLContactType @relation(fields: [ContactTypeId], references: [Id])
+  CollegeUI     CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
+}
+
 
 model PotentialCPLSavings {
   Sorder       Int
