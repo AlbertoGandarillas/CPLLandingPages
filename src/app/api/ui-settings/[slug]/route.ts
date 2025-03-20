@@ -11,6 +11,9 @@ export async function GET(request: Request, { params }: Params) {
         College: true,
         Links: true,
         Contacts: {
+          include: {
+            ContactType: true
+          },
           orderBy: {
             ContactOrder: 'asc'
           }

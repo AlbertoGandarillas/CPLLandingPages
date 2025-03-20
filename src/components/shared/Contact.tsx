@@ -2,10 +2,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
 
+interface ContactType {
+  Description: string;
+}
+
 interface Contact {
   Description: string;
   ContactName: string;
   ContactEmail: string;
+  ContactType: ContactType;
 }
 
 interface ContactsProps {
@@ -28,7 +33,7 @@ export default function Contacts({ settings, className }: ContactsProps) {
         <ul className="space-y-4">
           {validContacts.map((contact, index) => (
             <ContactItem
-              key={`${contact.Description}-${contact.ContactName}-${contact.ContactEmail}-${index}`}
+              key={`${contact.ContactType.Description}-${contact.ContactName}-${contact.ContactEmail}-${index}`}
               contact={contact}
             />
           ))}
@@ -62,7 +67,7 @@ function ContactItem({ contact }: { contact: Contact }) {
         </Avatar>
         <div className="px-3 flex flex-col">
           <p className="text-sm font-bold leading-none">
-            {contact.Description}
+            {contact.ContactType.Description}
           </p>
           <p className="text-sm font-medium leading-none pt-1">{contact.ContactName}</p>
         </div>
