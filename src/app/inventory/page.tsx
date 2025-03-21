@@ -503,7 +503,7 @@ export default function InventoryPage() {
                       <SelectContent>
                         <SelectItem value="all">All Statuses</SelectItem>
                         <SelectItem value="Articulated">Articulated</SelectItem>
-                        <SelectItem value="Inprogress">In Progress</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
