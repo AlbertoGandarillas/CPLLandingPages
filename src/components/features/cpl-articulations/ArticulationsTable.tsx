@@ -38,7 +38,7 @@ export default function ArticulationsTable({
 
   return (
     <>
-      <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 overflow-y-auto max-h-[600px]">
+      <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4">
         <ArticulationHeader
           viewMode={viewMode}
           onViewModeChange={setViewMode}

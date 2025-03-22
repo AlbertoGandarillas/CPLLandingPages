@@ -461,20 +461,9 @@ export default function InventoryPage() {
                 </ToggleGroupItem>
               </ToggleGroup>
             </CardTitle>
-            <div className="flex items-center justify-between gap-3 mb-4 ">
-              <div className="flex items-center space-x-4">
-                <SearchBar
-                  ref={searchBarRef}
-                  onSearch={handleSearch}
-                  placeholder="Search..."
-                  inputClassName="bg-blue-100"
-                  className="w-full sm:w-auto lg:w-64"
-                />
-                <DropdownColleges
-                  onCollegeSelect={setSelectedCollege}
-                  selectedCollege={selectedCollege}
-                />
-                {viewMode === "grid" && (
+            <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
+              {viewMode === "grid" && (
+                <div className="flex items-center justify-center gap-2 w-full">
                   <>
                     <Switch
                       id="cccc-filter"
@@ -486,12 +475,6 @@ export default function InventoryPage() {
                         ? "CCC Statewide Recommendations Only"
                         : "All Recommendations"}
                     </Label>
-                  </>
-                )}
-              </div>
-              {viewMode === "grid" && (
-                <>
-                  <div className="flex gap-2 items-center">
                     <Label htmlFor="status-filter">Status :</Label>
                     <Select
                       value={selectedStatus || "all"}
@@ -506,33 +489,45 @@ export default function InventoryPage() {
                         <SelectItem value="In Progress">In Progress</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </>
+                  </>
+                </div>
               )}
-              <DropdownLearningModes
-                onLearningModeSelect={setSelectedLearningMode}
-                selectedMode={selectedLearningMode}
-              />
-              <DropdownCPLTypes
-                onCPLTypeSelect={setSelectedCPLType}
-                selectedType={selectedCPLType}
-              />
-              <Button
-                variant="secondary"
-                onClick={handleClearFilters}
-                className="whitespace-nowrap shadow-md"
-              >
-                <Trash className="h-4 w-4" /> Clear Filters
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={handleExport}
-                className="w-full sm:w-auto shadow-md"
-              >
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Export to Excel
-              </Button>
+              <div className="flex gap-2 items-center justify-center w-full">
+                <SearchBar
+                  ref={searchBarRef}
+                  onSearch={handleSearch}
+                  placeholder="Search..."
+                  inputClassName="bg-blue-100"
+                  className="w-full sm:w-auto lg:w-64"
+                />
+                <DropdownColleges
+                  onCollegeSelect={setSelectedCollege}
+                  selectedCollege={selectedCollege}
+                />
+                <DropdownLearningModes
+                  onLearningModeSelect={setSelectedLearningMode}
+                  selectedMode={selectedLearningMode}
+                />
+                <DropdownCPLTypes
+                  onCPLTypeSelect={setSelectedCPLType}
+                  selectedType={selectedCPLType}
+                />
+                <Button
+                  variant="secondary"
+                  onClick={handleClearFilters}
+                  className="whitespace-nowrap shadow-md"
+                >
+                  <Trash className="h-4 w-4" /> Clear Filters
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleExport}
+                  className="w-full sm:w-auto shadow-md"
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Export to Excel
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="mt-3">
