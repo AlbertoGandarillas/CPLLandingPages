@@ -415,7 +415,7 @@ model CollegeUIConfig {
   CollegeAward               Boolean? @default(false)
   College                    LookupColleges @relation(fields: [CollegeID], references: [CollegeID])
   Links                      CollegeUILinks[]
-  Contacts                   ViewCPLContacts[]
+  Contacts                   CPLContact[]
 }
 
 model ViewCPLCourses {
@@ -506,8 +506,29 @@ model ViewCPLContacts {
     Name                            String? @db.VarChar(100)
     Email                           String? @db.VarChar(100)
 
-    CollegeUI                       CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
 }
+
+model CPLContactType {
+  Id          Int         @id @default(autoincrement())
+  Description String      @db.NVarChar(50)
+  Contacts    CPLContact[]
+}
+
+model CPLContact {
+  Id            Int       @id @default(autoincrement())
+  ContactTypeId Int
+  ContactName   String    @db.NVarChar(200)
+  ContactEmail  String    @db.NVarChar(200) 
+  ContactOrder  Int
+  CreationDate DateTime   @default(now())
+  CreatedBy    Int
+  CollegeID    Int
+  UpdatedBy    Int?
+  UpdatedOn    DateTime?  @default(now())
+  ContactType   CPLContactType @relation(fields: [ContactTypeId], references: [Id])
+  CollegeUI     CollegeUIConfig @relation(fields: [CollegeID], references: [CollegeID])
+}
+
 
 model PotentialCPLSavings {
   Sorder       Int
@@ -699,11 +720,63 @@ model LookupCatalogYear {
   StartDate        DateTime? 
   EndDate          DateTime? 
 }
-//Add a new model for evidence competency notes
+
 model ViewCPLEvidenceCompetencyNotes {
   outline_id Int
   title String
   Type String
   Notes String
   @@id([outline_id,title,Type])
+}
+
+model ViewCPLCollaborativeExhibits {
+  Title String?
+  AceID String?
+  id Int
+  college String?
+  CollegeID Int?
+  CollaborativeType String?
+  VersionNumber String?
+  ModelOfLearning Int?
+  CPLType Int?
+  collaborativeTypes ViewCPLCollaborativeTypes[]
+  creditRecommendations ViewCPLCollaborativeCRs[]
+  @@id([id])
+}
+
+model ViewCPLCollaborativeArticulations {
+  Title String?
+  CreditRecommendation String?
+  AceID String?
+  Status String?
+  id Int
+  outline_id Int
+  CriteriaID Int
+  college String?
+  CollegeID Int?
+  Course String?
+  Slug String?
+  creditRecommendation ViewCPLCollaborativeCRs @relation(fields: [id, CriteriaID], references: [id, CriteriaID])
+  @@id([id])
+}
+
+model ViewCPLCollaborativeTypes {
+    id Int
+    ExhibitID Int
+    CollaborativeID Int
+    Description String
+    exhibit ViewCPLCollaborativeExhibits @relation(fields: [ExhibitID], references: [id])
+  @@id([id])
+}
+
+model ViewCPLCollaborativeCRs {
+  Title String
+  CreditRecommendation String?
+  AceID String
+  id Int
+  CriteriaID Int
+  exhibit ViewCPLCollaborativeExhibits @relation(fields: [id], references: [id])
+  articulations ViewCPLCollaborativeArticulations[]
+  @@id([id,CriteriaID])
+
 }

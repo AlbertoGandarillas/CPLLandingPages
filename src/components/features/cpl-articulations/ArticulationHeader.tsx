@@ -10,6 +10,7 @@ interface ArticulationHeaderProps {
   onExport: () => void;
   children?: React.ReactNode;
   className?: string;
+  showExport?: boolean;
 }
 
 export default function ArticulationHeader({
@@ -18,6 +19,7 @@ export default function ArticulationHeader({
   onExport,
   children,
   className,
+  showExport = true,
 }: ArticulationHeaderProps) {
   return (
     <div
@@ -46,15 +48,17 @@ export default function ArticulationHeader({
               <List className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={onExport}
-            className="w-full sm:w-auto"
+          {showExport && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={onExport}
+              className="w-full sm:w-auto"
           >
             <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Export to Excel
-          </Button>
+              Export to Excel
+            </Button>
+          )}
         </div>
       </div>
     </div>
