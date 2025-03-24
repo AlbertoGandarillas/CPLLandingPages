@@ -721,6 +721,101 @@ model LookupCatalogYear {
   EndDate          DateTime? 
 }
 
+model Veteran {
+  id                    Int       @id @default(autoincrement())
+  FirstName            String?   
+  MiddleName           String?   
+  LastName             String?   
+  Branch               String?   
+  BirthDate            DateTime? 
+  TermDate             DateTime? 
+  Email                String?   
+  Email1               String?   
+  Email2               String?   
+  OfficePhone          String?   
+  MobilePhone          String?   
+  HomePhone            String?   
+  SalutationID         Int?
+  StatusID             Int?
+  ServiceID            Int?
+  StreetAddress        String?  
+  City                 String?   
+  State                String?  
+  ZipCode              String?   
+  Occupation           String?   
+  CreatedBy            Int?
+  CreatedOn            DateTime  @default(now()) @db.DateTime
+  UpdatedBy            Int?
+  UpdatedOn            DateTime? 
+  RESULT_CD            String?   
+  DNC_FLG              String?   
+  WARN_FLG             String?   
+  EMAIL_OPTOUT         String?   
+  CityId               Int?
+  CampaignID           Int?
+  Rank                 String?   
+  LevelID              Int?
+  StudentID            String?   
+  CollegeID            Int?
+  POS                  String?   
+  MapTotalCredits      Int?
+  CCCApplication       Boolean?
+  ProgramStudy         Int?
+  EducationalBenefits  String?   
+  FinancialAide        Boolean?
+  CounselingAppt       Boolean?
+  Orientation          Boolean?
+  Assessment           Boolean?
+  Notes                String?  
+  PotentialStudent     Boolean?
+  CPLSearchUpload      Boolean?
+  OriginID             Int?
+  CPLStatusID          Int?
+  TransferDestination  String?   
+  review_student_edu_plan Int?   
+  verif_global_credit  Int?     
+  initiate_articulations Int?   
+  complete_appro       Int?    
+  applied_cred         Int?    
+  assess_cpl           Int?     
+  accept_deny_appeal   Int?     
+  transcr_credit       Int?     
+  upd_user            Int?
+  StudentPlanNotes     String?   
+  OptOut               Boolean?
+  IsValidPdfFormat     Boolean?
+  StudentIDUpdated     Boolean?
+  CPLDoc               Int?     
+  CatalogYear         Int?
+  CPLLandingPage      Boolean?
+  documents           VeteranDocuments[]
+  cplTypes            VeteranCPLType[]
+}
+
+model VeteranDocuments {
+  id               Int       @id @default(autoincrement())
+  Filename         String?   
+  BinaryData       Bytes?
+  FileDescription  String?   
+  user_id          Int?
+  VeteranID        Int
+  Field            String?   
+  DocumentTypeID   Int?
+  NewDate          DateTime? 
+  IsValidPdfFormat Boolean?
+  IsBlank          Boolean?
+  veteran          Veteran   @relation(fields: [VeteranID], references: [id])
+}
+
+model VeteranCPLType {
+  VeteranID    Int
+  CPLType      Int
+  Value        Boolean?
+  veteran      Veteran     @relation(fields: [VeteranID], references: [id])
+
+  @@id([VeteranID, CPLType])
+}
+
 model ViewCPLEvidenceCompetencyNotes {
   outline_id Int
   title String

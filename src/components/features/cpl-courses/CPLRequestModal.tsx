@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FileAttachments } from "@/components/shared/FileAttachments";
 import { CCCApplyInstructions } from "@/components/shared/CCCApplyInstructions";
 import { AlertCircle, Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { veteranApi } from "@/services/veterans";
+import { catalogYearApi } from "@/services/catalogYear";
 
 interface CPLRequestModalProps {
   isOpen: boolean;
@@ -40,7 +48,8 @@ export default function CPLRequestModal({
   const [email, setEmail] = useState("");
   const [hasCCCApplyId, setHasCCCApplyId] = useState<boolean | null>(null);
   const [cccApplyId, setCCCApplyId] = useState("");
-  const { selectedCourses, getSelectedCoursesForCollege } = useSelectedCourses();
+  const { selectedCourses, getSelectedCoursesForCollege } =
+    useSelectedCourses();
   const collegeSelectedCourses = getSelectedCoursesForCollege(CollegeID || "");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +75,7 @@ export default function CPLRequestModal({
         const course = courses.find((c) => c.OutlineID.toString() === courseId);
         if (course?.IndustryCertifications) {
           initialCertifications[courseId] = course.IndustryCertifications.map(
-            cert => cert.IndustryCertification
+            (cert) => cert.IndustryCertification
           );
         }
       });
@@ -74,31 +83,31 @@ export default function CPLRequestModal({
     }
   }, [isOpen, courses, collegeSelectedCourses]);
 
-const handleCertificationChange = useCallback(
-  (courseId: string, certification: string, isChecked: boolean) => {
-    setSelectedCertifications((prev) => {
-      const courseCerts = prev[courseId] || [];
+  const handleCertificationChange = useCallback(
+    (courseId: string, certification: string, isChecked: boolean) => {
+      setSelectedCertifications((prev) => {
+        const courseCerts = prev[courseId] || [];
 
-      if (isChecked) {
-        // Only add if it doesn't exist
-        if (!courseCerts.includes(certification)) {
-          return {
-            ...prev,
-            [courseId]: [...courseCerts, certification],
-          };
+        if (isChecked) {
+          // Only add if it doesn't exist
+          if (!courseCerts.includes(certification)) {
+            return {
+              ...prev,
+              [courseId]: [...courseCerts, certification],
+            };
+          }
+          return prev;
         }
-        return prev;
-      }
 
-      // Remove certification
-      return {
-        ...prev,
-        [courseId]: courseCerts.filter((cert) => cert !== certification),
-      };
-    });
-  },
-  []
-);
+        // Remove certification
+        return {
+          ...prev,
+          [courseId]: courseCerts.filter((cert) => cert !== certification),
+        };
+      });
+    },
+    []
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -189,56 +198,215 @@ const handleCertificationChange = useCallback(
     cccApplyId: string | null
   ) => {
     try {
-      console.log("college id passed to cpl request");
-      console.log(CollegeID);
-      const response = await fetch("/api/cpl-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      // Step 1: Submit CPL request
+      let cplRequest;
+      try {
+        const response = await fetch("/api/cpl-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            hasCCCApplyId,
+            cccApplyId,
+            selectedCourses: collegeSelectedCourses.map((id) => {
+              const course = courses.find((a) => a.OutlineID.toString() === id);
+              return course
+                ? {
+                    course: `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`,
+                    certifications: selectedCertifications[id] || [],
+                  }
+                : "";
+            }),
+            CollegeID,
+            unlistedQualifications,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`CPL request failed: ${response.statusText}`);
+        }
+        cplRequest = await response.json();
+      } catch (error) {
+        throw new Error(
+          "Unable to submit your CPL request. Please try again or contact support if the problem persists."
+        );
+      }
+
+      // Step 2: Get current catalog year
+      let currentCatalogYear;
+      try {
+        currentCatalogYear = await catalogYearApi.getCurrentCatalogYear();
+        if (!currentCatalogYear) {
+          throw new Error("No active catalog year found");
+        }
+      } catch (error) {
+        throw new Error(
+          "System configuration error: Unable to determine current catalog year. Please contact support."
+        );
+      }
+
+      // Step 3: Check if veteran exists and create record if needed
+      let veteran;
+      try {
+        // Check if veteran already exists
+        const { exists, veteran: existingVeteran } =
+          await veteranApi.checkExisting({
+            firstName,
+            lastName,
+            collegeId: CollegeID ? parseInt(CollegeID) : undefined,
+            email,
+          });
+
+        if (exists && existingVeteran) {
+          // Make sure we have a valid veteran ID and required flags are set
+
+          if (!existingVeteran.id) {
+            console.error("Invalid veteran record:", existingVeteran);
+            throw new Error(
+              "Invalid veteran record structure received from server"
+            );
+          }
+          // Only upload documents if veteran has PotentialStudent and CPLLandingPage flags set
+          if (existingVeteran.PotentialStudent && existingVeteran.CPLLandingPage) {
+            if (files.length > 0) {
+              try {
+                await veteranApi.uploadDocuments(
+                  existingVeteran.id,
+                  await Promise.all(
+                    files.map(async (file) => ({
+                      VeteranID: existingVeteran.id,
+                      Filename: file.name,
+                      BinaryData: await convertToBase64(file),
+                      FileDescription: file.name,
+                      DocumentTypeID: 10,
+                      user_id: 1,
+                      Field: "student_joint_services",
+                    }))
+                  )
+                );
+              } catch (error) {
+                console.error("Failed to upload documents:", error);
+                throw new Error("Failed to upload documents. Please try again.");
+              }
+            }
+          }
+
+          veteran = existingVeteran; // Store the veteran for later use
+        } else {
+          // Create new veteran record with standard notes format
+          const currentDate = new Date().toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          });
+          const studentPlanNotes = [
+            `Student requested CPL review : ${currentDate}`,
+            cccApplyId && `\n\nCCCApply ID or Student ID\n${cccApplyId}`,
+            "Requested review on course(s) ",
+            collegeSelectedCourses
+              .map((id) => {
+                const course = courses.find(
+                  (a) => a.OutlineID.toString() === id
+                );
+                if (!course) return "";
+
+                const courseInfo = `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`;
+                const certInfo = selectedCertifications[id]?.length
+                  ? selectedCertifications[id]
+                      .map((cert) => `- ${cert}`)
+                      .join("\n")
+                  : "";
+
+                return certInfo ? `${courseInfo}\n${certInfo}` : courseInfo;
+              })
+              .filter(Boolean)
+              .join("\n"),
+            unlistedQualifications &&
+              `Additional Qualifications listed:\n${unlistedQualifications}`,
+          ]
+            .filter(Boolean)
+            .join("\n\n");
+
+          veteran = await veteranApi.createWithDocuments(
+            {
+              FirstName: firstName,
+              LastName: lastName,
+              Email: email,
+              CollegeID: CollegeID ? parseInt(CollegeID) : undefined,
+              StudentID: null,
+              IsValidPdfFormat: null,
+              CatalogYear: currentCatalogYear?.ID,
+              StudentPlanNotes: studentPlanNotes,
+              PotentialStudent: true,
+              CPLSearchUpload: false,
+              CPLLandingPage: true,
+            },
+            files
+          );
+        }
+
+        // Make sure we have a valid veteran object
+        if (!veteran) {
+          throw new Error("Failed to create or retrieve veteran record");
+        }
+      } catch (error) {
+        console.error("Veteran processing error:", error);
+        throw new Error(
+          "Unable to process veteran information. Please try again or contact support."
+        );
+      }
+
+      // Step 4: Send email notification
+      try {
+        await handleCPLRequestSubmit(
           firstName,
           lastName,
           email,
-          hasCCCApplyId,
-          cccApplyId,
-          selectedCourses: collegeSelectedCourses.map((id) => {
-            const course = courses.find((a) => a.OutlineID.toString() === id);
-            return course
-              ? {
-                  course: `${course.Subject} ${course.CourseNumber}: ${course.CourseTitle}`,
-                  certifications: selectedCertifications[id] || [],
-                }
-              : "";
-          }),
-          CollegeID,
-          unlistedQualifications,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+          files,
+          cccApplyId
+        );
+      } catch (error) {
+        console.error("Email notification error:", error);
+        toast({
+          title: "Request Submitted",
+          description:
+            "Your request was processed successfully, but we couldn't send the confirmation email.",
+          variant: "warning",
+        });
+        onClose();
+        return;
       }
 
-      const data = await response.json();
-
+      // Success path
       toast({
-        title: "Request Submitted",
+        title: "Request Submitted Successfully",
         description:
-          "Your CPL information request has been submitted successfully.",
+          "Your CPL information request has been submitted and confirmed.",
         variant: "success",
       });
-
-      await handleCPLRequestSubmit(firstName, lastName, email, files, cccApplyId);
       resetForm();
       onClose();
     } catch (error) {
-      console.error("Error submitting request:", error);
+      console.error("Error in handleCPLRequestDBSubmit:", error);
+
+      // Determine the error message to show to the user
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      // Show error toast with specific message
       toast({
-        title: "Error",
-        description: "Failed to submit your request. Please try again.",
+        title: "Submission Error",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -265,25 +433,20 @@ const handleCertificationChange = useCallback(
   );
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 max-w-3xl min-w-[300px]"
-        aria-describedby="dialog-description"
-      >
+      <DialogContent className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 max-w-3xl min-w-[300px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            Request CPL Information
-          </DialogTitle>
-          <p id="dialog-description" className="text-sm text-muted-foreground">
+          <DialogTitle>Request CPL Information</DialogTitle>
+          <DialogDescription>
             Fill out this form to request information about Credit for Prior
             Learning (CPL) opportunities.
-          </p>
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           {hasCCCApplyId === false && <CCCApplyInstructions />}
           <div className="grid grid-cols-2">
             <div className="flex items-center space-x-2">
               <Label htmlFor="hasCCCApplyId" className="font-bold">
-                Do you have a CCCApply ID?
+                Do you have a student ID or CCCApply ID?
               </Label>
               <RadioGroup
                 onValueChange={(value) => setHasCCCApplyId(value === "yes")}
@@ -308,14 +471,14 @@ const handleCertificationChange = useCallback(
             </div>
             {hasCCCApplyId && (
               <div className="flex items-center space-x-2">
-                <Label htmlFor="cccApplyId" className="font-bold">
-                  CCCApply ID
+                <Label htmlFor="cccApplyId" className="font-bold pl-2">
+                  ID
                 </Label>
                 <Input
                   id="cccApplyId"
-                  className="w-38"
+                  className="w-full"
                   value={cccApplyId}
-                  placeholder="Enter your CCCApply ID"
+                  placeholder="Enter student ID if available, if not your CCCApply ID"
                   onChange={(e) => setCCCApplyId(e.target.value)}
                   required
                 />
