@@ -696,3 +696,43 @@ model LookupCatalogYear {
   StartDate        DateTime? 
   EndDate          DateTime? 
 }
+
+model ViewCPLCollaborativeExhibits {
+  Title String?
+  AceID String?
+  id Int
+  college String?
+  CollegeID Int?
+  CollaborativeType String?
+  VersionNumber String?
+  ModelOfLearning Int?
+  CPLType Int?
+  articulations ViewCPLCollaborativeArticulations[]
+  collaborativeTypes ViewCPLCollaborativeTypes[]
+  @@id([id])
+}
+
+model ViewCPLCollaborativeArticulations {
+  Title String?
+  CreditRecommendation String?
+  AceID String?
+  Status String?
+  id Int
+  outline_id Int
+  CriteriaID Int
+  college String?
+  CollegeID Int?
+  Course String?
+  Slug String?
+  exhibit ViewCPLCollaborativeExhibits @relation(fields: [id], references: [id])
+  @@id([id])
+}
+
+model ViewCPLCollaborativeTypes {
+    id Int
+    ExhibitID Int
+    CollaborativeID Int
+    Description String
+    exhibit ViewCPLCollaborativeExhibits @relation(fields: [ExhibitID], references: [id])
+  @@id([id])
+}

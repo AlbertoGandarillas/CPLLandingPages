@@ -84,10 +84,13 @@ export function ExhibitArticulatedCoursesTable({ exhibitId, criteriaId, outlineI
                           </TooltipTrigger>
                           <TooltipContent
                             side="right"
-                            align="start"
+                            align="end"
                             sideOffset={5}
+                            className="max-h-[calc(100vh-4rem)] overflow-y-auto" 
                           >
-                            <p className="max-w-xs">{row.CatalogDescription}</p>
+                            <p className="max-w-[400px] whitespace-normal break-words">
+                              {row.CatalogDescription}
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

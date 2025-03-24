@@ -1,14 +1,16 @@
 "use client";
 import { type SearchBarRef } from "@/components/shared/SearchBar";
-import ArticulationsTable from "@/components/features/cpl-articulations/ArticulationsTable";
 import { DropdownCPLTypes } from "@/components/shared/DropdownCPLTypes";
-import { DropdownImplementedColleges } from "@/components/shared/DropdownImplementedColleges";
 import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes";
 import { MostCommonCRs } from "@/components/dashboard/MostCommonCRs";
 import SearchBar from "@/components/shared/SearchBar";
-import { createQueryString } from "@/lib/createQueryStringArticulations";
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useState, useRef } from "react";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useCallback, useState, useRef, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import {
   Card,
   CardContent,
@@ -20,11 +22,38 @@ import { MostCommonTopCodes } from "@/components/dashboard/MostCommonTopCodes";
 import { MostCommonCIDs } from "@/components/dashboard/MostCommonCIDs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Trash, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import {
+  AlertCircle,
+  FileSpreadsheet,
+  Grid,
+  List,
+  Trash,
+  Loader2,
+  X,
+} from "lucide-react";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
 import { MostCommonIndCertifications } from "@/components/dashboard/MostCommonIndCertifications";
+import { collaborativeExhibitsApi } from "@/services/collaborativeExhibits";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ExhibitCard } from "@/components/features/collaborative/CollabExhibitCard";
+import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
+import { DropdownColleges } from "@/components/shared/DropdownColleges";
+import { exportCollaborativeExhibits } from "@/lib/events/exportCollaborativeExhibits";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { createQueryString } from "@/lib/createQueryStringArticulations";
+import ArticulationsTable from "@/components/features/cpl-articulations/ArticulationsTable";
+import { toast } from "@/components/ui/use-toast";
+import { exportToExcel } from "@/lib/events/exportUtils";
+
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -48,16 +77,20 @@ export default function InventoryPage() {
   const [selectedCatalogYear, setSelectedCatalogYear] = useState<string | null>(
     null
   );
+  const [isCCCChecked, setIsCCCChecked] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState<
+    "Not Articulated" | "Articulated" | "Inprogress" | null
+  >(null);
+  const [viewMode, setViewMode] = useState("grid");
+  const { ref, inView } = useInView();
+  const [isViewLoading, setIsViewLoading] = useState(false);
 
-  const handleCatalogYearSelect = useCallback((yearId: string | null) => {
-    console.log("Page - Selected Year:", yearId);
-    setSelectedCatalogYear(yearId);
-  }, []);
+  const queryClient = useQueryClient();
 
   const {
     data: articulations,
-    error,
-    isLoading,
+    error: articulationsError,
+    isLoading: articulationsIsLoading,
   } = useQuery({
     queryKey: [
       "articulations",
@@ -69,10 +102,8 @@ export default function InventoryPage() {
       selectedCIDNumber,
       searchTerm,
       selectedIndCert,
-      selectedCatalogYear,
     ],
     queryFn: async () => {
-      console.log("Fetching with catalogYearId:", selectedCatalogYear);
       const response = await fetch(
         `/api/cpl-articulations?${createQueryString({
           college: selectedCollege ?? undefined,
@@ -83,8 +114,6 @@ export default function InventoryPage() {
           cidNumber: selectedCIDNumber ?? undefined,
           searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
           indCert: selectedIndCert ?? undefined,
-          excludeColleges: "120",
-          catalogYearId: selectedCatalogYear ?? undefined,
         })}`
       );
 
@@ -98,6 +127,60 @@ export default function InventoryPage() {
       return response.json();
     },
   });
+
+  const {
+    data: exhibitsResponse,
+    error,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: [
+      "collaborativeExhibits",
+      {
+        ccc: isCCCChecked ? "1" : "0",
+        status: selectedStatus,
+        searchTerm,
+        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+        modelOfLearning: selectedLearningMode,
+        cplType: selectedCPLType,
+      },
+    ],
+    queryFn: async ({ pageParam = 1 }) => {
+      return await collaborativeExhibitsApi.getExhibits({
+        ccc: isCCCChecked ? "1" : "0",
+        status: selectedStatus || undefined,
+        searchTerm: searchTerm || undefined,
+        modelOfLearning: selectedLearningMode
+          ? parseInt(selectedLearningMode)
+          : undefined,
+        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+        page: pageParam,
+        pageSize: 9,
+        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+      });
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
+        return lastPage.pagination.currentPage + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
+
+  const handleCatalogYearSelect = useCallback((yearId: string | null) => {
+    console.log("Page - Selected Year:", yearId);
+    setSelectedCatalogYear(yearId);
+  }, []);
 
   const handleSearch = useCallback((term: string) => {
     if (term.length >= 3 || term.length === 0) {
@@ -128,7 +211,7 @@ export default function InventoryPage() {
     setSelectedCIDNumber(cidNumber);
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = async () => {
     setSelectedCollege(null);
     setSelectedLearningMode(null);
     setSelectedCPLType(null);
@@ -139,16 +222,79 @@ export default function InventoryPage() {
     setSearchTerm("");
     searchBarRef.current?.clear();
     setSelectedCatalogYear(null);
+    setSelectedStatus(null);
+    setIsCCCChecked(true);
+    await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
+  };
+
+  const handleCCCChange = async (checked: boolean) => {
+    setIsCCCChecked(checked);
+    await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
+  };
+
+  const handleStatusChange = (value: string) => {
+    if (value === "all") {
+      setSelectedStatus(null);
+    } else {
+      setSelectedStatus(
+        value as "Not Articulated" | "Articulated" | "Inprogress"
+      );
+    }
+  };
+
+  useEffect(() => {
+    queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
+  }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, queryClient]);
+
+  const handleExport = async () => {
+    try {
+      if (viewMode === "list") {
+        if (articulations) {
+          exportToExcel(articulations, "Articulations");
+        }
+      } else {
+        await exportCollaborativeExhibits(
+          isCCCChecked ? "1" : "0",
+          selectedStatus,
+          searchTerm || null,
+          selectedCollege ? parseInt(selectedCollege) : undefined
+        );
+      }
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewModeChange = async (value: string) => {
+    if (value) {
+      setIsViewLoading(true);
+      try {
+        if (value === "list") {
+          await queryClient.refetchQueries({ queryKey: ["articulations"] });
+        } else {
+          await queryClient.refetchQueries({
+            queryKey: ["collaborativeExhibits"],
+          });
+        }
+        setViewMode(value);
+      } finally {
+        setIsViewLoading(false);
+      }
+    }
   };
 
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="w-full lg:min-w-0 lg:flex-1">
-          <div className="mb-4">
-          </div>
-            <PotentialSavingsTable
-              hideCPLImpactChart={true}
+          <div className="mb-4"></div>
+          <PotentialSavingsTable
+            hideCPLImpactChart={true}
             setSelectedCollege={handleCollegeSelect}
             onCatalogYearSelect={setSelectedCatalogYear}
             selectedCatalogYear={selectedCatalogYear}
@@ -262,7 +408,7 @@ export default function InventoryPage() {
           </Tabs>
         </div>
       </div>
-      <div className="mt-4">
+      <div className="mt-8">
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -274,81 +420,162 @@ export default function InventoryPage() {
             </AlertDescription>
           </Alert>
         )}
-        <ArticulationsTable
-          loading={isLoading}
-          error={error}
-          searchTerm={searchTerm}
-          CollegeID={selectedCollege ? parseInt(selectedCollege, 10) : 1}
-          articulations={articulations}
-        >
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0 w-full">
-            <SearchBar
-              ref={searchBarRef}
-              onSearch={handleSearch}
-              placeholder="Search..."
-              className="w-full sm:w-auto lg:w-96"
-            />
-            <DropdownImplementedColleges
-              onCollegeSelect={setSelectedCollege}
-              selectedCollege={selectedCollege}
-            />
-            <DropdownLearningModes
-              onLearningModeSelect={setSelectedLearningMode}
-              selectedMode={selectedLearningMode}
-            />
-            <DropdownCPLTypes
-              onCPLTypeSelect={setSelectedCPLType}
-              selectedType={selectedCPLType}
-            />
-            <div className="flex flex-wrap gap-2 mt-4">
-              {selectedCR && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  {selectedCR}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleCRSelect(null)}
-                  />
-                </Badge>
+        <Card className="w-full">
+          <CardHeader className="bg-muted p-4">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
+              <ToggleGroup
+                type="single"
+                value={viewMode}
+                onValueChange={handleViewModeChange}
+                className="mb-2 sm:mb-0"
+              >
+                <ToggleGroupItem
+                  value="grid"
+                  aria-label="Grid view"
+                  className={viewMode === "grid" ? "shadow-md" : ""}
+                  disabled={isViewLoading}
+                >
+                  {isViewLoading && viewMode !== "grid" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Grid className="h-4 w-4" />
+                      <span>Articulated Exhibits</span>
+                    </div>
+                  )}
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="list"
+                  aria-label="List view"
+                  className={viewMode === "list" ? "shadow-md" : ""}
+                  disabled={isViewLoading}
+                >
+                  {isViewLoading && viewMode !== "list" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                      <span>Articulated Courses</span>
+                    </div>
+                  )}
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </CardTitle>
+            <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
+              {viewMode === "grid" && (
+                <div className="flex items-center justify-center gap-2 w-full">
+                  <>
+                    <Switch
+                      id="cccc-filter"
+                      checked={isCCCChecked}
+                      onCheckedChange={handleCCCChange}
+                    />
+                    <Label htmlFor="cccc-filter">
+                      {isCCCChecked
+                        ? "CCC Statewide Recommendations Only"
+                        : "All Recommendations"}
+                    </Label>
+                    <Label htmlFor="status-filter">Status :</Label>
+                    <Select
+                      value={selectedStatus || "all"}
+                      onValueChange={handleStatusChange}
+                    >
+                      <SelectTrigger id="status-filter" className="w-[180px]">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="Articulated">Articulated</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </>
+                </div>
               )}
-              {selectedIndCert && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  {selectedIndCert}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleIndCertSelect(null)}
-                  />
-                </Badge>
-              )}
-              {selectedCIDNumber && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  {selectedCIDNumber}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleCIDNumberSelect(null)}
-                  />
-                </Badge>
-              )}
-              {selectedTopCode && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  {selectedProgram}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() =>
-                      handleTopCodeSelect({ code: null, title: null })
-                    }
-                  />
-                </Badge>
-              )}
+              <div className="flex gap-2 items-center justify-center w-full">
+                <SearchBar
+                  ref={searchBarRef}
+                  onSearch={handleSearch}
+                  placeholder="Search..."
+                  inputClassName="bg-blue-100"
+                  className="w-full sm:w-auto lg:w-64"
+                />
+                <DropdownColleges
+                  onCollegeSelect={setSelectedCollege}
+                  selectedCollege={selectedCollege}
+                />
+                <DropdownLearningModes
+                  onLearningModeSelect={setSelectedLearningMode}
+                  selectedMode={selectedLearningMode}
+                />
+                <DropdownCPLTypes
+                  onCPLTypeSelect={setSelectedCPLType}
+                  selectedType={selectedCPLType}
+                />
+                <Button
+                  variant="secondary"
+                  onClick={handleClearFilters}
+                  className="whitespace-nowrap shadow-md"
+                >
+                  <Trash className="h-4 w-4" /> Clear Filters
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleExport}
+                  className="w-full sm:w-auto shadow-md"
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Export to Excel
+                </Button>
+              </div>
             </div>
-            <Button
-              variant="secondary"
-              onClick={handleClearFilters}
-              className="whitespace-nowrap"
-            >
-              <Trash className="h-4 w-4" /> Clear Filters
-            </Button>
-          </div>
-        </ArticulationsTable>
+          </CardHeader>
+          <CardContent className="mt-3">
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <div className="text-gray-500">No results found</div>
+                  </div>
+                ) : (
+                  <>
+                    {exhibitsResponse?.pages.map((page) =>
+                      page.data.map((exhibit: any) => (
+                        <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                      ))
+                    )}
+                    <div
+                      ref={ref}
+                      className="col-span-full flex justify-center p-4"
+                    >
+                      {isFetchingNextPage ? (
+                        <SkeletonWrapper
+                          isLoading={true}
+                          fullWidth={true}
+                          variant="loading"
+                        />
+                      ) : hasNextPage ? (
+                        <div className="text-gray-500">Scroll to load more</div>
+                      ) : (
+                        <div className="text-gray-500">
+                          No more exhibits to load
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <ArticulationsTable
+                loading={articulationsIsLoading}
+                error={articulationsError}
+                searchTerm={searchTerm}
+                CollegeID={selectedCollege ? parseInt(selectedCollege, 10) : 1}
+                articulations={articulations}
+              />
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
