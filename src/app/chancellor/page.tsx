@@ -16,9 +16,21 @@ import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndu
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { FileSpreadsheet, Grid, Info, List, Loader2 } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
 import { DropdownMOS } from "@/components/shared/DropdownMOS";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { collaborativeExhibitsApi } from "@/services/collaborativeExhibits";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select";
+import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
+import { ExhibitCard } from "@/components/features/collaborative/CollabExhibitCard";
+import { useInView } from "react-intersection-observer";
+import { Button } from "@/components/ui/button";
+import { exportCollaborativeExhibits } from "@/lib/events/exportCollaborativeExhibits";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -32,6 +44,15 @@ export default function Home() {
   >(null);
   const [catalogYearId, setCatalogYearId] = useState<string | null>(null);
   const [fetchUrl, setFetchUrl] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
+   const { ref, inView } = useInView();
+  const [isViewLoading, setIsViewLoading] = useState(false);
+    const [isCCCChecked, setIsCCCChecked] = useState(true);
+    const [selectedStatus, setSelectedStatus] = useState<
+      "Not Articulated" | "Articulated" | "Inprogress" | null
+    >(null);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const newUrl = `/api/cpl-courses?${createQueryString({
@@ -45,6 +66,56 @@ export default function Home() {
     })}`;
     setFetchUrl(newUrl);
   }, [selectedCollege, selectedIndustryCertification, selectedCPLType, selectedLearningMode, searchTerm, catalogYearId]);
+
+    const {
+      data: exhibitsResponse,
+      error,
+      isLoading,
+      fetchNextPage,
+      hasNextPage,
+      isFetchingNextPage,
+      refetch,
+    } = useInfiniteQuery({
+      queryKey: [
+        "collaborativeExhibits",
+        {
+          ccc: isCCCChecked ? "1" : "0",
+          status: selectedStatus,
+          searchTerm,
+          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+          modelOfLearning: selectedLearningMode,
+          cplType: selectedCPLType,
+        },
+      ],
+      queryFn: async ({ pageParam = 1 }) => {
+        return await collaborativeExhibitsApi.getExhibits({
+          ccc: isCCCChecked ? "1" : "0",
+          status: selectedStatus || undefined,
+          searchTerm: searchTerm || undefined,
+          modelOfLearning: selectedLearningMode
+            ? parseInt(selectedLearningMode)
+            : undefined,
+          cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+          page: pageParam,
+          pageSize: 9,
+          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+        });
+      },
+      getNextPageParam: (lastPage) => {
+        if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
+          return lastPage.pagination.currentPage + 1;
+        }
+        return undefined;
+      },
+      initialPageParam: 1,
+    });
+
+      useEffect(() => {
+        if (inView && hasNextPage) {
+          fetchNextPage();
+        }
+      }, [inView, fetchNextPage, hasNextPage]);
+
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId === "0" ? null : collegeId);
@@ -68,6 +139,54 @@ export default function Home() {
       setSearchTerm(term);
     }
   }, []);
+  const handleExport = async () => {
+    try {
+        await exportCollaborativeExhibits(
+          isCCCChecked ? "1" : "0",
+          selectedStatus,
+          searchTerm || null,
+          selectedCollege ? parseInt(selectedCollege) : undefined
+        );
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };  
+    const handleViewModeChange = async (value: string) => {
+      if (value) {
+        setIsViewLoading(true);
+        try {
+          if (value === "list") {
+            await queryClient.refetchQueries({ queryKey: ["articulations"] });
+          } else {
+            await queryClient.refetchQueries({
+              queryKey: ["collaborativeExhibits"],
+            });
+          }
+          setViewMode(value);
+        } finally {
+          setIsViewLoading(false);
+        }
+      }
+    };
+     const handleCCCChange = async (checked: boolean) => {
+       setIsCCCChecked(checked);
+       await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
+     };
+
+     const handleStatusChange = (value: string) => {
+       if (value === "all") {
+         setSelectedStatus(null);
+       } else {
+         setSelectedStatus(
+           value as "Not Articulated" | "Articulated" | "Inprogress"
+         );
+       }
+     };
   return (
     <SelectedCoursesProvider>
       <div className="mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
@@ -87,10 +206,7 @@ export default function Home() {
                       Potential CPL Savings & Preservation of Funds (PoF), 20
                       Year-Impact College Metrics
                     </h1>
-                    <Info
-                      size={16}
-                      className="ml-2 cursor-help"
-                    />
+                    <Info size={16} className="ml-2 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent className="text-xs w-[calc(100vw-32px)] sm:max-w-[500px] font-normal text-left bg-gray-50">
                     <div>
@@ -192,10 +308,48 @@ export default function Home() {
         </Accordion>
         <Card className="w-full">
           <CardHeader className="bg-gray-100 p-4">
-            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="hidden text-lg sm:text-xl">Eligible Courses</div>
+            <CardTitle>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
+                <ToggleGroup
+                  type="single"
+                  value={viewMode}
+                  onValueChange={handleViewModeChange}
+                  className="mb-2 sm:mb-0"
+                >
+                  <ToggleGroupItem
+                    value="grid"
+                    aria-label="Grid view"
+                    className={viewMode === "grid" ? "shadow-md" : ""}
+                    disabled={isViewLoading}
+                  >
+                    {isViewLoading && viewMode !== "grid" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Grid className="h-4 w-4" />
+                        <span>Articulated Exhibits</span>
+                      </div>
+                    )}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="list"
+                    aria-label="List view"
+                    className={viewMode === "list" ? "shadow-md" : ""}
+                    disabled={isViewLoading}
+                  >
+                    {isViewLoading && viewMode !== "list" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <List className="h-4 w-4" />
+                        <span>Articulated Courses</span>
+                      </div>
+                    )}
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
               <div className="w-full sm:w-auto">
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
                   <SearchBar
                     onSearch={handleSearch}
                     inputClassName="bg-blue-100"
@@ -206,7 +360,9 @@ export default function Home() {
                   />
                   {selectedCollege && selectedCollege !== "0" ? (
                     <DropdownIndustryCertifications
-                      onIndustryCertificationSelect={handleIndustryCertificationSelect}
+                      onIndustryCertificationSelect={
+                        handleIndustryCertificationSelect
+                      }
                       collegeId={selectedCollege}
                     />
                   ) : null}
@@ -215,26 +371,114 @@ export default function Home() {
                     onLearningModeSelect={handleLerningModeSelect}
                   />
                   <DropdownMOS onMOSSelect={handleMOSSelect} />
+                  {viewMode === "grid" && (
+                    <>
+                      <Switch
+                        id="cccc-filter"
+                        checked={isCCCChecked}
+                        onCheckedChange={handleCCCChange}
+                      />
+                      <Label htmlFor="cccc-filter">
+                        {isCCCChecked
+                          ? "CCC Statewide Recommendations Only"
+                          : "All Recommendations"}
+                      </Label>
+                    </>
+                  )}
+                  {viewMode === "grid" && (
+                    <>
+                      <div className="flex gap-2 items-center">
+                        <Label htmlFor="status-filter">Status :</Label>
+                        <Select
+                          value={selectedStatus || "all"}
+                          onValueChange={handleStatusChange}
+                        >
+                          <SelectTrigger
+                            id="status-filter"
+                            className="w-[180px]"
+                          >
+                            <SelectValue placeholder="All Statuses" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="Articulated">
+                              Articulated
+                            </SelectItem>
+                            <SelectItem value="In Progress">
+                              In Progress
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={handleExport}
+                          className="w-full sm:w-auto shadow-md"
+                        >
+                          <FileSpreadsheet className="h-4 w-4 mr-2" />
+                          Export to Excel
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <div className="space-y-4">
-              <div className="w-full overflow-x-auto">
-                <ArticulationsTable
-                  articulations={ []}
-                  loading={false}
-                  error={null}
-                  searchTerm={searchTerm}
-                  showCollegeName={true}
-                  CollegeID={
-                    selectedCollege ? parseInt(selectedCollege, 10) : 1
-                  }
-                  settingsObject={null}
-                  fetchUrl={fetchUrl}
-                />
-              </div>
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                  {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                    <div className="col-span-full flex justify-center p-4">
+                      <div className="text-gray-500">No results found</div>
+                    </div>
+                  ) : (
+                    <>
+                      {exhibitsResponse?.pages.map((page) =>
+                        page.data.map((exhibit: any) => (
+                          <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                        ))
+                      )}
+                      <div
+                        ref={ref}
+                        className="col-span-full flex justify-center p-4"
+                      >
+                        {isFetchingNextPage ? (
+                          <SkeletonWrapper
+                            isLoading={true}
+                            fullWidth={true}
+                            variant="loading"
+                          />
+                        ) : hasNextPage ? (
+                          <div className="text-gray-500">
+                            Scroll to load more
+                          </div>
+                        ) : (
+                          <div className="text-gray-500">
+                            No more exhibits to load
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="w-full overflow-x-auto">
+                  <ArticulationsTable
+                    articulations={[]}
+                    loading={false}
+                    error={null}
+                    searchTerm={searchTerm}
+                    showCollegeName={true}
+                    CollegeID={
+                      selectedCollege ? parseInt(selectedCollege, 10) : 1
+                    }
+                    settingsObject={null}
+                    fetchUrl={fetchUrl}
+                  />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -10,7 +10,14 @@ export async function GET(request: Request, { params }: Params) {
       include: {
         College: true,
         Links: true,
-        Contacts: true,
+        Contacts: {
+          include: {
+            ContactType: true
+          },
+          orderBy: {
+            ContactOrder: 'asc'
+          }
+        },
       },
     });
     if (!articulations) {

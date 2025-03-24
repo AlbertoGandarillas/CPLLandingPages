@@ -42,16 +42,16 @@ export default function Footer({ actionItems }: FooterProps) {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <address className="text-sm not-italic">
-              <p>473 E. Carnegie Drive</p>
-              <p>Suite # 200</p>
-              <p>San Bernardino, CA 92408</p>
+              <p>Calvin Gloria, MAP Project Manager</p>
+              <p>Veterans Resource Center</p>
+              <p>2001 Third Street</p>
+              <p>Norco, CA 92860</p>
               <p>
                 Email:{" "}
-                <a href="mailto:tech.support@theinfotechpartners.com">
-                  tech.support@theinfotechpartners.com
+                <a href="mailto:Calvin.Gloria@norcocollege.edu">
+                  Calvin.Gloria@norcocollege.edu
                 </a>
               </p>
-              <p>Phone: (909) 862-8078</p>
             </address>
           </div>
         </div>

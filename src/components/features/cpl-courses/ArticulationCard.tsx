@@ -33,6 +33,7 @@ import CertificationHoverCard from "./CertificationHoverCard";
 import { useToast } from "@/components/ui/use-toast";
 import { useSelectedCourses } from "@/contexts/SelectedCoursesContext";
 import LearningModesTable from "@/components/shared/LearningModesTable";
+import { EvidenceNotes } from "./EvidenceNotes";
 
 interface ArticulationCardProps {
   articulation: ExtendedViewCPLCourses;
@@ -246,10 +247,7 @@ export default function ArticulationCard({
                   </TableHeader>
                   <TableBody>
                     {articulation.IndustryCertifications.map((cert, index) => (
-                      <TableRow
-                        key={index}
-                        className="py-2 select-none"
-                      >
+                      <TableRow key={index} className="py-2 select-none">
                         <TableCell className="text-sm text-left align-top">
                           {cert.CPLTypeDescription}
                         </TableCell>
@@ -273,17 +271,37 @@ export default function ArticulationCard({
                           />
                         </TableCell>
                         <TableCell className="align-top">
-                          {
-                          cert.EvidenceCompetency ? (
+                          {cert.EvidenceCompetency ? (
                             <ul className="ml-4">
-                              {cert.EvidenceCompetency.split('|').map((evidence, evidenceIndex) => (
-                                <li
-                                  key={evidenceIndex}
-                                  className="text-sm list-disc"
-                                >
-                                  {evidence.trim()}
-                                </li>
-                              ))}
+                              {cert.evidenceCompetencies?.map(
+                                (evidence, evidenceIndex) => (
+                                  evidence.HaveNotes === 1 ? (
+                                    <TooltipProvider key={evidenceIndex}>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <li className="text-sm list-disc cursor-help underline">
+                                            {evidence.EvidenCompetency?.trim()}
+                                          </li>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <EvidenceNotes
+                                            outline_id={articulation.OutlineID}
+                                            evidence={evidence.EvidenCompetency?.trim()}
+                                            title={
+                                              evidence.IndustryCertification?.trim() ||
+                                              ""
+                                            }
+                                          />
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  ) : (
+                                    <li key={evidenceIndex} className="text-sm list-disc">
+                                      {evidence.EvidenCompetency?.trim()}
+                                    </li>
+                                  )
+                                )
+                              )}
                             </ul>
                           ) : (
                             <>
