@@ -699,7 +699,7 @@ model LookupCatalogYear {
   StartDate        DateTime? 
   EndDate          DateTime? 
 }
-
+//Add a new model for evidence competency notes
 model ViewCPLEvidenceCompetencyNotes {
   outline_id Int
   title String
