@@ -5,11 +5,18 @@ import ContactCard from "../shared/ContactCard";
 import SidebarButtons from "../shared/SidebarButtons";
 import Contacts from "../shared/Contact";
 import Image from "next/image";
-interface Contact {
-  ContactType: string;
-  Name: string;
-  Email: string;
+
+interface ContactType {
+  Description: string;
 }
+
+interface Contact {
+  Description: string;
+  ContactName: string;
+  ContactEmail: string;
+  ContactType: ContactType;
+}
+
 interface SidebarProps {
   settingsObject: {
     College: {
@@ -40,6 +47,7 @@ interface SidebarProps {
   children?: React.ReactNode;
   className?: string;
 }
+
 export default function Sidebar({
   settingsObject,
   children,
@@ -47,9 +55,9 @@ export default function Sidebar({
   className
 }: SidebarProps) {
   const logoUrl = `${process.env.NEXT_PUBLIC_LOGO_BASE_URL}${settingsObject.LogoUrl}`;
+
   return (
     <>
-
       {/* Sidebar content */}
       <aside
         className={`lg:block lg:sticky lg:top-0 lg:h-screen w-80 p-4 flex flex-col justify-start overflow-y-auto`}
