@@ -707,8 +707,8 @@ model ViewCPLCollaborativeExhibits {
   VersionNumber String?
   ModelOfLearning Int?
   CPLType Int?
-  articulations ViewCPLCollaborativeArticulations[]
   collaborativeTypes ViewCPLCollaborativeTypes[]
+  creditRecommendations ViewCPLCollaborativeCRs[]
   @@id([id])
 }
 
@@ -724,7 +724,7 @@ model ViewCPLCollaborativeArticulations {
   CollegeID Int?
   Course String?
   Slug String?
-  exhibit ViewCPLCollaborativeExhibits @relation(fields: [id], references: [id])
+  creditRecommendation ViewCPLCollaborativeCRs @relation(fields: [id, CriteriaID], references: [id, CriteriaID])
   @@id([id])
 }
 
@@ -735,4 +735,15 @@ model ViewCPLCollaborativeTypes {
     Description String
     exhibit ViewCPLCollaborativeExhibits @relation(fields: [ExhibitID], references: [id])
   @@id([id])
+}
+
+model ViewCPLCollaborativeCRs {
+  Title String
+  CreditRecommendation String?
+  AceID String
+  id Int
+  CriteriaID Int
+  exhibit ViewCPLCollaborativeExhibits @relation(fields: [id], references: [id])
+  articulations ViewCPLCollaborativeArticulations[]
+  @@id([id,CriteriaID])
 }

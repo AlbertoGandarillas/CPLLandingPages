@@ -10,7 +10,6 @@ import {
 interface Articulation {
   id: number;
   Course: string | null;
-  CreditRecommendation: string | null;
   Status: string | null;
   college: string | null;
   Slug: string | null;
@@ -32,12 +31,11 @@ export function CollabArticulationsDataTable({
   }
 
   return (
-    <div className="max-h-[300px] overflow-auto">
+    <div className="max-h-[300px] overflow-auto pl-2 py-2">
       <Table className="w-full">
         <TableHeader className="sticky top-0 bg-white z-10">
           <TableRow className="bg-muted text-gray-800">
             <TableHead className="text-xs w-[100px] text-center">Course</TableHead>
-            <TableHead className="text-xs">Credit Rec.</TableHead>
             <TableHead className="text-xs w-[80px]">Status</TableHead>
             <TableHead className="text-xs">College</TableHead>
           </TableRow>
@@ -47,9 +45,6 @@ export function CollabArticulationsDataTable({
             <TableRow key={`${articulation.id}-${index}`}>
               <TableCell className="text-xs w-[100px] text-center">
                 {articulation.Course || "N/A"}
-              </TableCell>
-              <TableCell className="text-xs">
-                {articulation.CreditRecommendation || "N/A"}
               </TableCell>
               <TableCell className="text-xs w-[80px]">
                 {articulation.Status || "N/A"}

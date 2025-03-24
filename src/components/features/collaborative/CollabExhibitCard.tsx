@@ -7,14 +7,21 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CollabArticulationsDataTable } from "@/components/features/collaborative/CollabArticulationsDataTable";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 interface Articulation {
   id: number;
   Course: string | null;
-  CreditRecommendation: string | null;
   Status: string | null;
   college: string | null;
   Slug: string | null;
+}
+
+interface CreditRecommendation {
+  id: number;
+  CreditRecommendation: string | null;
+  articulations: Articulation[];
 }
 
 interface Exhibit {
@@ -24,7 +31,7 @@ interface Exhibit {
   AceID: string | null;
   college: string | null;
   VersionNumber: string | null;
-  articulations: Articulation[];
+  creditRecommendations: CreditRecommendation[];
   collaborativeTypes: CollaborativeType[];
 }
 
@@ -70,10 +77,34 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
           </div>
         </CardDescription>
       </CardHeader>
-      <CardContent className="mt-3">
-        <CollabArticulationsDataTable
-          articulations={exhibit.articulations || []}
-        />
+      <CardContent className="mt-3 max-h-[300px] overflow-auto">
+        {exhibit.creditRecommendations.map((cr, index) => (
+          <Collapsible key={index} defaultOpen={true}>
+            <div className="flex items-center justify-between space-x-4 px-4">
+              <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4  transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
+                <p className="text-sm font-bold text-left px-2">
+                  {cr.CreditRecommendation}
+                </p>
+                {cr.articulations && cr.articulations.length > 0 && (
+                  <ChevronDown className="mx-2 h-4 w-4 shrink-0 transition-transform duration-200" />
+                )}
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="space-y-2">
+              <div className="rounded-md px-4">
+                {cr.articulations && cr.articulations.length > 0 ? (
+                  <CollabArticulationsDataTable
+                    articulations={cr.articulations}
+                  />
+                ) : (
+                  <div className="text-center py-4 text-gray-500 text-sm">
+                    No articulations found for this Credit Recommendation
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        ))}
       </CardContent>
     </Card>
   );

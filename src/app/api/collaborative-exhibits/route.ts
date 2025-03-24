@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 
 // Define the type for our where clause
 type ExhibitsWhereInput = Prisma.ViewCPLCollaborativeExhibitsWhereInput;
-type ArticulationsWhereInput =
-  Prisma.ViewCPLCollaborativeArticulationsWhereInput;
+type ArticulationsWhereInput = Prisma.ViewCPLCollaborativeArticulationsWhereInput;
+type CreditRecommendationsWhereInput = Prisma.ViewCPLCollaborativeCRsWhereInput;
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         }
       };
     }
-    // When ccc is "0", don't filter by CollaborativeID to include all records
+
     if (modelOfLearning) {
       exhibitsWhere.ModelOfLearning = parseInt(modelOfLearning);
     }
@@ -44,49 +44,21 @@ export async function GET(request: NextRequest) {
       exhibitsWhere.CPLType = parseInt(cplType);
     }
 
-    // Handle collegeID parameter - now part of OR condition
+    // Handle collegeID parameter
     const collegeCondition = collegeID ? { CollegeID: parseInt(collegeID) } : {};
 
-    // Build the where clause for ViewCPLCollaborativeArticulations
-    const articulationsWhere: ArticulationsWhereInput = {};
+    // Build the where clause for credit recommendations
+    const creditRecommendationsWhere: CreditRecommendationsWhereInput = {};
 
-    // Handle status parameter
-    if (status) {
-      articulationsWhere.Status = status;
-    }
-
-    // Add search functionality for both exhibits and articulations
+    // Add search functionality
     if (searchTerm) {
       exhibitsWhere.OR = [
         { Title: { contains: searchTerm } },
         { AceID: { contains: searchTerm } },
-        { college: { contains: searchTerm } },
-        {
-          articulations: {
-            some: {
-              OR: [
-                { CreditRecommendation: { contains: searchTerm } },
-                { Status: { contains: searchTerm } },
-                { CollegeID: collegeID ? { equals: parseInt(collegeID) } : undefined },
-                { college: { contains: searchTerm } },
-                { Course: { contains: searchTerm } },
-              ],
-            },
-          },
-        },
+        { college: { contains: searchTerm } }
       ];
     } else if (collegeID) {
-      // If no search term but collegeID exists, use OR condition
-      exhibitsWhere.OR = [
-        collegeCondition,
-        {
-          articulations: {
-            some: {
-              CollegeID: parseInt(collegeID)
-            }
-          }
-        }
-      ];
+      exhibitsWhere.OR = [collegeCondition];
     }
 
     // Get total count for pagination
@@ -94,15 +66,34 @@ export async function GET(request: NextRequest) {
       where: exhibitsWhere,
     });
 
-    // Fetch paginated exhibits with filtered articulations
+    // Fetch paginated exhibits with related data
     const exhibits = await db.viewCPLCollaborativeExhibits.findMany({
       where: exhibitsWhere,
       include: {
-        articulations: {
-          where: articulationsWhere,
-          orderBy: [{ CreditRecommendation: "asc" }, { Course: "asc" }],
-        },
         collaborativeTypes: true,
+        creditRecommendations: {
+          where: searchTerm ? {
+            OR: [
+              { CreditRecommendation: { contains: searchTerm } }
+            ]
+          } : undefined,
+          include: {
+            articulations: status || searchTerm || collegeID ? {
+              where: {
+                OR: [
+                  status ? { Status: status } : {},
+                  searchTerm ? {
+                    OR: [
+                      { Course: { contains: searchTerm } },
+                      { college: { contains: searchTerm } }
+                    ]
+                  } : {},
+                  collegeID ? { CollegeID: parseInt(collegeID) } : {}
+                ]
+              }
+            } : true
+          }
+        }
       },
       orderBy: {
         Title: "asc",
@@ -121,10 +112,10 @@ export async function GET(request: NextRequest) {
 
     // Format the response with type safety
     const formattedExhibits = exhibits.map((exhibit) => {
-      const { articulations, collaborativeTypes, ...rest } = exhibit;
+      const { creditRecommendations, collaborativeTypes, ...rest } = exhibit;
       return {
         ...rest,
-        articulations: articulations || [],
+        creditRecommendations: creditRecommendations || [],
         collaborativeTypes: collaborativeTypes || [],
       };
     });

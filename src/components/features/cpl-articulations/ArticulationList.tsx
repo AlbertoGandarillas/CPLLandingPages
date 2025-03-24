@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { SquareArrowOutUpRight } from "lucide-react";
 import {
   Dialog,
-  DialogContent, 
+  DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -31,10 +31,15 @@ interface ArticulationListProps {
 export default function ArticulationList({
   articulations,
 }: ArticulationListProps) {
-  const [selectedExhibitId, setSelectedExhibitId] = useState<string | null>(null);
-  const [selectedArticulation, setSelectedArticulation] = useState<ViewCPLArticulations | null>(null);
+  const [selectedExhibitId, setSelectedExhibitId] = useState<string | null>(
+    null
+  );
+  const [selectedArticulation, setSelectedArticulation] =
+    useState<ViewCPLArticulations | null>(null);
   const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
-  const [displayedArticulations, setDisplayedArticulations] = useState<ViewCPLArticulations[]>([]);
+  const [displayedArticulations, setDisplayedArticulations] = useState<
+    ViewCPLArticulations[]
+  >([]);
   const [page, setPage] = useState(1);
   const loadingRef = useRef(null);
   const itemsPerPage = 20;
@@ -52,47 +57,213 @@ export default function ArticulationList({
             (page + 1) * itemsPerPage
           );
           if (nextItems.length > 0) {
-            setDisplayedArticulations(prev => [...prev, ...nextItems]);
-            setPage(prev => prev + 1);
+            setDisplayedArticulations((prev) => [...prev, ...nextItems]);
+            setPage((prev) => prev + 1);
           }
         }
       },
       { threshold: 0.1 }
     );
 
-    if (loadingRef.current) {
-      observer.observe(loadingRef.current);
+    // Store the current value of the ref in a variable
+    const currentLoadingRef = loadingRef.current;
+
+    // Use the stored variable in both observe and cleanup
+    if (currentLoadingRef) {
+      observer.observe(currentLoadingRef);
     }
 
     return () => {
-      if (loadingRef.current) {
-        observer.unobserve(loadingRef.current);
+      // Use the same stored variable in cleanup
+      if (currentLoadingRef) {
+        observer.unobserve(currentLoadingRef);
       }
     };
-  }, [page, articulations]);
+  }, [page, articulations, itemsPerPage]); // Add itemsPerPage to dependencies
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ maxHeight: '70vh' }}>
+      <TableContainer component={Paper} sx={{ maxHeight: "70vh" }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', width: '80px', backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Details</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>CPL Type</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>College</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Subject</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Course Number</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Title</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Credits</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>CID Number</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>CID Descriptor</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Exhibit ID</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Exhibit Title</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Learning Mode</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Credit Recommendation</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Top Code</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Students</TableCell>
-              <TableCell sx={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))", fontWeight: "bold", fontSize: "12px", fontFamily: "var(--font-sans)" }}>Units</TableCell>
+              <TableCell
+                sx={{
+                  fontWeight: "bold",
+                  width: "80px",
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Details
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                CPL Type
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                College
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Subject
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Course Number
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Title
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Credits
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                CID Number
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                CID Descriptor
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Exhibit ID
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Exhibit Title
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Learning Mode
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Credit Recommendation
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Top Code
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Students
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Units
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -110,35 +281,103 @@ export default function ArticulationList({
                       setSelectedArticulation(articulation);
                       setLoadingButtonId(null);
                     }}
-                    disabled={loadingButtonId === articulation.ArticulationID.toString()}
+                    disabled={
+                      loadingButtonId === articulation.ArticulationID.toString()
+                    }
                   >
-                    {loadingButtonId === articulation.ArticulationID.toString() ? (
+                    {loadingButtonId ===
+                    articulation.ArticulationID.toString() ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
                     ) : (
                       <SquareArrowOutUpRight className="h-4 w-4" />
                     )}
                   </Button>
                 </TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.CPLTypeDescription}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.College}</TableCell>
-                <TableCell align="center" sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.Subject}</TableCell>
-                <TableCell align="center" sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.CourseNumber}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.CourseTitle}</TableCell>
-                <TableCell align="center" sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.Units}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.CIDNumber}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)" }}>{articulation.CIDDescriptor}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"  }}>{articulation.AceID}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"  }}>{articulation.IndustryCertification}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"  }}>{articulation.CPLModeofLearningDescription}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"  }}>{articulation.Criteria}</TableCell>
-                <TableCell sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"  }}>{articulation.Program_Title}</TableCell>
-                <TableCell align="center" sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"   }}>{articulation.Students}</TableCell>
-                <TableCell align="center" sx={{ fontSize: '12px', fontFamily: "var(--font-sans)"   }}>{articulation.CRUnits?.toString()}</TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CPLTypeDescription}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.College}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.Subject}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CourseNumber}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CourseTitle}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.Units}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CIDNumber}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CIDDescriptor}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.AceID}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.IndustryCertification}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CPLModeofLearningDescription}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.Criteria}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.Program_Title}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.Students}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.CRUnits?.toString()}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        <div ref={loadingRef} style={{ height: '20px' }} />
+        <div ref={loadingRef} style={{ height: "20px" }} />
       </TableContainer>
 
       <Dialog
@@ -155,7 +394,8 @@ export default function ArticulationList({
 
               <div className="pr-8">
                 {selectedArticulation &&
-                selectedArticulation?.VersionNumber?.toString().trim() !== "" ? (
+                selectedArticulation?.VersionNumber?.toString().trim() !==
+                  "" ? (
                   <Badge variant="default">
                     Version : {selectedArticulation?.VersionNumber}
                   </Badge>
