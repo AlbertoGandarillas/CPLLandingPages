@@ -59,8 +59,12 @@ export async function GET(request: NextRequest) {
       const selectedCourses = await db.viewCPLCourses.findMany({
         where: baseWhere,
         include: {
-          IndustryCertifications:true,
-          },
+          IndustryCertifications: {
+            include: {
+              evidenceCompetencies: true
+            }
+          }
+        },
         orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
       });
 
@@ -149,7 +153,11 @@ export async function GET(request: NextRequest) {
         db.viewCPLCourses.findMany({
           where: baseWhere,
           include: {
-            IndustryCertifications: true,
+            IndustryCertifications: {
+              include: {
+                evidenceCompetencies: true
+              }
+            },
           },
           orderBy: [{ Subject: "asc" }, { CourseNumber: "asc" }],
           skip: (page - 1) * limit,
