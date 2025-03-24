@@ -9,7 +9,7 @@ interface FlattenedExhibit {
   ArticulationStatus: string;
   ArticulationCollege: string;
   Course: string;
-  CollaborativeType: string;
+  CollaborativeTypes: string;
 }
 
 export const exportCollaborativeExhibits = async (
@@ -36,35 +36,55 @@ export const exportCollaborativeExhibits = async (
 
     // Flatten the data structure
     const flattenedData: FlattenedExhibit[] = data.flatMap((exhibit: any) => {
-      if (!exhibit.articulations || exhibit.articulations.length === 0) {
-        // Return exhibit with empty articulation fields
-        return [
-          {
+      // Get collaborative types as comma separated string
+      const collaborativeTypes = exhibit.collaborativeTypes
+        ?.map((type: any) => type.Description)
+        .join(", ") || "";
+
+      if (!exhibit.creditRecommendations || exhibit.creditRecommendations.length === 0) {
+        // Return exhibit with empty credit recommendation fields
+        return [{
+          "Exhibit ID": exhibit.AceID || "",
+          Title: exhibit.Title || "",
+          "Exhibit College": exhibit.college || "",
+          Version: exhibit.VersionNumber || "",
+          "Credit Recommendation": "",
+          Status: "",
+          "Articulation College": "",
+          Course: "",
+          "Collaborative Types": collaborativeTypes
+        }];
+      }
+
+      return exhibit.creditRecommendations.flatMap((cr: any) => {
+        if (!cr.articulations || cr.articulations.length === 0) {
+          // Return credit recommendation with empty articulation fields
+          return [{
             "Exhibit ID": exhibit.AceID || "",
             Title: exhibit.Title || "",
             "Exhibit College": exhibit.college || "",
             Version: exhibit.VersionNumber || "",
-            "Credit Recommendation": "",
+            "Credit Recommendation": cr.CreditRecommendation || "",
             Status: "",
             "Articulation College": "",
             Course: "",
-            "Collaborative Type": (exhibit.CollaborativeType || "").split("|").join(","),
-          },
-        ];
-      }
+            "Collaborative Types": collaborativeTypes
+          }];
+        }
 
-      // Return exhibit with each articulation as a separate row
-      return exhibit.articulations.map((articulation: any) => ({
-        "Exhibit ID": exhibit.AceID || "",
-        Title: exhibit.Title || "",
-        "Exhibit College": exhibit.college || "",
-        Version: exhibit.VersionNumber || "",
-        "Credit Recommendation": articulation.CreditRecommendation || "",
-        Status: articulation.Status || "",
-        "Articulation College": articulation.college || "",
-        Course: articulation.Course || "",
-        "Collaborative Type": (exhibit.CollaborativeType || "").split("|").join(","),
-      }));
+        // Return credit recommendation with each articulation as a separate row
+        return cr.articulations.map((articulation: any) => ({
+          "Exhibit ID": exhibit.AceID || "",
+          Title: exhibit.Title || "",
+          "Exhibit College": exhibit.college || "",
+          Version: exhibit.VersionNumber || "",
+          "Credit Recommendation": cr.CreditRecommendation || "",
+          Status: articulation.Status || "",
+          "Articulation College": articulation.college || "",
+          Course: articulation.Course || "",
+          "Collaborative Types": collaborativeTypes
+        }));
+      });
     });
 
     // Create worksheet
@@ -80,6 +100,7 @@ export const exportCollaborativeExhibits = async (
       { wch: 15 }, // ArticulationStatus
       { wch: 20 }, // ArticulationCollege
       { wch: 30 }, // Course
+      { wch: 30 }, // CollaborativeTypes
     ];
     worksheet["!cols"] = columnWidths;
 
