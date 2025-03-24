@@ -721,13 +721,13 @@ model LookupCatalogYear {
   EndDate          DateTime? 
 }
 
-
 model ViewCPLEvidenceCompetencyNotes {
   outline_id Int
   title String
   Type String
   Notes String
   @@id([outline_id,title,Type])
+}
 
 model ViewCPLCollaborativeExhibits {
   Title String?
