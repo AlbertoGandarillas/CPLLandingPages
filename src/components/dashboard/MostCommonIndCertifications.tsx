@@ -20,7 +20,7 @@ export const MostCommonIndCertifications = ({
   console.log(data);
   const columns = [
     { key: "Title", label: "Title" },
-    { key: "StudentsCount", label: "Students Count", headerAlign: "flex justify-end" },
+    { key: "StudentsCount", label: "Student Count", headerAlign: "flex justify-end" },
   ];
 
   const filteredData =
@@ -38,15 +38,15 @@ export const MostCommonIndCertifications = ({
   }
 
   if (error) {
-    console.error("Error loading Most Common Industry Certifications:", error);
-    return <div>Error loading Most Common CRs</div>;
+    console.error("Error loading Most Common CPL Exhibits:", error);
+    return <div>Error loading Most Common CPL Exhibits</div>;
   }
 
   return (
     <div>
       <div className="flex items-center pb-4">
         <Input
-          placeholder="Filter Industry Certifications..."
+          placeholder="Filter CPL Exhibits..."
           value={filterValue}
           onChange={(event) => setFilterValue(event.target.value)}
           className="w-full"

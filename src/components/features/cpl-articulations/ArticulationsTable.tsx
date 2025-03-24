@@ -5,6 +5,7 @@ import SkeletonWrapper from "../../shared/SkeletonWrapper";
 import ArticulationHeader from "./ArticulationHeader";
 import ArticulationList from "./ArticulationList";
 import { ViewCPLArticulations } from "@prisma/client";
+import { exportToExcel } from "@/lib/events/exportUtils";
 
 interface ArticulationsTableProps {
   articulations?: ViewCPLArticulations[];
@@ -29,13 +30,20 @@ export default function ArticulationsTable({
 
   const isEmpty = articulations.length === 0 && !loading && !error;
 
+  const handleExport = () => {
+    if (articulations.length > 0) {
+      exportToExcel(articulations, "Articulations");
+    }
+  };
+
   return (
     <>
-      <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 overflow-y-auto max-h-[600px]">
+      <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4">
         <ArticulationHeader
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onExport={() => exportToExcel(articulations, "Articulations")}
+          onExport={handleExport}
+          showExport={false}
         >
           {children}
         </ArticulationHeader>
@@ -53,33 +61,3 @@ export default function ArticulationsTable({
     </>
   );
 }
-
-const exportToExcel = (
-  articulations: ViewCPLArticulations[],
-  fileName: string
-): void => {
-  const ws = XLSX.utils.json_to_sheet(
-    articulations.map(
-      (articulation): ArticulationExport => ({
-        "CPL Type": articulation.CPLTypeDescription ?? "",
-        "College": articulation.College ?? "",
-        "Subject": articulation.Subject ?? "",
-        "Course Number": articulation.CourseNumber ?? "",
-        "Course Title": articulation.CourseTitle ?? "",
-        "Credits": articulation.Units ?? "",
-        "CID Number": articulation.CIDNumber ?? "",
-        "CID Descriptor": articulation.CIDDescriptor ?? "",
-        "Exhibit ID": articulation.AceID ?? "",
-        "Exhibit Title": articulation.IndustryCertification ?? "",
-        "Learning Module": articulation.CPLModeofLearningDescription ?? "",
-        "Credit Recommendation": articulation.Criteria ?? "",
-        "Top Code": articulation.Program_Title ?? "",
-        "Students": articulation.Students?.toString() ?? "",
-        "Units": articulation.CRUnits?.toString() ?? "",
-      })
-    )
-  );
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Articulations Sheet");
-  XLSX.writeFile(wb, `${fileName}.xlsx`);
-};

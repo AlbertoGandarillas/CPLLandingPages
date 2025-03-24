@@ -145,8 +145,8 @@ export const PotentialSavingsTable = ({
             hideCPLImpactChart ? "xl:w-full 2xl:w-full" : "xl:w-1/2 2xl:w-3/4"
           }`}
         >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-            <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 xxl:grid-cols-4 mb-4">
+            <div className="lg:col-span-1 md:col-span-1">
               <ToggleGroup
                 type="single"
                 value={selectedType}
@@ -176,7 +176,15 @@ export const PotentialSavingsTable = ({
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 md:col-span-1 text-center">
+              <span className="text-xs font-bold pr-2">Academic Year </span>
+              <DropdownCatalogYear
+                selectedCatalogYear={selectedCatalogYear}
+                onCatalogYearSelect={handleCatalogYearSelect}
+                className="w-full"
+              />
+            </div>
+            <div className="lg:col-span-1 md:col-span-1">
               <div className="flex gap-2 p-1">
                 <Input
                   placeholder="Filter Colleges..."
@@ -186,15 +194,7 @@ export const PotentialSavingsTable = ({
                 />
               </div>
             </div>
-            <div className="lg:col-span-1">
-              <span className="text-xs font-bold pr-2">Academic Year </span>
-              <DropdownCatalogYear
-                selectedCatalogYear={selectedCatalogYear}
-                onCatalogYearSelect={handleCatalogYearSelect}
-                className="w-full"
-              />
-            </div>
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 md:col-span-1">
               <Button
                 size="sm"
                 variant="secondary"

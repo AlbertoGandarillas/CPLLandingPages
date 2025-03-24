@@ -2,10 +2,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
 
+interface ContactType {
+  Description: string;
+}
+
 interface Contact {
-  ContactType: string;
-  Name: string;
-  Email: string;
+  Description: string;
+  ContactName: string;
+  ContactEmail: string;
+  ContactType: ContactType;
 }
 
 interface ContactsProps {
@@ -16,7 +21,7 @@ interface ContactsProps {
 }
 
 export default function Contacts({ settings, className }: ContactsProps) {
-  const validContacts = settings.Contacts.filter((contact) => contact.Name);
+  const validContacts = settings.Contacts.filter((contact) => contact.ContactName);
 
   if (validContacts.length === 0) {
     return <EmptyContactsCard className={className} />;
@@ -28,7 +33,7 @@ export default function Contacts({ settings, className }: ContactsProps) {
         <ul className="space-y-4">
           {validContacts.map((contact, index) => (
             <ContactItem
-              key={`${contact.ContactType}-${contact.Name}-${contact.Email}-${index}`}
+              key={`${contact.ContactType.Description}-${contact.ContactName}-${contact.ContactEmail}-${index}`}
               contact={contact}
             />
           ))}
@@ -43,7 +48,7 @@ function EmptyContactsCard({ className }: { className?: string }) {
     <Card className={`w-full ${className}`}>
       <CardContent>
         <p className="text-sm text-muted-foreground">
-          No contact information available.
+
         </p>
       </CardContent>
     </Card>
@@ -55,16 +60,16 @@ function ContactItem({ contact }: { contact: Contact }) {
     <li className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <Avatar>
-          <AvatarImage src="" alt={contact.Name} />
+          <AvatarImage src="" alt={contact.ContactName} />
           <AvatarFallback>
             <User className="h-5 w-5" />
           </AvatarFallback>
         </Avatar>
         <div className="px-3 flex flex-col">
           <p className="text-sm font-bold leading-none">
-            {contact.ContactType}
+            {contact.ContactType.Description}
           </p>
-          <p className="text-sm font-medium leading-none pt-1">{contact.Name}</p>
+          <p className="text-sm font-medium leading-none pt-1">{contact.ContactName}</p>
         </div>
       </div>
     </li>
