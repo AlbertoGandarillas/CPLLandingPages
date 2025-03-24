@@ -309,8 +309,9 @@ export default function InventoryPage() {
               <TabsTrigger
                 value="industry"
                 className="text-xs whitespace-nowrap"
+                title="CPL Exhibits are collections of Credit Recommendations, either from ACE in the case of Military CPL or MAP for all other CPL"
               >
-                Industry Certifications
+                CPL Exhibits
               </TabsTrigger>
               <TabsTrigger
                 value="topcodes"
@@ -346,10 +347,10 @@ export default function InventoryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-sm font-semibold">
-                    Most Common Industry Certifications
+                    Most Common CPL Exhibits
                   </CardTitle>
                   <CardDescription>
-                    Note: List reflects all industry certifications currently in
+                    Note: List reflects all CPL Exhibits currently in
                     MAP. Not all are articulated with a course at a
                     college...yet.
                   </CardDescription>
