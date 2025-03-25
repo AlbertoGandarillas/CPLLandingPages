@@ -15,7 +15,12 @@ import { DropdownLearningModes } from "@/components/shared/DropdownLearningModes
 import { DropdownIndustryCertifications } from "@/components/shared/DropdownIndustryCertifications";
 import { SelectedCoursesProvider } from "@/contexts/SelectedCoursesContext";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { FileSpreadsheet, Grid, Info, List, Loader2 } from "lucide-react";
 import { DropdownColleges } from "@/components/shared/DropdownColleges";
 import { DropdownMOS } from "@/components/shared/DropdownMOS";
@@ -24,7 +29,13 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { collaborativeExhibitsApi } from "@/services/collaborativeExhibits";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectValue,
+  SelectTrigger,
+  SelectItem,
+} from "@/components/ui/select";
 import SkeletonWrapper from "@/components/shared/SkeletonWrapper";
 import { ExhibitCard } from "@/components/features/collaborative/CollabExhibitCard";
 import { useInView } from "react-intersection-observer";
@@ -45,12 +56,12 @@ export default function Home() {
   const [catalogYearId, setCatalogYearId] = useState<string | null>(null);
   const [fetchUrl, setFetchUrl] = useState("");
   const [viewMode, setViewMode] = useState("grid");
-   const { ref, inView } = useInView();
+  const { ref, inView } = useInView();
   const [isViewLoading, setIsViewLoading] = useState(false);
-    const [isCCCChecked, setIsCCCChecked] = useState(true);
-    const [selectedStatus, setSelectedStatus] = useState<
-      "Not Articulated" | "Articulated" | "Inprogress" | null
-    >(null);
+  const [isCCCChecked, setIsCCCChecked] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<
+    "Not Articulated" | "Articulated" | "Inprogress" | null
+  >("Articulated");
 
   const queryClient = useQueryClient();
 
@@ -65,57 +76,63 @@ export default function Home() {
       catalogYearId: catalogYearId ?? undefined,
     })}`;
     setFetchUrl(newUrl);
-  }, [selectedCollege, selectedIndustryCertification, selectedCPLType, selectedLearningMode, searchTerm, catalogYearId]);
+  }, [
+    selectedCollege,
+    selectedIndustryCertification,
+    selectedCPLType,
+    selectedLearningMode,
+    searchTerm,
+    catalogYearId,
+  ]);
 
-    const {
-      data: exhibitsResponse,
-      error,
-      isLoading,
-      fetchNextPage,
-      hasNextPage,
-      isFetchingNextPage,
-      refetch,
-    } = useInfiniteQuery({
-      queryKey: [
-        "collaborativeExhibits",
-        {
-          ccc: isCCCChecked ? "1" : "0",
-          status: selectedStatus,
-          searchTerm,
-          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-          modelOfLearning: selectedLearningMode,
-          cplType: selectedCPLType,
-        },
-      ],
-      queryFn: async ({ pageParam = 1 }) => {
-        return await collaborativeExhibitsApi.getExhibits({
-          ccc: isCCCChecked ? "1" : "0",
-          status: selectedStatus || undefined,
-          searchTerm: searchTerm || undefined,
-          modelOfLearning: selectedLearningMode
-            ? parseInt(selectedLearningMode)
-            : undefined,
-          cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
-          page: pageParam,
-          pageSize: 9,
-          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-        });
+  const {
+    data: exhibitsResponse,
+    error,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: [
+      "collaborativeExhibits",
+      {
+        ccc: isCCCChecked ? "1" : "0",
+        status: selectedStatus,
+        searchTerm,
+        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+        modelOfLearning: selectedLearningMode,
+        cplType: selectedCPLType,
       },
-      getNextPageParam: (lastPage) => {
-        if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
-          return lastPage.pagination.currentPage + 1;
-        }
-        return undefined;
-      },
-      initialPageParam: 1,
-    });
+    ],
+    queryFn: async ({ pageParam = 1 }) => {
+      return await collaborativeExhibitsApi.getExhibits({
+        ccc: isCCCChecked ? "1" : "0",
+        status: selectedStatus || undefined,
+        searchTerm: searchTerm || undefined,
+        modelOfLearning: selectedLearningMode
+          ? parseInt(selectedLearningMode)
+          : undefined,
+        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+        page: pageParam,
+        pageSize: 9,
+        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+      });
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
+        return lastPage.pagination.currentPage + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+  });
 
-      useEffect(() => {
-        if (inView && hasNextPage) {
-          fetchNextPage();
-        }
-      }, [inView, fetchNextPage, hasNextPage]);
-
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId === "0" ? null : collegeId);
@@ -141,12 +158,12 @@ export default function Home() {
   }, []);
   const handleExport = async () => {
     try {
-        await exportCollaborativeExhibits(
-          isCCCChecked ? "1" : "0",
-          selectedStatus,
-          searchTerm || null,
-          selectedCollege ? parseInt(selectedCollege) : undefined
-        );
+      await exportCollaborativeExhibits(
+        isCCCChecked ? "1" : "0",
+        selectedStatus,
+        searchTerm || null,
+        selectedCollege ? parseInt(selectedCollege) : undefined
+      );
     } catch (error) {
       console.error("Export failed:", error);
       toast({
@@ -155,38 +172,38 @@ export default function Home() {
         variant: "destructive",
       });
     }
-  };  
-    const handleViewModeChange = async (value: string) => {
-      if (value) {
-        setIsViewLoading(true);
-        try {
-          if (value === "list") {
-            await queryClient.refetchQueries({ queryKey: ["articulations"] });
-          } else {
-            await queryClient.refetchQueries({
-              queryKey: ["collaborativeExhibits"],
-            });
-          }
-          setViewMode(value);
-        } finally {
-          setIsViewLoading(false);
+  };
+  const handleViewModeChange = async (value: string) => {
+    if (value) {
+      setIsViewLoading(true);
+      try {
+        if (value === "list") {
+          await queryClient.refetchQueries({ queryKey: ["articulations"] });
+        } else {
+          await queryClient.refetchQueries({
+            queryKey: ["collaborativeExhibits"],
+          });
         }
+        setViewMode(value);
+      } finally {
+        setIsViewLoading(false);
       }
-    };
-     const handleCCCChange = async (checked: boolean) => {
-       setIsCCCChecked(checked);
-       await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
-     };
+    }
+  };
+  const handleCCCChange = async (checked: boolean) => {
+    setIsCCCChecked(checked);
+    await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
+  };
 
-     const handleStatusChange = (value: string) => {
-       if (value === "all") {
-         setSelectedStatus(null);
-       } else {
-         setSelectedStatus(
-           value as "Not Articulated" | "Articulated" | "Inprogress"
-         );
-       }
-     };
+  const handleStatusChange = (value: string) => {
+    if (value === "all") {
+      setSelectedStatus(null);
+    } else {
+      setSelectedStatus(
+        value as "Not Articulated" | "Articulated" | "Inprogress"
+      );
+    }
+  };
   return (
     <SelectedCoursesProvider>
       <div className="mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
