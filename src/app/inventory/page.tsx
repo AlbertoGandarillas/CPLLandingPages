@@ -460,7 +460,7 @@ export default function InventoryPage() {
                     </div>
                   )}
                 </ToggleGroupItem>
-              </ToggleGroup>
+              </ToggleGroup> 
             </CardTitle>
             <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
               {viewMode === "grid" && (

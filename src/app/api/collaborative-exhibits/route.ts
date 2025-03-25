@@ -65,31 +65,16 @@ export async function GET(request: NextRequest) {
     const totalCount = await db.viewCPLCollaborativeExhibits.count({
       where: exhibitsWhere,
     });
-
     // Fetch paginated exhibits with related data
     const exhibits = await db.viewCPLCollaborativeExhibits.findMany({
       where: exhibitsWhere,
       include: {
         collaborativeTypes: true,
         creditRecommendations: {
-          where: searchTerm ? {
-            OR: [
-              { CreditRecommendation: { contains: searchTerm } }
-            ]
-          } : undefined,
           include: {
-            articulations: status || searchTerm || collegeID ? {
+            articulations: status != "all"  && status ? {
               where: {
-                OR: [
-                  status ? { Status: status } : {},
-                  searchTerm ? {
-                    OR: [
-                      { Course: { contains: searchTerm } },
-                      { college: { contains: searchTerm } }
-                    ]
-                  } : {},
-                  collegeID ? { CollegeID: parseInt(collegeID) } : {}
-                ]
+                Status: status
               }
             } : true
           }
