@@ -836,6 +836,10 @@ model ViewCPLCollaborativeExhibits {
   CPLType Int?
   EligibleStudents Int?
   EligibleCredits Float?
+  ArticulatedCourses String?
+  ArticulatedColleges String?
+  CreditRecommendations String?
+  ArticulatedCollegeIDs String?
   collaborativeTypes ViewCPLCollaborativeTypes[]
   creditRecommendations ViewCPLCollaborativeCRs[]
   @@id([id])
