@@ -77,10 +77,10 @@ export default function InventoryPage() {
   const [selectedCatalogYear, setSelectedCatalogYear] = useState<string | null>(
     null
   );
-  const [isCCCChecked, setIsCCCChecked] = useState(true);
+  const [isCCCChecked, setIsCCCChecked] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<
     "Not Articulated" | "Articulated" | "Inprogress" | null
-  >(null);
+  >("Articulated");
   const [viewMode, setViewMode] = useState("grid");
   const { ref, inView } = useInView();
   const [isViewLoading, setIsViewLoading] = useState(false);
