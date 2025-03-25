@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 
 // Define the type for our where clause
 type ExhibitsWhereInput = Prisma.ViewCPLCollaborativeExhibitsWhereInput;
-type ArticulationsWhereInput = Prisma.ViewCPLCollaborativeArticulationsWhereInput;
 type CreditRecommendationsWhereInput = Prisma.ViewCPLCollaborativeCRsWhereInput;
 
 export async function GET(request: NextRequest) {
@@ -46,19 +45,45 @@ export async function GET(request: NextRequest) {
 
     // Handle collegeID parameter
     const collegeCondition = collegeID ? { CollegeID: parseInt(collegeID) } : {};
-
-    // Build the where clause for credit recommendations
-    const creditRecommendationsWhere: CreditRecommendationsWhereInput = {};
+    // Build combined where conditions
+    let searchConditions: Prisma.ViewCPLCollaborativeExhibitsWhereInput[] = [];
+    let collegeConditions: Prisma.ViewCPLCollaborativeExhibitsWhereInput[] = [];
 
     // Add search functionality
     if (searchTerm) {
-      exhibitsWhere.OR = [
+      searchConditions = [
         { Title: { contains: searchTerm } },
         { AceID: { contains: searchTerm } },
-        { college: { contains: searchTerm } }
+        { college: { contains: searchTerm } },
+        { ArticulatedCourses: { contains: searchTerm } },
+        { ArticulatedColleges: { contains: searchTerm } },
+        { CreditRecommendations: { contains: searchTerm } },
       ];
+    }
+
+    // Add college filtering condition
+    if (collegeID) {
+      collegeConditions = [
+        { CollegeID: parseInt(collegeID) },
+        {
+          ArticulatedCollegeIDs: {
+            not: null,
+            contains: collegeID,
+          }
+        }
+      ];
+    }
+
+    // Combine conditions with AND if both present
+    if (searchTerm && collegeID) {
+      exhibitsWhere.AND = [
+        { OR: searchConditions },
+        { OR: collegeConditions }
+      ];
+    } else if (searchTerm) {
+      exhibitsWhere.OR = searchConditions;
     } else if (collegeID) {
-      exhibitsWhere.OR = [collegeCondition];
+      exhibitsWhere.OR = collegeConditions;
     }
 
     // Get total count for pagination
