@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CollabArticulationsDataTable } from "@/components/features/collaborative/CollabArticulationsDataTable";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 
 interface Articulation {
@@ -31,6 +35,8 @@ interface Exhibit {
   AceID: string | null;
   college: string | null;
   VersionNumber: string | null;
+  EligibleStudents: number | null;
+  EligibleCredits: number | null;
   creditRecommendations: CreditRecommendation[];
   collaborativeTypes: CollaborativeType[];
 }
@@ -75,6 +81,24 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
               Version: {exhibit.VersionNumber || "N/A"}
             </div>
           </div>
+          {((exhibit.EligibleStudents !== null && exhibit.EligibleStudents > 0) || (exhibit.EligibleCredits !== null && exhibit.EligibleCredits > 0)) && (
+            <div className="flex justify-between items-center gap-2">
+                <div>
+              {exhibit.EligibleStudents !== null && exhibit.EligibleStudents > 0 && (
+                  <span>
+                    Eligible Students: {exhibit.EligibleStudents}
+                  </span>
+              )}
+                </div>
+                <div>
+              {exhibit.EligibleCredits !== null && exhibit.EligibleCredits > 0 && (
+                  <span >
+                    Eligible Credits: {exhibit.EligibleCredits}
+                  </span>
+              )}
+                </div>
+            </div>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent className="mt-3 max-h-[300px] overflow-auto">

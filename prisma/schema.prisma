@@ -834,6 +834,8 @@ model ViewCPLCollaborativeExhibits {
   VersionNumber String?
   ModelOfLearning Int?
   CPLType Int?
+  EligibleStudents Int?
+  EligibleCredits Float?
   collaborativeTypes ViewCPLCollaborativeTypes[]
   creditRecommendations ViewCPLCollaborativeCRs[]
   @@id([id])
