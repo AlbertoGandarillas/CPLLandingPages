@@ -72,7 +72,7 @@ export default function Home() {
       cplType: selectedCPLType ?? undefined,
       learningMode: selectedLearningMode,
       searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
-      excludeColleges: "120",
+      excludeColleges: "0,4,5,120,24",
       catalogYearId: catalogYearId ?? undefined,
     })}`;
     setFetchUrl(newUrl);
