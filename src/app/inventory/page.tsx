@@ -114,6 +114,7 @@ export default function InventoryPage() {
           cidNumber: selectedCIDNumber ?? undefined,
           searchTerm: searchTerm.length >= 3 ? searchTerm : undefined,
           indCert: selectedIndCert ?? undefined,
+          excludeColleges: "0,4,5,120,24",
         })}`
       );
 
