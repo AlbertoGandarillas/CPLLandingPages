@@ -24,7 +24,7 @@ export const MostCommonTopCodes = ({
   console.log("MostCommonTopCodes - Data:", data);
 
   const columns = [
-    { key: "Program_Title", label: "Tops Code" },
+    { key: "Program_Title", label: "TOPs Code" },
     { key: "Count", label: "Count", headerAlign: "flex justify-end" },
   ];
 
@@ -44,8 +44,8 @@ export const MostCommonTopCodes = ({
   }
 
   if (error) {
-    console.error("Error loading Most Common Top Codes:", error);
-    return <div>Error loading Most Common Top Codes</div>;
+    console.error("Error loading Most Common TOP Codes:", error);
+    return <div>Error loading Most Common TOP Codes</div>;
   }
 
   const handleRowClick = (row: any) => {
@@ -59,7 +59,7 @@ export const MostCommonTopCodes = ({
     <div>
       <div className="flex items-center pb-4">
         <Input
-          placeholder="Filter Top Codes..."
+          placeholder="Filter TOP Codes..."
           value={filterValue}
           onChange={(event) => setFilterValue(event.target.value)}
           className="w-full"
