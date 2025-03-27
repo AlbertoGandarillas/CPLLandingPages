@@ -60,7 +60,7 @@ function PotentialSavings({
       },
       {
         accessorKey: "Units",
-        header: "Eligible CPL *",
+        header: "CPL Units *",
         Cell: ({ cell }) => {
           const value = cell.getValue<number>();
           return (
