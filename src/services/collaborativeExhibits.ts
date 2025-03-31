@@ -34,6 +34,10 @@ interface FetchExhibitsParams {
   collegeID?: number;
   modelOfLearning?: number;
   cplType?: number;
+  creditRecommendation?: string;
+  industryCert?: string;
+  topCode?: string;
+  cidNumber?: string;
   page?: number;
   pageSize?: number;
 }
@@ -58,6 +62,10 @@ export const collaborativeExhibitsApi = {
     collegeID,
     modelOfLearning,
     cplType,
+    creditRecommendation,
+    industryCert,
+    topCode,
+    cidNumber,
     page = 1,
     pageSize = 9,
   }: FetchExhibitsParams = {}): Promise<ExhibitsResponse> => {
@@ -83,6 +91,18 @@ export const collaborativeExhibitsApi = {
       }
       if (cplType) {
         params.append("cplType", cplType.toString());
+      }
+      if (creditRecommendation) {
+        params.append("creditRecommendation", creditRecommendation);
+      }
+      if (industryCert) {
+        params.append("industryCert", industryCert);
+      }
+      if (topCode) {
+        params.append("topCode", topCode);
+      }
+      if (cidNumber) {
+        params.append("cidNumber", cidNumber);
       }
 
       params.append("page", page.toString());

@@ -30,6 +30,7 @@ import {
   Trash,
   Loader2,
   X,
+  Filter,
 } from "lucide-react";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ import ArticulationsTable from "@/components/features/cpl-articulations/Articula
 import { toast } from "@/components/ui/use-toast";
 import { exportToExcel } from "@/lib/events/exportUtils";
 import React from "react";
+import { Badge } from "@/components/ui/badge";
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -147,6 +149,10 @@ export default function InventoryPage() {
         collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
         modelOfLearning: selectedLearningMode,
         cplType: selectedCPLType,
+        creditRecommendation: selectedCR || undefined,
+        industryCert: selectedIndCert || undefined,
+        topCode: selectedTopCode || undefined,
+        cidNumber: selectedCIDNumber || undefined,
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
@@ -158,10 +164,14 @@ export default function InventoryPage() {
           ? parseInt(selectedLearningMode)
           : undefined,
         cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+        creditRecommendation: selectedCR || undefined,
+        industryCert: selectedIndCert || undefined,
         page: pageParam,
         pageSize: 9,
         collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-      });
+        topCode: selectedTopCode || undefined,
+        cidNumber: selectedCIDNumber || undefined,
+        });
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
@@ -246,7 +256,7 @@ export default function InventoryPage() {
 
   useEffect(() => {
     queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
-  }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, queryClient]);
+  }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, selectedCR, selectedIndCert, selectedTopCode, selectedCIDNumber, queryClient]);
 
   const handleExport = async () => {
     try {
@@ -409,6 +419,54 @@ export default function InventoryPage() {
               </Card>
             </TabsContent>
           </Tabs>
+          <div className="mt-4">
+            {(selectedCollege || selectedCatalogYear || selectedCR || selectedIndCert || selectedProgram || selectedCIDNumber ) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold flex items-center gap-2"><p>Selected Filters</p><Filter className="h-4 w-4" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {selectedCollege && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  {selectedCollege}
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCollege(null)} />
+                </Badge>
+                )}
+                {selectedCatalogYear && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCatalogYear}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCatalogYear(null)} />
+                  </Badge>
+                )}
+                {selectedCR && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCR}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCR(null)} />
+                  </Badge>
+                )}
+                {selectedIndCert && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedIndCert}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedIndCert(null)} />
+                  </Badge>
+                )}
+                  {selectedProgram && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedProgram}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedProgram(null)} />
+                  </Badge>
+                )}
+                {selectedCIDNumber && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCIDNumber}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCIDNumber(null)} />
+                  </Badge>
+                )}         
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
       <div className="mt-8">

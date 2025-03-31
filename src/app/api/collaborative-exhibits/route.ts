@@ -18,6 +18,10 @@ export async function GET(request: NextRequest) {
     const collegeID = searchParams.get("collegeID");
     const modelOfLearning = searchParams.get("modelOfLearning");
     const cplType = searchParams.get("cplType");
+    const creditRecommendation = searchParams.get("creditRecommendation");
+    const industryCert = searchParams.get("industryCert");
+    const topCode = searchParams.get("topCode");
+    const cidNumber = searchParams.get("cidNumber");
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
@@ -42,7 +46,26 @@ export async function GET(request: NextRequest) {
     if (cplType) {
       exhibitsWhere.CPLType = parseInt(cplType);
     }
-
+    if (creditRecommendation) {
+      exhibitsWhere.CreditRecommendations = {
+        contains: creditRecommendation
+      };
+    }
+    if (industryCert) {
+      exhibitsWhere.Title = {
+        contains: industryCert
+      };
+    }
+    if (topCode) {
+      exhibitsWhere.TopCodes = {
+        contains: topCode
+      }
+    }
+    if (cidNumber) {
+      exhibitsWhere.CIDNumbers = {
+        contains: cidNumber
+      };
+    }
     // Handle collegeID parameter
     const collegeCondition = collegeID ? { CollegeID: parseInt(collegeID) } : {};
     // Build combined where conditions

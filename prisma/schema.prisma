@@ -540,6 +540,10 @@ model PotentialCPLSavings {
   Units        Float
   AverageUnits Float
   Combined     Float
+  MilitaryCredits     Float
+  NonMilitaryCredits  Float
+  MilitaryStudents    Int
+  NonMilitaryStudents Int
    @@id([Sorder, CollegeID])
   @@map("_PotentialCPLSavings")
 }
@@ -840,6 +844,8 @@ model ViewCPLCollaborativeExhibits {
   ArticulatedColleges String?
   CreditRecommendations String?
   ArticulatedCollegeIDs String?
+  TopCodes String?
+  CIDNumbers String?
   collaborativeTypes ViewCPLCollaborativeTypes[]
   creditRecommendations ViewCPLCollaborativeCRs[]
   @@id([id])
@@ -857,6 +863,8 @@ model ViewCPLCollaborativeArticulations {
   CollegeID Int?
   Course String?
   Slug String?
+  TopCode Int?
+  CIDNumber String?
   creditRecommendation ViewCPLCollaborativeCRs @relation(fields: [id, CriteriaID], references: [id, CriteriaID])
   @@id([id])
 }

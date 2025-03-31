@@ -59,6 +59,10 @@ export const PotentialSavingsTable = ({
         Students: item.Students,
         AvgUnits: item.AverageUnits,
         Units: item.Units,
+        MilitaryCredits: item.MilitaryCredits,
+        NonMilitaryCredits: item.NonMilitaryCredits,
+        MilitaryStudents: item.MilitaryStudents,
+        NonMilitaryStudents: item.NonMilitaryStudents,
       }));
   }, [data]);
 
@@ -206,10 +210,11 @@ export const PotentialSavingsTable = ({
               </Button>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5 mb-4">
             <SummaryStats
               data={getSummaryStatsData}
               formatCurrency={formatCurrency}
+              selectedType={selectedType}
             />
           </div>
           <div>

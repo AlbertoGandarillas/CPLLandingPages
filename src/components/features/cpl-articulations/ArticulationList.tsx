@@ -240,7 +240,7 @@ export default function ArticulationList({
                   fontFamily: "var(--font-sans)",
                 }}
               >
-                Top Code
+                TOP Code
               </TableCell>
               <TableCell
                 sx={{

@@ -18,7 +18,7 @@ export const MostCommonCRs = ({
 
   const columns = [
     { key: "Criteria", label: "Credit Recommendation" },
-    { key: "Count", label: "Count", headerAlign: "flex justify-end" },
+    { key: "Count", label: "Student Count", headerAlign: "flex justify-end" },
   ];
 
   const filteredData = useMemo(() => {
