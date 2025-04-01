@@ -42,42 +42,33 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
             title="20-Year Impact"
             value={item.YearImpact ? formatCurrency(item.YearImpact) : "0"}
             icon={<BarChart2 className="h-6 w-6" />}
-          />
-          <StatCard
-            title="Combined"
-            value={item.Combined ? formatCurrency(item.Combined) : "0"}
-            icon={<Layers className="h-6 w-6" />}
-          >
-          </StatCard>          
+          />        
           <StatCard
             title="Units"
             value={item.Units ? item.Units.toLocaleString() : "0"}
             icon={<Ruler className="h-6 w-6" />}
           >
             {selectedType === "0" ? (
-              <div className="w-full flex justify-between gap-2 text-sm">
-                <ul>
-                  <li>Military</li>
-                  <li>{item.MilitaryCredits.toLocaleString()}</li>
-                </ul>
-                <ul>
-                  <li>NonMilitary</li>
-                  <li>{item.NonMilitaryCredits.toLocaleString()}</li>
-                </ul>
+              <div className="w-full flex justify-between lg:flex-col 2xl:flex-row gap-2 text-sm">
+                <div className="flex justify-between gap-2">
+                  <p>Military</p>
+                  <p>{item.MilitaryCredits.toLocaleString()}</p>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <p>Workig Adult</p>
+                  <p>{item.NonMilitaryCredits.toLocaleString()}</p>
+                </div>
               </div>
             ) : selectedType === "1" ? (
-              <div className="w-full text-sm">
-                <ul>
-                  <li>Military</li>
-                  <li>{item.MilitaryCredits.toLocaleString()}</li>
-                </ul>
+              <div className="w-full text-sm flex justify-start gap-2">
+                  <p>Military</p>
+                  <p>{item.MilitaryCredits.toLocaleString()}</p>
+
               </div>
             ) : (
-              <div className="w-full text-sm">
-                <ul>
-                  <li>NonMilitary</li>
-                  <li>{item.NonMilitaryCredits.toLocaleString()}</li>
-                </ul>
+              <div className="w-full text-sm flex justify-start gap-2">
+                  <p>Workig Adult</p>
+                  <p>{item.NonMilitaryCredits.toLocaleString()}</p>
               </div>
             )}
           </StatCard>
@@ -87,30 +78,26 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
             icon={<Users className="h-6 w-6" />}
           >
             <div className="w-full flex justify-between gap-2 text-sm">
-              {selectedType === "0" ? (
-                <div className="w-full flex justify-between gap-2 text-sm">
-                  <ul>
-                    <li>Military</li>
-                    <li>{item.MilitaryStudents.toLocaleString()}</li>
-                  </ul>
-                  <ul>
-                    <li>NonMilitary</li>
-                    <li>{item.NonMilitaryStudents.toLocaleString()}</li>
-                  </ul>
+              {selectedType === "0" ? ( 
+                <div className="w-full flex justify-between lg:flex-col  2xl:flex-row gap-2 text-sm">
+                  <div className="flex justify-between gap-2">
+                    <p>Military</p>
+                    <p>{item.MilitaryStudents.toLocaleString()}</p>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <p>Working Adult</p>
+                    <p>{item.NonMilitaryStudents.toLocaleString()}</p>
+                  </div>
                 </div>
               ) : selectedType === "1" ? (
-                <div className="w-full text-sm">
-                  <ul>
-                    <li>Military</li>
-                    <li>{item.MilitaryStudents.toLocaleString()}</li>
-                  </ul>
+                <div className="w-full text-sm flex justify-start gap-2">
+                    <p>Military</p>
+                    <p>{item.MilitaryStudents.toLocaleString()}</p>
                 </div>
               ) : (
-                <div className="w-full text-sm">
-                  <ul>
-                    <li>NonMilitary</li>
-                    <li>{item.NonMilitaryStudents.toLocaleString()}</li>
-                  </ul>
+                <div className="w-full text-sm flex justify-start gap-2">
+                    <p>Working Adult</p>
+                    <p>{item.NonMilitaryStudents.toLocaleString()}</p>
                 </div>
               )}
             </div>

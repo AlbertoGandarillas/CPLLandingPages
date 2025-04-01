@@ -587,6 +587,7 @@ model ViewCPLArticulations {
   ModeofLearningCode          String?
   CriteriaID                  Int
   Criteria                    String?
+  SkillLevel                  String?
   IssuedFormID                Int?
   CIDNumber                   String?
   CIDDescriptor               String?
@@ -685,6 +686,7 @@ model ViewCPLExhibitCourses {
   CriteriaID  Int
   Criteria    String?
   Course      String?
+  CourseTitle String?
   CatalogDescription String?
   College            String?
   @@id([ExhibitID, outline_id, CriteriaID])

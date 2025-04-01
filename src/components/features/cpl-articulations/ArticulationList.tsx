@@ -218,6 +218,17 @@ export default function ArticulationList({
                   fontFamily: "var(--font-sans)",
                 }}
               >
+                Version
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
                 Learning Mode
               </TableCell>
               <TableCell
@@ -230,6 +241,17 @@ export default function ArticulationList({
                 }}
               >
                 Credit Recommendation
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "hsl(var(--muted))",
+                  color: "hsl(var(--muted-foreground))",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Skill Level
               </TableCell>
               <TableCell
                 sx={{
@@ -349,12 +371,22 @@ export default function ArticulationList({
                 <TableCell
                   sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
                 >
+                  {articulation.VersionNumber}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
                   {articulation.CPLModeofLearningDescription}
                 </TableCell>
                 <TableCell
                   sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
                 >
                   {articulation.Criteria}
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
+                >
+                  {articulation.SkillLevel}
                 </TableCell>
                 <TableCell
                   sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}

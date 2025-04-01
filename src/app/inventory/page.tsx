@@ -63,6 +63,7 @@ interface TopCodeSelection {
 
 export default function InventoryPage() {
   const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
+  const [selectedCollegeName, setSelectedCollegeName] = useState<string | null>(null);
   const [selectedLearningMode, setSelectedLearningMode] = useState<
     string | null
   >(null);
@@ -564,6 +565,7 @@ export default function InventoryPage() {
                 <DropdownColleges
                   onCollegeSelect={setSelectedCollege}
                   selectedCollege={selectedCollege}
+
                 />
                 <DropdownLearningModes
                   onLearningModeSelect={setSelectedLearningMode}
