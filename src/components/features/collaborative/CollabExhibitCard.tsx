@@ -54,7 +54,7 @@ interface ExhibitCardProps {
 export function ExhibitCard({ exhibit }: ExhibitCardProps) {
   return (
     <Card>
-      <CardHeader className="bg-muted">
+      <CardHeader className="">
         <CardTitle className="text-lg flex items-start justify-between gap-2">
           {exhibit.Title || "Untitled Exhibit"}
           <div className="flex gap-2">
@@ -74,7 +74,7 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
         <CardDescription>
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <span className="font-bold">{exhibit.AceID || "N/A"}</span>
+              <span>{exhibit.AceID || "N/A"}</span>
             </div>
             <div>{exhibit.college || "N/A"}</div>
             <div className="text-right">

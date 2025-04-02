@@ -52,23 +52,23 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
               <div className="w-full flex justify-between lg:flex-col 2xl:flex-row gap-2 text-sm">
                 <div className="flex justify-between gap-2">
                   <p>Military</p>
-                  <p>{item.MilitaryCredits.toLocaleString()}</p>
+                  <p>{ item.MilitaryCredits > 0 ? item.MilitaryCredits.toLocaleString() : "0"}</p>
                 </div>
                 <div className="flex justify-between gap-2">
                   <p>Workig Adult</p>
-                  <p>{item.NonMilitaryCredits.toLocaleString()}</p>
+                  <p>{ item.NonMilitaryCredits > 0 ? item.NonMilitaryCredits.toLocaleString() : "0"}</p>
                 </div>
               </div>
             ) : selectedType === "1" ? (
               <div className="w-full text-sm flex justify-start gap-2">
                   <p>Military</p>
-                  <p>{item.MilitaryCredits.toLocaleString()}</p>
+                  <p>{ item.MilitaryCredits > 0 ? item.MilitaryCredits.toLocaleString() : "0"}</p>
 
               </div>
             ) : (
               <div className="w-full text-sm flex justify-start gap-2">
                   <p>Workig Adult</p>
-                  <p>{item.NonMilitaryCredits.toLocaleString()}</p>
+                  <p>{ item.NonMilitaryCredits > 0 ? item.NonMilitaryCredits.toLocaleString() : "0"}</p>
               </div>
             )}
           </StatCard>
@@ -82,22 +82,22 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
                 <div className="w-full flex justify-between lg:flex-col  2xl:flex-row gap-2 text-sm">
                   <div className="flex justify-between gap-2">
                     <p>Military</p>
-                    <p>{item.MilitaryStudents.toLocaleString()}</p>
+                    <p>{ item.MilitaryStudents > 0 ? item.MilitaryStudents.toLocaleString() : "0"}</p>
                   </div>
                   <div className="flex justify-between gap-2">
                     <p>Working Adult</p>
-                    <p>{item.NonMilitaryStudents.toLocaleString()}</p>
+                    <p>{ item.NonMilitaryStudents > 0 ? item.NonMilitaryStudents.toLocaleString() : "0"}</p>
                   </div>
                 </div>
               ) : selectedType === "1" ? (
                 <div className="w-full text-sm flex justify-start gap-2">
                     <p>Military</p>
-                    <p>{item.MilitaryStudents.toLocaleString()}</p>
+                    <p>{ item.MilitaryStudents > 0 ? item.MilitaryStudents.toLocaleString() : "0"}</p>
                 </div>
               ) : (
                 <div className="w-full text-sm flex justify-start gap-2">
                     <p>Working Adult</p>
-                    <p>{item.NonMilitaryStudents.toLocaleString()}</p>
+                    <p>{ item.NonMilitaryStudents > 0 ? item.NonMilitaryStudents.toLocaleString() : "0"}</p>
                 </div>
               )}
             </div>

@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableHead,
@@ -47,7 +48,13 @@ export function CollabArticulationsDataTable({
                 {articulation.Course || "N/A"}
               </TableCell>
               <TableCell className="text-xs w-[80px]">
-                {articulation.Status || "N/A"}
+                <Badge variant="outline" className={`whitespace-nowrap ${
+                  articulation.Status === "Articulated" ? "bg-green-100" :
+                  articulation.Status === "In Progress" ? "bg-yellow-100" :
+                  articulation.Status === "Not Articulated" ? "bg-red-100" : ""
+                }`}>
+                  {articulation.Status || "N/A"}
+                </Badge>
               </TableCell>
               <TableCell className="text-xs">
                 <a

@@ -11,6 +11,7 @@ interface ActionItem {
   icon: React.ElementType;
   href: string;
   primary: boolean;
+  customColor?: string;
 }
 
 interface HeaderProps {
@@ -61,7 +62,10 @@ export function Header({ actionItems }: HeaderProps) {
         <nav className="hidden md:flex items-center space-x-4">
           {actionItems.map((item) => (
             <Link key={item.name} href={item.href} passHref>
-              <Button variant={item.primary ? "default" : "secondary"}>
+              <Button 
+                variant={item.customColor ? undefined : (item.primary ? "default" : "secondary")}
+                className={`text-white ${item.customColor ? `bg-[${item.customColor}] hover:bg-[${item.customColor}/90]` : undefined}`}
+              >
                 {React.createElement(item.icon, { className: "w-4 h-4 mr-2" })}
                 {item.name}
               </Button>

@@ -324,9 +324,10 @@ export default function Home() {
           </AccordionItem>
         </Accordion>
         <Card className="w-full">
-          <CardHeader className="bg-gray-100 p-4">
+          <CardHeader className="p-4">
             <CardTitle>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
+              <div className="flex flex-col justify-between sm:flex-row sm:items-center gap-4 mb-4">
+                <h3>{viewMode === 'grid' ? 'Exhibts':'Courses' }</h3>
                 <ToggleGroup
                   type="single"
                   value={viewMode}
@@ -366,10 +367,9 @@ export default function Home() {
                 </ToggleGroup>
               </div>
               <div className="w-full sm:w-auto">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                   <SearchBar
                     onSearch={handleSearch}
-                    inputClassName="bg-blue-100"
                   />
                   <DropdownColleges
                     onCollegeSelect={handleCollegeSelect}
@@ -397,8 +397,8 @@ export default function Home() {
                       />
                       <Label htmlFor="cccc-filter">
                         {isCCCChecked
-                          ? "CCC Statewide Recommendations Only"
-                          : "All Recommendations"}
+                          ? "All Recommendations"
+                          : "CCC Statewide Recommendations Only"}
                       </Label>
                     </>
                   )}

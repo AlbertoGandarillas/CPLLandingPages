@@ -483,8 +483,9 @@ export default function InventoryPage() {
           </Alert>
         )}
         <Card className="w-full">
-          <CardHeader className="bg-muted p-4">
-            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
+          <CardHeader className="p-4">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 text-lg">
+            <h3>{viewMode === 'grid' ? 'Exhibts':'Courses' }</h3>
               <ToggleGroup
                 type="single"
                 value={viewMode}
@@ -525,7 +526,7 @@ export default function InventoryPage() {
             </CardTitle>
             <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
               {viewMode === "grid" && (
-                <div className="flex items-center justify-center gap-2 w-full">
+                <div className="flex items-center justify-start gap-2 w-full">
                   <>
                     <Switch
                       id="cccc-filter"
@@ -534,8 +535,8 @@ export default function InventoryPage() {
                     />
                     <Label htmlFor="cccc-filter">
                       {isCCCChecked
-                        ? "CCC Statewide Recommendations Only"
-                        : "All Recommendations"}
+                        ? "All Recommendations"
+                        : "CCC Statewide Recommendations Only"}
                     </Label>
                     <Label htmlFor="status-filter">Status :</Label>
                     <Select
@@ -554,12 +555,11 @@ export default function InventoryPage() {
                   </>
                 </div>
               )}
-              <div className="flex gap-2 items-center justify-center w-full">
+              <div className="flex gap-2 items-center justify-between w-full">
                 <SearchBar
                   ref={searchBarRef}
                   onSearch={handleSearch}
                   placeholder="Search..."
-                  inputClassName="bg-blue-100"
                   className="w-full sm:w-auto lg:w-64"
                 />
                 <DropdownColleges
