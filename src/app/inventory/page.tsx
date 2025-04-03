@@ -84,6 +84,7 @@ export default function InventoryPage() {
   const [viewMode, setViewMode] = useState("grid");
   const { ref, inView } = useInView();
   const [isViewLoading, setIsViewLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -248,10 +249,11 @@ export default function InventoryPage() {
   }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, queryClient]);
 
   const handleExport = async () => {
+    setIsExporting(true);
     try {
       if (viewMode === "list") {
         if (articulations) {
-          exportToExcel(articulations, "Articulations");
+          await exportToExcel(articulations, "Articulations");
         }
       } else {
         await exportCollaborativeExhibits(
@@ -268,6 +270,8 @@ export default function InventoryPage() {
         description: "Failed to export data. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -525,8 +529,13 @@ export default function InventoryPage() {
                   variant="secondary"
                   onClick={handleExport}
                   className="w-full sm:w-auto shadow-md"
+                  disabled={isExporting}
                 >
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  {isExporting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  )}
                   Export to Excel
                 </Button>
               </div>

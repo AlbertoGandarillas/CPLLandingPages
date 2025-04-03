@@ -62,6 +62,7 @@ export default function Home() {
   const [selectedStatus, setSelectedStatus] = useState<
     "Not Articulated" | "Articulated" | "Inprogress" | null
   >("Articulated");
+  const [isExporting, setIsExporting] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -158,6 +159,7 @@ export default function Home() {
   }, []);
   const handleExport = async () => {
     try {
+      setIsExporting(true);
       await exportCollaborativeExhibits(
         isCCCChecked ? "1" : "0",
         selectedStatus,
@@ -171,6 +173,8 @@ export default function Home() {
         description: "Failed to export data. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
     }
   };
   const handleViewModeChange = async (value: string) => {
@@ -431,9 +435,14 @@ export default function Home() {
                           variant="secondary"
                           onClick={handleExport}
                           className="w-full sm:w-auto shadow-md"
+                          disabled={isExporting}
                         >
-                          <FileSpreadsheet className="h-4 w-4 mr-2" />
-                          Export to Excel
+                          {isExporting ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <FileSpreadsheet className="h-4 w-4 mr-2" />
+                          )}
+                          {isExporting ? "Exporting..." : "Export to Excel"}
                         </Button>
                       </div>
                     </>
