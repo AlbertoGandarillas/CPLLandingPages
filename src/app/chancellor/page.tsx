@@ -327,7 +327,7 @@ export default function Home() {
           <CardHeader className="p-4">
             <CardTitle>
               <div className="flex flex-col justify-between sm:flex-row sm:items-center gap-4 mb-4">
-                <h3>{viewMode === 'grid' ? 'Exhibts':'Courses' }</h3>
+                <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
                 <ToggleGroup
                   type="single"
                   value={viewMode}

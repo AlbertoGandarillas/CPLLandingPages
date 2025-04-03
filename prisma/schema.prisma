@@ -638,8 +638,9 @@ model ViewCPLMostCommonCreditRecommendations {
 
 model GetCPLMostCommonCRs {
   ID Int 
-  Criteria              String?
-  Count                 Int?
+  Criteria                  String?
+  Count                     Int?
+  CollegeRecordCountString  String?
   @@id([ID])
 }
 

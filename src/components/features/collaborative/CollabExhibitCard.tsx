@@ -105,10 +105,10 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
         {exhibit.creditRecommendations.map((cr, index) => (
           <Collapsible key={index} defaultOpen={true}>
             <div className="flex items-center justify-between space-x-4 px-4">
-              <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4  transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
-                <p className="text-sm font-bold text-left px-2">
+              <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4 transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
+                <span className="text-sm font-bold text-left px-2">
                   {cr.CreditRecommendation}
-                </p>
+                </span>
                 {cr.articulations && cr.articulations.length > 0 && (
                   <ChevronDown className="mx-2 h-4 w-4 shrink-0 transition-transform duration-200" />
                 )}

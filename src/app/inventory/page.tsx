@@ -485,7 +485,7 @@ export default function InventoryPage() {
         <Card className="w-full">
           <CardHeader className="p-4">
             <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 text-lg">
-            <h3>{viewMode === 'grid' ? 'Exhibts':'Courses' }</h3>
+            <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
               <ToggleGroup
                 type="single"
                 value={viewMode}

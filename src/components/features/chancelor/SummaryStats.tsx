@@ -55,7 +55,7 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
                   <p>{ item.MilitaryCredits > 0 ? item.MilitaryCredits.toLocaleString() : "0"}</p>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <p>Workig Adult</p>
+                  <p>Working Adult</p>
                   <p>{ item.NonMilitaryCredits > 0 ? item.NonMilitaryCredits.toLocaleString() : "0"}</p>
                 </div>
               </div>
@@ -67,7 +67,7 @@ export const SummaryStats = ({ data, formatCurrency, selectedType }: SummaryStat
               </div>
             ) : (
               <div className="w-full text-sm flex justify-start gap-2">
-                  <p>Workig Adult</p>
+                  <p>Working Adult</p>
                   <p>{ item.NonMilitaryCredits > 0 ? item.NonMilitaryCredits.toLocaleString() : "0"}</p>
               </div>
             )}
