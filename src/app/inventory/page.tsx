@@ -53,7 +53,7 @@ import { createQueryString } from "@/lib/createQueryStringArticulations";
 import ArticulationsTable from "@/components/features/cpl-articulations/ArticulationsTable";
 import { toast } from "@/components/ui/use-toast";
 import { exportToExcel } from "@/lib/events/exportUtils";
-
+import React from "react";
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -172,6 +172,7 @@ export default function InventoryPage() {
     },
     initialPageParam: 1,
   });
+
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -322,7 +323,7 @@ export default function InventoryPage() {
                 value="topcodes"
                 className="text-xs whitespace-nowrap"
               >
-                Top Codes
+                TOP Codes
               </TabsTrigger>
               <TabsTrigger value="cids" className="text-xs whitespace-nowrap">
                 C-ID Numbers
@@ -373,7 +374,7 @@ export default function InventoryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-sm font-semibold">
-                    Most Common Top Codes
+                    Most Common TOP Codes
                   </CardTitle>
                   <CardDescription>
                     Note: List reflects all Course TOP codes with an associated
