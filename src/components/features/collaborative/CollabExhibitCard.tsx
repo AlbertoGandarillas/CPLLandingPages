@@ -108,9 +108,7 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
                 <span className={`text-sm ${cr.articulations && cr.articulations.length > 0 ? "font-bold" : "font-normal"} text-left px-2`}>
                   {cr.CreditRecommendation}
                 </span>
-                {cr.articulations && cr.articulations.length > 0 && (
                   <ChevronDown className="mx-2 h-4 w-4 shrink-0 transition-transform duration-200" />
-                )}
               </CollapsibleTrigger>
             </div>
             <CollapsibleContent className="space-y-2">
