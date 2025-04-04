@@ -74,7 +74,7 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
         <CardDescription>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span>Originating College : </span> {exhibit.college || "American Council of Education"}
+              <span>Originating College : </span> {exhibit.college || "ACE"}
             </div>
             <div className="text-right">
               Version: {exhibit.VersionNumber || "N/A"}
