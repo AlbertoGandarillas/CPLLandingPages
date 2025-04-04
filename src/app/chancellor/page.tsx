@@ -42,6 +42,7 @@ import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { exportCollaborativeExhibits } from "@/lib/events/exportCollaborativeExhibits";
 import { toast } from "@/components/ui/use-toast";
+import debounce from "lodash/debounce";
 
 export default function Home() {
   const [open, setOpen] = useState("item-1");
@@ -62,8 +63,25 @@ export default function Home() {
   const [selectedStatus, setSelectedStatus] = useState<
     "Not Articulated" | "Articulated" | "Inprogress" | null
   >("Articulated");
+  const [isLoadingExhibits, setIsLoadingExhibits] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const debouncedSetSearchTerm = useCallback(
+    (term: string) => {
+      if (term.length >= 3 || term.length === 0) {
+        setSearchTerm(term);
+      }
+    },
+    []
+  );
+
+  const handleSearch = useCallback(
+    (term: string) => {
+      debounce(debouncedSetSearchTerm, 300)(term);
+    },
+    [debouncedSetSearchTerm]
+  );
 
   useEffect(() => {
     const newUrl = `/api/cpl-courses?${createQueryString({
@@ -106,18 +124,23 @@ export default function Home() {
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
-      return await collaborativeExhibitsApi.getExhibits({
-        ccc: isCCCChecked ? "1" : "0",
-        status: selectedStatus || undefined,
-        searchTerm: searchTerm || undefined,
-        modelOfLearning: selectedLearningMode
-          ? parseInt(selectedLearningMode)
-          : undefined,
-        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
-        page: pageParam,
-        pageSize: 9,
-        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-      });
+      setIsLoadingExhibits(true);
+      try {
+        return await collaborativeExhibitsApi.getExhibits({
+          ccc: isCCCChecked ? "1" : "0",
+          status: selectedStatus || undefined,
+          searchTerm: searchTerm || undefined,
+          modelOfLearning: selectedLearningMode
+            ? parseInt(selectedLearningMode)
+            : undefined,
+          cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+          page: pageParam,
+          pageSize: 9,
+          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+        });
+      } finally {
+        setIsLoadingExhibits(false);
+      }
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
@@ -151,11 +174,7 @@ export default function Home() {
   const handleMOSSelect = (industryCertification: string | null) => {
     setSelectedIndustryCertification(industryCertification);
   };
-  const handleSearch = useCallback((term: string) => {
-    if (term.length >= 3 || term.length === 0) {
-      setSearchTerm(term);
-    }
-  }, []);
+
   const handleExport = async () => {
     try {
       await exportCollaborativeExhibits(
@@ -326,68 +345,56 @@ export default function Home() {
         <Card className="w-full">
           <CardHeader className="p-4">
             <CardTitle>
-              <div className="flex flex-col justify-between sm:flex-row sm:items-center gap-4 mb-4">
-                <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
-                <ToggleGroup
-                  type="single"
-                  value={viewMode}
-                  onValueChange={handleViewModeChange}
-                  className="mb-2 sm:mb-0"
-                >
-                  <ToggleGroupItem
-                    value="grid"
-                    aria-label="Grid view"
-                    className={viewMode === "grid" ? "shadow-md" : ""}
-                    disabled={isViewLoading}
+              <div className="flex flex-col md:grid md:grid-cols-3 md:items-center justify-between gap-4 mb-4 text-lg">
+                <div className="flex items-center justify-center md:justify-start">
+                  <ToggleGroup
+                    type="single"
+                    value={viewMode}
+                    onValueChange={handleViewModeChange}
+                    className="mb-2 sm:mb-0"
                   >
-                    {isViewLoading && viewMode !== "grid" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Grid className="h-4 w-4" />
-                        <span>Articulated Exhibits</span>
-                      </div>
-                    )}
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="list"
-                    aria-label="List view"
-                    className={viewMode === "list" ? "shadow-md" : ""}
-                    disabled={isViewLoading}
-                  >
-                    {isViewLoading && viewMode !== "list" ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <List className="h-4 w-4" />
-                        <span>Articulated Courses</span>
-                      </div>
-                    )}
-                  </ToggleGroupItem>
-                </ToggleGroup>
+                    <ToggleGroupItem
+                      value="grid"
+                      aria-label="Grid view"
+                      className={viewMode === "grid" ? "shadow-md" : ""}
+                      disabled={isViewLoading}
+                    >
+                      {isViewLoading && viewMode !== "grid" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Grid className="h-4 w-4" />
+                          <span>Articulated Exhibits</span>
+                        </div>
+                      )}
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value="list"
+                      aria-label="List view"
+                      className={viewMode === "list" ? "shadow-md" : ""}
+                      disabled={isViewLoading}
+                    >
+                      {isViewLoading && viewMode !== "list" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <List className="h-4 w-4" />
+                          <span>Articulated Courses</span>
+                        </div>
+                      )}
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+                <div className="flex items-center justify-center">
+                  <h3>
+                    {viewMode === "grid" ? "Exhibits" : "Courses"}
+                  </h3>
+                </div>
+                <div></div>
               </div>
               <div className="w-full sm:w-auto">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                  <SearchBar
-                    onSearch={handleSearch}
-                  />
-                  <DropdownColleges
-                    onCollegeSelect={handleCollegeSelect}
-                    selectedCollege={selectedCollege}
-                  />
-                  {selectedCollege && selectedCollege !== "0" ? (
-                    <DropdownIndustryCertifications
-                      onIndustryCertificationSelect={
-                        handleIndustryCertificationSelect
-                      }
-                      collegeId={selectedCollege}
-                    />
-                  ) : null}
-                  <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
-                  <DropdownLearningModes
-                    onLearningModeSelect={handleLerningModeSelect}
-                  />
-                  <DropdownMOS onMOSSelect={handleMOSSelect} />
+                <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center justify-start gap-2 w-full">
                   {viewMode === "grid" && (
                     <>
                       <Switch
@@ -400,12 +407,7 @@ export default function Home() {
                           ? "All Recommendations"
                           : "CCC Statewide Recommendations Only"}
                       </Label>
-                    </>
-                  )}
-                  {viewMode === "grid" && (
-                    <>
-                      <div className="flex gap-2 items-center">
-                        <Label htmlFor="status-filter">Status :</Label>
+                      <Label htmlFor="status-filter">Status :</Label>
                         <Select
                           value={selectedStatus || "all"}
                           onValueChange={handleStatusChange}
@@ -425,7 +427,32 @@ export default function Home() {
                               In Progress
                             </SelectItem>
                           </SelectContent>
-                        </Select>
+                        </Select>                      
+                    </>
+                  )}                    
+                  </div>
+                  <div className="flex gap-2 items-center justify-end w-full">
+                  <SearchBar onSearch={handleSearch} className="w-full sm:w-auto lg:w-64"  />
+                  <DropdownColleges
+                    onCollegeSelect={handleCollegeSelect}
+                    selectedCollege={selectedCollege}
+                  />
+                  {selectedCollege && selectedCollege !== "0" ? (
+                    <DropdownIndustryCertifications
+                      onIndustryCertificationSelect={
+                        handleIndustryCertificationSelect
+                      }
+                      collegeId={selectedCollege}
+                    />
+                  ) : null}
+                  <DropdownCPLTypes onCPLTypeSelect={handleCPLTypeSelect} />
+                  <DropdownLearningModes
+                    onLearningModeSelect={handleLerningModeSelect}
+                  />
+                  <DropdownMOS onMOSSelect={handleMOSSelect} />
+                  {viewMode === "grid" && (
+                    <>
+                      <div className="flex gap-2 items-center">
                         <Button
                           size="sm"
                           variant="secondary"
@@ -438,6 +465,7 @@ export default function Home() {
                       </div>
                     </>
                   )}
+                  </div>
                 </div>
               </div>
             </CardTitle>
@@ -446,41 +474,42 @@ export default function Home() {
             <div className="space-y-4">
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                  {exhibitsResponse?.pages[0]?.data.length === 0 ? (
-                    <div className="col-span-full flex justify-center p-4">
-                      <div className="text-gray-500">No results found</div>
-                    </div>
-                  ) : (
-                    <>
-                      {exhibitsResponse?.pages.map((page) =>
-                        page.data.map((exhibit: any) => (
-                          <ExhibitCard key={exhibit.id} exhibit={exhibit} />
-                        ))
+                {isLoadingExhibits && !isFetchingNextPage ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                ) : exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <div className="text-gray-500">No results found</div>
+                  </div>
+                ) : (
+                  <>
+                    {exhibitsResponse?.pages.map((page) =>
+                      page.data.map((exhibit: any) => (
+                        <ExhibitCard key={exhibit.id} exhibit={exhibit} />
+                      ))
+                    )}
+                    <div
+                      ref={ref}
+                      className="col-span-full flex justify-center p-4"
+                    >
+                      {isFetchingNextPage ? (
+                        <SkeletonWrapper
+                          isLoading={true}
+                          fullWidth={true}
+                          variant="loading"
+                        />
+                      ) : hasNextPage ? (
+                        <div className="text-gray-500">Scroll to load more</div>
+                      ) : (
+                        <div className="text-gray-500">
+                        </div>
                       )}
-                      <div
-                        ref={ref}
-                        className="col-span-full flex justify-center p-4"
-                      >
-                        {isFetchingNextPage ? (
-                          <SkeletonWrapper
-                            isLoading={true}
-                            fullWidth={true}
-                            variant="loading"
-                          />
-                        ) : hasNextPage ? (
-                          <div className="text-gray-500">
-                            Scroll to load more
-                          </div>
-                        ) : (
-                          <div className="text-gray-500">
-                            No more exhibits to load
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
                 <div className="w-full overflow-x-auto">
                   <ArticulationsTable
                     articulations={[]}

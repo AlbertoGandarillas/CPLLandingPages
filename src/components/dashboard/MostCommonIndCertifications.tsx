@@ -118,7 +118,7 @@ export const MostCommonIndCertifications = ({
           className="w-full"
         />
       </div>
-      <TableContainer component={Paper} sx={{ maxHeight: "300px" }}>
+      <TableContainer component={Paper} sx={{ maxHeight: "380px" }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>

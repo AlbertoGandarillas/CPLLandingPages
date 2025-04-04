@@ -56,6 +56,8 @@ import { toast } from "@/components/ui/use-toast";
 import { exportToExcel } from "@/lib/events/exportUtils";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { debounce } from "lodash";
+
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -87,6 +89,7 @@ export default function InventoryPage() {
   const [viewMode, setViewMode] = useState("grid");
   const { ref, inView } = useInView();
   const [isViewLoading, setIsViewLoading] = useState(false);
+  const [isLoadingExhibits, setIsLoadingExhibits] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -157,22 +160,27 @@ export default function InventoryPage() {
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
-      return await collaborativeExhibitsApi.getExhibits({
-        ccc: isCCCChecked ? "1" : "0",
-        status: selectedStatus || undefined,
-        searchTerm: searchTerm || undefined,
-        modelOfLearning: selectedLearningMode
-          ? parseInt(selectedLearningMode)
-          : undefined,
-        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
-        creditRecommendation: selectedCR || undefined,
-        industryCert: selectedIndCert || undefined,
-        page: pageParam,
-        pageSize: 9,
-        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-        topCode: selectedTopCode || undefined,
-        cidNumber: selectedCIDNumber || undefined,
+      setIsLoadingExhibits(true);
+      try {
+        return await collaborativeExhibitsApi.getExhibits({
+          ccc: isCCCChecked ? "1" : "0",
+          status: selectedStatus || undefined,
+          searchTerm: searchTerm || undefined,
+          modelOfLearning: selectedLearningMode
+            ? parseInt(selectedLearningMode)
+            : undefined,
+          cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+          creditRecommendation: selectedCR || undefined,
+          industryCert: selectedIndCert || undefined,
+          page: pageParam,
+          pageSize: 9,
+          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+          topCode: selectedTopCode || undefined,
+          cidNumber: selectedCIDNumber || undefined,
         });
+      } finally {
+        setIsLoadingExhibits(false);
+      }
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
@@ -195,11 +203,21 @@ export default function InventoryPage() {
     setSelectedCatalogYear(yearId);
   }, []);
 
-  const handleSearch = useCallback((term: string) => {
-    if (term.length >= 3 || term.length === 0) {
-      setSearchTerm(term);
-    }
-  }, []);
+  const debouncedSearch = useCallback(
+    (term: string) => {
+      if (term.length >= 3 || term.length === 0) {
+        setSearchTerm(term);
+      }
+    },
+    []
+  );
+
+  const handleSearch = useCallback(
+    (term: string) => {
+      debounce(debouncedSearch, 500)(term);
+    },
+    [debouncedSearch]
+  );
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId);
@@ -305,7 +323,6 @@ export default function InventoryPage() {
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="w-full lg:min-w-0 lg:flex-1">
-          <div className="mb-4"></div>
           <PotentialSavingsTable
             hideCPLImpactChart={true}
             setSelectedCollege={handleCollegeSelect}
@@ -455,7 +472,10 @@ export default function InventoryPage() {
                   {selectedProgram && (
                   <Badge variant="secondary" className="text-xs flex items-center gap-1">
                     {selectedProgram}
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedProgram(null)} />
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => {
+                      setSelectedProgram(null);
+                      setSelectedTopCode(null);
+                    }} />
                   </Badge>
                 )}
                 {selectedCIDNumber && (
@@ -484,9 +504,9 @@ export default function InventoryPage() {
         )}
         <Card className="w-full">
           <CardHeader className="p-4">
-            <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 text-lg">
-            <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
-              <ToggleGroup
+            <CardTitle className="flex flex-col md:grid md:grid-cols-3 md:items-center justify-between gap-4 mb-4 text-lg">
+            <div className="flex items-center justify-center md:justify-start">
+            <ToggleGroup
                 type="single"
                 value={viewMode}
                 onValueChange={handleViewModeChange}
@@ -522,7 +542,13 @@ export default function InventoryPage() {
                     </div>
                   )}
                 </ToggleGroupItem>
-              </ToggleGroup> 
+              </ToggleGroup>  
+            </div>
+             <div className="flex items-center justify-center">
+              <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
+             </div>
+             <div>
+             </div>
             </CardTitle>
             <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
               {viewMode === "grid" && (
@@ -555,7 +581,7 @@ export default function InventoryPage() {
                   </>
                 </div>
               )}
-              <div className="flex gap-2 items-center justify-between w-full">
+              <div className="flex gap-2 items-center justify-end w-full">
                 <SearchBar
                   ref={searchBarRef}
                   onSearch={handleSearch}
@@ -596,7 +622,11 @@ export default function InventoryPage() {
           <CardContent className="mt-3">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                {isLoadingExhibits && !isFetchingNextPage ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                ) : exhibitsResponse?.pages[0]?.data.length === 0 ? (
                   <div className="col-span-full flex justify-center p-4">
                     <div className="text-gray-500">No results found</div>
                   </div>
@@ -621,7 +651,6 @@ export default function InventoryPage() {
                         <div className="text-gray-500">Scroll to load more</div>
                       ) : (
                         <div className="text-gray-500">
-                          No more exhibits to load
                         </div>
                       )}
                     </div>

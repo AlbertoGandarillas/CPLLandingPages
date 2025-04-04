@@ -123,7 +123,7 @@ export const MostCommonCRs = ({
           className="w-full"
         />
       </div>
-      <TableContainer component={Paper} sx={{ maxHeight: "300px" }}>
+      <TableContainer component={Paper} sx={{ maxHeight: "380px" }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -171,6 +171,7 @@ export const MostCommonCRs = ({
                 key={index}
                 onClick={() => onSelect(row.Criteria)}
                 sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}
+                title={`${row.CollegeRecordCountString}`}
               >
                 <TableCell sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}>
                   {row.Criteria}
@@ -178,7 +179,6 @@ export const MostCommonCRs = ({
                 <TableCell 
                   align="right"
                   sx={{ fontSize: "12px", fontFamily: "var(--font-sans)", width: "150px" }}
-                  title={`${row.CollegeRecordCountString}`}
                 >
                   {row.Count}
                 </TableCell>
