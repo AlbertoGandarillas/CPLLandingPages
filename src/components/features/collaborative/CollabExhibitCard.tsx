@@ -102,10 +102,10 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
       </CardHeader>
       <CardContent className="mt-3 max-h-[300px] overflow-auto">
         {exhibit.creditRecommendations.map((cr, index) => (
-          <Collapsible key={index} defaultOpen={true}>
+          <Collapsible key={index} defaultOpen={cr.articulations && cr.articulations.length > 0}>
             <div className="flex items-center justify-between space-x-4 px-4">
               <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4 transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
-                <span className="text-sm font-bold text-left px-2">
+                <span className={`text-sm ${cr.articulations && cr.articulations.length > 0 ? "font-bold" : "font-normal"} text-left px-2`}>
                   {cr.CreditRecommendation}
                 </span>
                 {cr.articulations && cr.articulations.length > 0 && (
