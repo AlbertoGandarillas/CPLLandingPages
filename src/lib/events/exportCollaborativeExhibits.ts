@@ -1,15 +1,15 @@
 import * as XLSX from "xlsx";
 
 interface FlattenedExhibit {
-  AceID: string;
+  "Exhibit ID": string;
   Title: string;
-  ExhibitCollege: string;
-  VersionNumber: string;
-  CreditRecommendation: string;
-  ArticulationStatus: string;
-  ArticulationCollege: string;
+  "Exhibit College": string;
+  Version: string;
+  "Credit Recommendation": string;
+  Status: string;
+  "Articulation College": string;
   Course: string;
-  CollaborativeTypes: string;
+  "Collaborative Types": string;
 }
 
 export const exportCollaborativeExhibits = async (
@@ -19,30 +19,24 @@ export const exportCollaborativeExhibits = async (
   collegeID: number | undefined
 ) => {
   try {
-    // Fetch all data without pagination
     const params = new URLSearchParams();
     if (ccc) params.append("ccc", ccc);
     if (status) params.append("status", status);
     if (searchTerm) params.append("searchTerm", searchTerm);
     if (collegeID) params.append("collegeID", collegeID.toString());
-    params.append("export", "true"); // Add this flag to fetch all records
+    params.append("export", "true");
 
-    const response = await fetch(
-      `/api/collaborative-exhibits?${params.toString()}`
-    );
+    const response = await fetch(`/api/collaborative-exhibits?${params.toString()}`);
     if (!response.ok) throw new Error("Failed to fetch data for export");
 
-    const data = await response.json();
-
-    // Flatten the data structure
-    const flattenedData: FlattenedExhibit[] = data.flatMap((exhibit: any) => {
-      // Get collaborative types as comma separated string
+    const exhibits = await response.json();
+    // Aplanar los datos para el Excel
+    const flattenedData: FlattenedExhibit[] = exhibits.flatMap((exhibit: any) => {
       const collaborativeTypes = exhibit.collaborativeTypes
         ?.map((type: any) => type.Description)
         .join(", ") || "";
 
-      if (!exhibit.creditRecommendations || exhibit.creditRecommendations.length === 0) {
-        // Return exhibit with empty credit recommendation fields
+      if (!exhibit.creditRecommendations?.length) {
         return [{
           "Exhibit ID": exhibit.AceID || "",
           Title: exhibit.Title || "",
@@ -57,8 +51,7 @@ export const exportCollaborativeExhibits = async (
       }
 
       return exhibit.creditRecommendations.flatMap((cr: any) => {
-        if (!cr.articulations || cr.articulations.length === 0) {
-          // Return credit recommendation with empty articulation fields
+        if (!cr.articulations?.length) {
           return [{
             "Exhibit ID": exhibit.AceID || "",
             Title: exhibit.Title || "",
@@ -72,7 +65,6 @@ export const exportCollaborativeExhibits = async (
           }];
         }
 
-        // Return credit recommendation with each articulation as a separate row
         return cr.articulations.map((articulation: any) => ({
           "Exhibit ID": exhibit.AceID || "",
           Title: exhibit.Title || "",
@@ -87,32 +79,27 @@ export const exportCollaborativeExhibits = async (
       });
     });
 
-    // Create worksheet
     const worksheet = XLSX.utils.json_to_sheet(flattenedData);
-
-    // Set column widths
+    
     const columnWidths = [
-      { wch: 15 }, // AceID
+      { wch: 15 }, // Exhibit ID
       { wch: 40 }, // Title
-      { wch: 20 }, // ExhibitCollege
-      { wch: 15 }, // VersionNumber
-      { wch: 30 }, // CreditRecommendation
-      { wch: 15 }, // ArticulationStatus
-      { wch: 20 }, // ArticulationCollege
+      { wch: 20 }, // Exhibit College
+      { wch: 15 }, // Version
+      { wch: 30 }, // Credit Recommendation
+      { wch: 15 }, // Status
+      { wch: 20 }, // Articulation College
       { wch: 30 }, // Course
-      { wch: 30 }, // CollaborativeTypes
+      { wch: 30 }, // Collaborative Types
     ];
     worksheet["!cols"] = columnWidths;
 
-    // Create workbook
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Collaborative Exhibits");
 
-    // Generate filename with current date
     const date = new Date().toISOString().split("T")[0];
     const filename = `collaborative_exhibits_${date}.xlsx`;
 
-    // Save file
     XLSX.writeFile(workbook, filename);
   } catch (error) {
     console.error("Export error:", error);

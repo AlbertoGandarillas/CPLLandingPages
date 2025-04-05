@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 
 // Define the type for our where clause
 type ExhibitsWhereInput = Prisma.ViewCPLCollaborativeExhibitsWhereInput;
-type CreditRecommendationsWhereInput = Prisma.ViewCPLCollaborativeCRsWhereInput;
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,9 +23,6 @@ export async function GET(request: NextRequest) {
     const cidNumber = searchParams.get("cidNumber");
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "10");
-
-    // Calculate pagination
-    const skip = (page - 1) * pageSize;
 
     // Build the where clause for ViewCPLCollaborativeExhibits
     const exhibitsWhere: ExhibitsWhereInput = {};
@@ -68,6 +64,7 @@ export async function GET(request: NextRequest) {
     }
     // Handle collegeID parameter
     const collegeCondition = collegeID ? { CollegeID: parseInt(collegeID) } : {};
+    
     // Build combined where conditions
     let searchConditions: Prisma.ViewCPLCollaborativeExhibitsWhereInput[] = [];
     let collegeConditions: Prisma.ViewCPLCollaborativeExhibitsWhereInput[] = [];
@@ -109,10 +106,79 @@ export async function GET(request: NextRequest) {
       exhibitsWhere.OR = collegeConditions;
     }
 
+    if (isExport) {
+      try {
+        // Primero obtenemos solo los IDs de los exhibits
+        const exhibitIds = await db.viewCPLCollaborativeExhibits.findMany({
+          where: exhibitsWhere,
+          select: {
+            id: true
+          },
+          orderBy: {
+            Title: "asc"
+          }
+        });
+
+        // Luego obtenemos los datos en lotes de 50
+        const batchSize = 50;
+        const results = [];
+        
+        for (let i = 0; i < exhibitIds.length; i += batchSize) {
+          const batchIds = exhibitIds.slice(i, i + batchSize).map(e => e.id);
+          
+          const batchResults = await db.viewCPLCollaborativeExhibits.findMany({
+            where: {
+              id: {
+                in: batchIds
+              }
+            },
+            select: {
+              id: true,
+              AceID: true,
+              Title: true,
+              college: true,
+              VersionNumber: true,
+              collaborativeTypes: {
+                select: {
+                  Description: true
+                }
+              },
+              creditRecommendations: {
+                select: {
+                  CreditRecommendation: true,
+                  articulations: {
+                    where: status !== "all" && status ? {
+                      Status: status
+                    } : {},
+                    select: {
+                      Status: true,
+                      Course: true,
+                      college: true
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          results.push(...batchResults);
+        }
+
+        return NextResponse.json(results);
+      } catch (error) {
+        console.error("Error in export:", error);
+        return NextResponse.json(
+          { error: "Failed to export exhibits" },
+          { status: 500 }
+        );
+      }
+    }
+
     // Get total count for pagination
     const totalCount = await db.viewCPLCollaborativeExhibits.count({
       where: exhibitsWhere,
     });
+
     // Fetch paginated exhibits with related data
     const exhibits = await db.viewCPLCollaborativeExhibits.findMany({
       where: exhibitsWhere,
@@ -120,7 +186,7 @@ export async function GET(request: NextRequest) {
         collaborativeTypes: true,
         creditRecommendations: {
           include: {
-            articulations: status != "all"  && status ? {
+            articulations: status !== "all" && status ? {
               where: {
                 Status: status
               }
@@ -131,17 +197,9 @@ export async function GET(request: NextRequest) {
       orderBy: {
         Title: "asc",
       },
-      ...(isExport
-        ? {}
-        : {
-            skip: (page - 1) * pageSize,
-            take: pageSize,
-          }),
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
-
-    if (isExport) {
-      return NextResponse.json(exhibits);
-    }
 
     // Format the response with type safety
     const formattedExhibits = exhibits.map((exhibit) => {
