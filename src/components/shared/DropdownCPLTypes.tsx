@@ -28,7 +28,7 @@ export const DropdownCPLTypes = ({ onCPLTypeSelect, selectedType }: DropdownCPLT
       onSelect={handleSelect}
       getDisplayValue={(item) => item.CPLTypeDescription ?? ""}
       getId={(item) => item.ID.toString()}
-      placeholder="Select CPL Type..."
+      placeholder="All CPL Types"
       searchPlaceholder="Search CPL Type..."
       noResultsText="No CPL Type found."
       allItemsText="All CPL Types"

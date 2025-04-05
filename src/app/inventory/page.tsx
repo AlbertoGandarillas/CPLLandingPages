@@ -30,6 +30,7 @@ import {
   Trash,
   Loader2,
   X,
+  Filter,
 } from "lucide-react";
 import { PotentialSavingsTable } from "@/components/features/chancelor/PotentialSavingsTable";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,9 @@ import ArticulationsTable from "@/components/features/cpl-articulations/Articula
 import { toast } from "@/components/ui/use-toast";
 import { exportToExcel } from "@/lib/events/exportUtils";
 import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { debounce } from "lodash";
+
 interface TopCodeSelection {
   code: string | null;
   title: string | null;
@@ -61,6 +65,7 @@ interface TopCodeSelection {
 
 export default function InventoryPage() {
   const [selectedCollege, setSelectedCollege] = useState<string | null>(null);
+  const [selectedCollegeName, setSelectedCollegeName] = useState<string | null>(null);
   const [selectedLearningMode, setSelectedLearningMode] = useState<
     string | null
   >(null);
@@ -84,6 +89,7 @@ export default function InventoryPage() {
   const [viewMode, setViewMode] = useState("grid");
   const { ref, inView } = useInView();
   const [isViewLoading, setIsViewLoading] = useState(false);
+  const [isLoadingExhibits, setIsLoadingExhibits] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   const queryClient = useQueryClient();
@@ -148,21 +154,34 @@ export default function InventoryPage() {
         collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
         modelOfLearning: selectedLearningMode,
         cplType: selectedCPLType,
+        creditRecommendation: selectedCR || undefined,
+        industryCert: selectedIndCert || undefined,
+        topCode: selectedTopCode || undefined,
+        cidNumber: selectedCIDNumber || undefined,
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
-      return await collaborativeExhibitsApi.getExhibits({
-        ccc: isCCCChecked ? "1" : "0",
-        status: selectedStatus || undefined,
-        searchTerm: searchTerm || undefined,
-        modelOfLearning: selectedLearningMode
-          ? parseInt(selectedLearningMode)
-          : undefined,
-        cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
-        page: pageParam,
-        pageSize: 9,
-        collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
-      });
+      setIsLoadingExhibits(true);
+      try {
+        return await collaborativeExhibitsApi.getExhibits({
+          ccc: isCCCChecked ? "1" : "0",
+          status: selectedStatus || undefined,
+          searchTerm: searchTerm || undefined,
+          modelOfLearning: selectedLearningMode
+            ? parseInt(selectedLearningMode)
+            : undefined,
+          cplType: selectedCPLType ? parseInt(selectedCPLType) : undefined,
+          creditRecommendation: selectedCR || undefined,
+          industryCert: selectedIndCert || undefined,
+          page: pageParam,
+          pageSize: 9,
+          collegeID: selectedCollege ? parseInt(selectedCollege) : undefined,
+          topCode: selectedTopCode || undefined,
+          cidNumber: selectedCIDNumber || undefined,
+        });
+      } finally {
+        setIsLoadingExhibits(false);
+      }
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
@@ -185,11 +204,21 @@ export default function InventoryPage() {
     setSelectedCatalogYear(yearId);
   }, []);
 
-  const handleSearch = useCallback((term: string) => {
-    if (term.length >= 3 || term.length === 0) {
-      setSearchTerm(term);
-    }
-  }, []);
+  const debouncedSearch = useCallback(
+    (term: string) => {
+      if (term.length >= 3 || term.length === 0) {
+        setSearchTerm(term);
+      }
+    },
+    []
+  );
+
+  const handleSearch = useCallback(
+    (term: string) => {
+      debounce(debouncedSearch, 500)(term);
+    },
+    [debouncedSearch]
+  );
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId);
@@ -247,7 +276,7 @@ export default function InventoryPage() {
 
   useEffect(() => {
     queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
-  }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, queryClient]);
+  }, [isCCCChecked, selectedStatus, searchTerm, selectedCollege, selectedCR, selectedIndCert, selectedTopCode, selectedCIDNumber, queryClient]);
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -298,7 +327,6 @@ export default function InventoryPage() {
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="w-full lg:min-w-0 lg:flex-1">
-          <div className="mb-4"></div>
           <PotentialSavingsTable
             hideCPLImpactChart={true}
             setSelectedCollege={handleCollegeSelect}
@@ -413,6 +441,57 @@ export default function InventoryPage() {
               </Card>
             </TabsContent>
           </Tabs>
+          <div className="mt-4">
+            {(selectedCollege || selectedCatalogYear || selectedCR || selectedIndCert || selectedProgram || selectedCIDNumber ) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold flex items-center gap-2"><p>Selected Filters</p><Filter className="h-4 w-4" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {selectedCollege && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  {selectedCollege}
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCollege(null)} />
+                </Badge>
+                )}
+                {selectedCatalogYear && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCatalogYear}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCatalogYear(null)} />
+                  </Badge>
+                )}
+                {selectedCR && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCR}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCR(null)} />
+                  </Badge>
+                )}
+                {selectedIndCert && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedIndCert}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedIndCert(null)} />
+                  </Badge>
+                )}
+                  {selectedProgram && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedProgram}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => {
+                      setSelectedProgram(null);
+                      setSelectedTopCode(null);
+                    }} />
+                  </Badge>
+                )}
+                {selectedCIDNumber && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    {selectedCIDNumber}
+                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCIDNumber(null)} />
+                  </Badge>
+                )}         
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
       <div className="mt-8">
@@ -428,9 +507,10 @@ export default function InventoryPage() {
           </Alert>
         )}
         <Card className="w-full">
-          <CardHeader className="bg-muted p-4">
-            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 mb-4">
-              <ToggleGroup
+          <CardHeader className="p-4">
+            <CardTitle className="flex flex-col md:grid md:grid-cols-3 md:items-center justify-between gap-4 mb-4 text-lg">
+            <div className="flex items-center justify-center md:justify-start">
+            <ToggleGroup
                 type="single"
                 value={viewMode}
                 onValueChange={handleViewModeChange}
@@ -466,11 +546,17 @@ export default function InventoryPage() {
                     </div>
                   )}
                 </ToggleGroupItem>
-              </ToggleGroup> 
+              </ToggleGroup>  
+            </div>
+             <div className="flex items-center justify-center">
+              <h3>{viewMode === 'grid' ? 'Exhibits':'Courses' }</h3>
+             </div>
+             <div>
+             </div>
             </CardTitle>
             <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
               {viewMode === "grid" && (
-                <div className="flex items-center justify-center gap-2 w-full">
+                <div className="flex items-center justify-start gap-2 w-full">
                   <>
                     <Switch
                       id="cccc-filter"
@@ -479,8 +565,8 @@ export default function InventoryPage() {
                     />
                     <Label htmlFor="cccc-filter">
                       {isCCCChecked
-                        ? "CCC Statewide Recommendations Only"
-                        : "All Recommendations"}
+                        ? "All Recommendations"
+                        : "CCC Statewide Recommendations Only"}
                     </Label>
                     <Label htmlFor="status-filter">Status :</Label>
                     <Select
@@ -499,17 +585,17 @@ export default function InventoryPage() {
                   </>
                 </div>
               )}
-              <div className="flex gap-2 items-center justify-center w-full">
+              <div className="flex gap-2 items-center justify-end w-full">
                 <SearchBar
                   ref={searchBarRef}
                   onSearch={handleSearch}
                   placeholder="Search..."
-                  inputClassName="bg-blue-100"
                   className="w-full sm:w-auto lg:w-64"
                 />
                 <DropdownColleges
                   onCollegeSelect={setSelectedCollege}
                   selectedCollege={selectedCollege}
+
                 />
                 <DropdownLearningModes
                   onLearningModeSelect={setSelectedLearningMode}
@@ -545,7 +631,11 @@ export default function InventoryPage() {
           <CardContent className="mt-3">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                {exhibitsResponse?.pages[0]?.data.length === 0 ? (
+                {isLoadingExhibits && !isFetchingNextPage ? (
+                  <div className="col-span-full flex justify-center p-4">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                ) : exhibitsResponse?.pages[0]?.data.length === 0 ? (
                   <div className="col-span-full flex justify-center p-4">
                     <div className="text-gray-500">No results found</div>
                   </div>
@@ -570,7 +660,6 @@ export default function InventoryPage() {
                         <div className="text-gray-500">Scroll to load more</div>
                       ) : (
                         <div className="text-gray-500">
-                          No more exhibits to load
                         </div>
                       )}
                     </div>

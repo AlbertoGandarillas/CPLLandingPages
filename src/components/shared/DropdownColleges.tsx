@@ -21,7 +21,7 @@ export const DropdownColleges = ({
       onSelect={onCollegeSelect}
       getDisplayValue={(item) => item.College}
       getId={(item) => item.CollegeID}
-      placeholder="Select College..."
+      placeholder="All Colleges"
       searchPlaceholder="Search College..."
       noResultsText="No College found."
       allItemsText="All Colleges"

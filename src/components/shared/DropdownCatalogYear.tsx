@@ -25,7 +25,7 @@ export const DropdownCatalogYear = ({
       onSelect={onCatalogYearSelect}
       getDisplayValue={(item) => item.CatalogYear}
       getId={(item) => item.ID}
-      placeholder="Select Academic Year..."
+      placeholder="All Academic Years"
       searchPlaceholder="Search Academic Year..."
       noResultsText="No Academic Year found."
       allItemsText="All Academic Years"

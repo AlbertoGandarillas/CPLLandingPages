@@ -48,8 +48,8 @@ import Footer from "@/components/dashboard/Footer";
 import { Header } from "@/components/dashboard/Header";
 
 const actionItems = [
-  { name: "Upload Your JST", icon: Upload, href: "https://veteransmapsearch.azurewebsites.net/default.aspx", primary: false },
-  { name: "Sign into MAP", icon: LogIn, href: "https://mappingarticulatedpathways.azurewebsites.net/modules/security/login.aspx", primary: true },
+  { name: "Upload Your JST", icon: Upload, href: "https://veteransmapsearch.azurewebsites.net/default.aspx", primary: false, customColor: "bg-blue-500" },
+  { name: "Sign into MAP", icon: LogIn, href: "https://mappingarticulatedpathways.azurewebsites.net/modules/security/login.aspx", primary: true, customColor: "#FFB71C;" },
 ];
 
 export default function DashboardLayout({

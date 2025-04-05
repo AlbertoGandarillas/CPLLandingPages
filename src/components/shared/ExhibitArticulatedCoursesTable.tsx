@@ -52,7 +52,7 @@ export function ExhibitArticulatedCoursesTable({ exhibitId, criteriaId, outlineI
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[15%]">Course</TableHead>
+              <TableHead>Course</TableHead>
               <TableHead>Credit Recommendation</TableHead>
               <TableHead>College</TableHead>
             </TableRow>
@@ -95,7 +95,7 @@ export function ExhibitArticulatedCoursesTable({ exhibitId, criteriaId, outlineI
                         </Tooltip>
                       </TooltipProvider>
                     )}
-                    {row.Course}
+                    {row.Course} {row.CourseTitle}
                   </div>
                 </TableCell>
                 <TableCell>{row.Criteria}</TableCell>

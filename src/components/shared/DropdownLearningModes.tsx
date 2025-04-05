@@ -33,7 +33,7 @@ export const DropdownLearningModes = ({
       onSelect={handleSelect}
       getDisplayValue={(item) => item.CPLModeofLearningDescription ?? ""}
       getId={(item) => item.ID.toString()}
-      placeholder="Select Learning Mode..."
+      placeholder="All Learning Modes"
       searchPlaceholder="Search Learning Mode..."
       noResultsText="No Learning Mode found."
       allItemsText="All Learning Modes"

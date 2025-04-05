@@ -59,6 +59,10 @@ export const PotentialSavingsTable = ({
         Students: item.Students,
         AvgUnits: item.AverageUnits,
         Units: item.Units,
+        MilitaryCredits: item.MilitaryCredits,
+        NonMilitaryCredits: item.NonMilitaryCredits,
+        MilitaryStudents: item.MilitaryStudents,
+        NonMilitaryStudents: item.NonMilitaryStudents,
       }));
   }, [data]);
 
@@ -145,32 +149,32 @@ export const PotentialSavingsTable = ({
             hideCPLImpactChart ? "xl:w-full 2xl:w-full" : "xl:w-1/2 2xl:w-3/4"
           }`}
         >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 xxl:grid-cols-4 mb-4">
-            <div className="lg:col-span-1 md:col-span-1">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-3 xxl:grid-cols-3 mb-4">
+            <div className="lg:col-span-1 md:col-span-1 flex justify-center items-center xl:justify-start">
               <ToggleGroup
                 type="single"
                 value={selectedType}
                 onValueChange={handleTypeChange}
-                className="p-1 rounded-lg w-full"
+                className="p-1 rounded-lg w-64 bg-muted"
               >
                 <ToggleGroupItem
                   value="0"
                   aria-label="All"
-                  className="data-[state=on]:bg-muted"
+                  className="data-[state=on]:bg-white data-[state=on]:text-black"
                 >
                   All
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="1"
                   aria-label="Military"
-                  className="data-[state=on]:bg-muted"
+                  className="data-[state=on]:bg-white data-[state=on]:text-black"
                 >
                   Military
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="2"
                   aria-label="Working Adult"
-                  className="data-[state=on]:bg-muted"
+                  className="data-[state=on]:bg-white data-[state=on]:text-black"
                 >
                   Working Adult
                 </ToggleGroupItem>
@@ -184,32 +188,31 @@ export const PotentialSavingsTable = ({
                 className="w-full"
               />
             </div>
-            <div className="lg:col-span-1 md:col-span-1">
-              <div className="flex gap-2 p-1">
-                <Input
-                  placeholder="Filter Colleges..."
-                  value={filterValue}
-                  onChange={(event) => setFilterValue(event.target.value)}
-                  className="w-full"
-                />
-              </div>
-            </div>
-            <div className="lg:col-span-1 md:col-span-1">
+            <div className="lg:col-span-1 md:col-span-1 text-center lg:text-right">
               <Button
                 size="sm"
                 variant="secondary"
                 onClick={() => exportToExcel(filteredData, "PotentialSavings")}
-                className="w-full"
+                className="w-40"
               >
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Export to Excel
               </Button>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+          <div className="w-full mb-4">
+                <Input
+                  placeholder="Filter Colleges..."
+                  value={filterValue}
+                  onChange={(event) => setFilterValue(event.target.value)}
+                  className="w-full"
+                />
+          </div>          
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 mb-4">
             <SummaryStats
               data={getSummaryStatsData}
               formatCurrency={formatCurrency}
+              selectedType={selectedType}
             />
           </div>
           <div>

@@ -54,7 +54,7 @@ interface ExhibitCardProps {
 export function ExhibitCard({ exhibit }: ExhibitCardProps) {
   return (
     <Card>
-      <CardHeader className="bg-muted">
+      <CardHeader className="">
         <CardTitle className="text-lg flex items-start justify-between gap-2">
           {exhibit.Title || "Untitled Exhibit"}
           <div className="flex gap-2">
@@ -72,11 +72,10 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
           </div>
         </CardTitle>
         <CardDescription>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="font-bold">{exhibit.AceID || "N/A"}</span>
+              <span>Originating College : </span> {exhibit.college || "ACE"}
             </div>
-            <div>{exhibit.college || "N/A"}</div>
             <div className="text-right">
               Version: {exhibit.VersionNumber || "N/A"}
             </div>
@@ -103,15 +102,13 @@ export function ExhibitCard({ exhibit }: ExhibitCardProps) {
       </CardHeader>
       <CardContent className="mt-3 max-h-[300px] overflow-auto">
         {exhibit.creditRecommendations.map((cr, index) => (
-          <Collapsible key={index} defaultOpen={true}>
+          <Collapsible key={index} defaultOpen={cr.articulations && cr.articulations.length > 0}>
             <div className="flex items-center justify-between space-x-4 px-4">
-              <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4  transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
-                <p className="text-sm font-bold text-left px-2">
+              <CollapsibleTrigger className="flex flex-1 items-center justify-between py-4 transition-all hover:underline [&[data-state=open]>svg]:rotate-180 bg-muted">
+                <span className={`text-sm ${cr.articulations && cr.articulations.length > 0 ? "font-bold" : "font-normal"} text-left px-2`}>
                   {cr.CreditRecommendation}
-                </p>
-                {cr.articulations && cr.articulations.length > 0 && (
+                </span>
                   <ChevronDown className="mx-2 h-4 w-4 shrink-0 transition-transform duration-200" />
-                )}
               </CollapsibleTrigger>
             </div>
             <CollapsibleContent className="space-y-2">

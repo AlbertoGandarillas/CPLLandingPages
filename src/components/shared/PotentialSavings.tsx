@@ -103,7 +103,6 @@ function PotentialSavings({
     },
     muiTableHeadCellProps: {
       sx: {
-        backgroundColor: theme === "dark" ? "hsl(var(--muted))" : "hsl(var(--muted))",
         color: theme === "dark" ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))",
         fontWeight: "bold",
         fontSize: "12px",
