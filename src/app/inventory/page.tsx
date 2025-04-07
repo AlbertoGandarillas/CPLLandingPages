@@ -289,8 +289,14 @@ export default function InventoryPage() {
         await exportCollaborativeExhibits(
           isCCCChecked ? "1" : "0",
           selectedStatus,
-          searchTerm || null,
-          selectedCollege ? parseInt(selectedCollege) : undefined
+          searchTerm,
+          selectedCollege ? parseInt(selectedCollege) : undefined,
+          selectedLearningMode || undefined,
+          selectedCPLType || undefined,
+          selectedCR || undefined,
+          selectedIndCert || undefined,
+          selectedTopCode || undefined,
+          selectedCIDNumber || undefined
         );
       }
     } catch (error) {
