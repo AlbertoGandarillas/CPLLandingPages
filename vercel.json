@@ -3,7 +3,7 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "functions": {
-    "api/**/*": {
+    "**/api/**/*": {
       "maxDuration": 60
     }
   }
