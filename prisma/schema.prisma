@@ -892,3 +892,23 @@ model ViewCPLCollaborativeCRs {
   @@id([id,CriteriaID])
 
 }
+
+model ViewExportArticulatedExhibits {
+  AceID String?
+  Title String?
+  VersionNumber String?
+  CreditRecommendation String?
+  SkillLevel String?
+  Status String?
+  id Int
+  outline_id Int?
+  college String?
+  CollegeID Int?
+  Course String?
+  ModelOfLearning Int?
+  CPLType Int?
+  TopCode Int?
+  CIDNumber String?
+  CollaborativeType String?
+  @@id([id])
+}

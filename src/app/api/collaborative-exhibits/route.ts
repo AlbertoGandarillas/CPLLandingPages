@@ -108,118 +108,72 @@ export async function GET(request: NextRequest) {
 
     if (isExport) {
       try {
-        // First get all IDs with a simple query
-        const exhibitIds = await db.viewCPLCollaborativeExhibits.findMany({
-          where: exhibitsWhere,
-          select: {
-            id: true
-          },
-          orderBy: {
-            Title: "asc"
-          }
-        });
-
-        const results = [];
-        const batchSize = 10; // Reduced batch size to avoid parameter limit
-
-        // Process in smaller batches
-        for (let i = 0; i < exhibitIds.length; i += batchSize) {
-          const currentBatch = exhibitIds.slice(i, i + batchSize);
-          
-          // Process each ID individually to avoid parameter explosion
-          const batchPromises = currentBatch.map(({ id }) => 
-            db.viewCPLCollaborativeExhibits.findUnique({
-              where: { id },
-              select: {
-                id: true,
-                AceID: true,
-                Title: true,
-                college: true,
-                VersionNumber: true,
-                collaborativeTypes: {
-                  select: {
-                    Description: true
-                  }
-                },
-                creditRecommendations: {
-                  select: {
-                    CreditRecommendation: true,
-                    articulations: {
-                      where: status !== "all" && status ? {
-                        Status: status
-                      } : {},
-                      select: {
-                        Status: true,
-                        Course: true,
-                        college: true
-                      }
-                    }
-                  }
-                }
+        // Get all records from ViewExportArticulatedExhibits with filters
+        const results = await db.viewExportArticulatedExhibits.findMany({
+          where: {
+            ...(ccc === "1" ? {
+              CollaborativeID: 1
+            } : {}),
+            ...(modelOfLearning ? {
+              ModelOfLearning: parseInt(modelOfLearning)
+            } : {}),
+            ...(cplType ? {
+              CPLType: parseInt(cplType)
+            } : {}),
+            ...(creditRecommendation ? {
+              CreditRecommendation: {
+                contains: creditRecommendation
               }
-            })
-          );
-
-          // Wait for all promises in the current batch
-          const batchResults = await Promise.all(batchPromises);
-          
-          // Filter out null results and add to results array
-          results.push(...batchResults.filter(result => result !== null));
-
-          // Add a small delay between batches to prevent overwhelming the database
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
+            } : {}),
+            ...(industryCert ? {
+              Title: {
+                contains: industryCert
+              }
+            } : {}),
+            ...(topCode ? {
+              TopCode: parseInt(topCode)
+            } : {}),
+            ...(cidNumber ? {
+              CIDNumber: {
+                contains: cidNumber
+              }
+            } : {}),
+            ...(collegeID ? {
+              OR: [
+                { CollegeID: parseInt(collegeID) },
+              ]
+            } : {}),
+            ...(status && status !== "all" ? {
+              Status: status
+            } : {}),
+            ...(searchTerm ? {
+              OR: [
+                { Title: { contains: searchTerm } },
+                { AceID: { contains: searchTerm } },
+                { college: { contains: searchTerm } },
+                { Course: { contains: searchTerm } },
+                { CreditRecommendation: { contains: searchTerm } }
+              ]
+            } : {})
+          },
+          orderBy: [
+            { AceID: 'asc' },
+            { CreditRecommendation: 'asc' }
+          ]
+        });
 
         // Format the results for export
-        const formattedResults = results.flatMap(exhibit => {
-          if (!exhibit) return [];
-
-          const collaborativeTypes = exhibit.collaborativeTypes
-            ?.map(type => type.Description)
-            .join(", ") || "";
-
-          if (!exhibit.creditRecommendations?.length) {
-            return [{
-              ExhibitID: exhibit.AceID || "",
-              Title: exhibit.Title || "",
-              "Exhibit College": exhibit.college || "",
-              Version: exhibit.VersionNumber || "",
-              "Credit Recommendation": "",
-              Status: "",
-              "Articulation College": "",
-              Course: "",
-              "Collaborative Types": collaborativeTypes
-            }];
-          }
-
-          return exhibit.creditRecommendations.flatMap(cr => {
-            if (!cr.articulations?.length) {
-              return [{
-                ExhibitID: exhibit.AceID || "",
-                Title: exhibit.Title || "",
-                "Exhibit College": exhibit.college || "",
-                Version: exhibit.VersionNumber || "",
-                "Credit Recommendation": cr.CreditRecommendation || "",
-                Status: "",
-                "Articulation College": "",
-                Course: "",
-                "Collaborative Types": collaborativeTypes
-              }];
-            }
-
-            return cr.articulations.map(articulation => ({        
-              ExhibitID: exhibit.AceID || "",
-              Title: exhibit.Title || "",
-              "Exhibit College": exhibit.college || "",
-              Version: exhibit.VersionNumber || "",
-              "Credit Recommendation": cr.CreditRecommendation || "",
-              Status: articulation.Status || "",
-              "Articulation College": articulation.college || "",
-              Course: articulation.Course || "",
-              "Collaborative Types": collaborativeTypes
-            }));
-          });
-        });
+        const formattedResults = results.map(exhibit => ({
+          ExhibitID: exhibit.AceID || "",
+          Title: exhibit.Title || "",
+          Version: exhibit.VersionNumber || "",
+          "Credit Recommendation": exhibit.CreditRecommendation || "",
+          "Skill Level": exhibit.SkillLevel || "",
+          Status: exhibit.Status || "",
+          "Articulation College": exhibit.college || "",
+          Course: exhibit.Course || "",
+          "Collaborative Types": exhibit.CollaborativeType || ""
+        }));
 
         return NextResponse.json(formattedResults);
       } catch (error) {
