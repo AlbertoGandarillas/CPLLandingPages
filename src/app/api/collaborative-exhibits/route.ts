@@ -238,14 +238,31 @@ export async function GET(request: NextRequest) {
 
     // Fetch paginated exhibits with related data
     const exhibits = await db.viewCPLCollaborativeExhibits.findMany({
-      where: exhibitsWhere,
+      where: {
+        ...exhibitsWhere,
+        ...(status !== "all" && status ? {
+          creditRecommendations: {
+            some: {
+              articulations: {
+                some: {
+                  Status: status === "In Progress" ? 
+                    { in: ["In Progress", "Not Articulated"] } : 
+                    status
+                }
+              }
+            }
+          }
+        } : {})
+      },
       include: {
         collaborativeTypes: true,
         creditRecommendations: {
           include: {
             articulations: status !== "all" && status ? {
               where: {
-                Status: status
+                Status: status === "In Progress" ? 
+                  { in: ["In Progress", "Not Articulated"] } : 
+                  status
               }
             } : true
           }
