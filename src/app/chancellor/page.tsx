@@ -428,7 +428,7 @@ export default function Home() {
                               Articulated
                             </SelectItem>
                             <SelectItem value="In Progress">
-                              In Progress
+                              In Progress and/or Not Articulated
                             </SelectItem>
                           </SelectContent>
                         </Select>                      
