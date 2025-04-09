@@ -44,11 +44,10 @@ interface CPLChartProps {
 }
 
 const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
-  const [tooltipData, setTooltipData] = useState<TransformedCollege | null>(
-    null
-  );
+  const [tooltipData, setTooltipData] = useState<TransformedCollege | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isChartHovered, setIsChartHovered] = useState(false);
 
   const calculateImpactScore = (college: College): number => {
     const avgUnitScore = Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5);
@@ -124,21 +123,45 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX + 10, y: e.clientY + 10 });
+      // Check if mouse is within chart bounds
+      const chartElement = document.querySelector('.chart-container');
+      if (!chartElement) return;
+      
+      const chartRect = chartElement.getBoundingClientRect();
+      const isMouseInChart = 
+        e.clientX >= chartRect.left &&
+        e.clientX <= chartRect.right &&
+        e.clientY >= chartRect.top &&
+        e.clientY <= chartRect.bottom;
+
+      if (!isMouseInChart) {
+        setTooltipData(null);
+        setHoveredIndex(null);
+        setIsChartHovered(false);
+        return;
+      }
+
+      if (isChartHovered) {
+        setMousePosition({ x: e.clientX + 10, y: e.clientY + 10 });
+      }
     };
 
     const handleScroll = () => {
       setTooltipData(null);
       setHoveredIndex(null);
+      setIsChartHovered(false);
     };
 
     const handleMouseLeave = () => {
       setTooltipData(null);
       setHoveredIndex(null);
+      setIsChartHovered(false);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
     window.addEventListener("mouseleave", handleMouseLeave);
+
     const chartContainer = document.querySelector(".chart-container");
     if (chartContainer) {
       chartContainer.addEventListener("scroll", handleScroll);
@@ -147,22 +170,25 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mouseleave", handleMouseLeave);
       if (chartContainer) {
         chartContainer.removeEventListener("scroll", handleScroll);
         chartContainer.removeEventListener("mouseleave", handleMouseLeave);
       }
     };
-  }, []);
+  }, [isChartHovered]);
 
   const handleMouseOver = (data: TransformedCollege, index: number) => {
     setTooltipData(data);
     setHoveredIndex(index);
+    setIsChartHovered(true);
   };
 
   const handleMouseOut = () => {
     setTooltipData(null);
     setHoveredIndex(null);
+    setIsChartHovered(false);
   };
 
   // Calculate system average using all colleges
@@ -286,6 +312,7 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
                   left: 30,
                   bottom: 20,
                 }}
+                onMouseLeave={handleMouseOut}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                 <XAxis type="number" domain={[0, axisMax]} hide={true} />
@@ -346,7 +373,7 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
           </div>
         </div>
 
-        {tooltipData && (
+        {tooltipData && isChartHovered && (
           <div
             style={{
               position: "fixed",
