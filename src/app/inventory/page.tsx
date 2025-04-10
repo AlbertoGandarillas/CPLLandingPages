@@ -57,6 +57,7 @@ import { exportToExcel } from "@/lib/events/exportUtils";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { debounce } from "lodash";
+import { useColleges } from "@/hooks/useColleges";
 
 interface TopCodeSelection {
   code: string | null;
@@ -93,6 +94,25 @@ export default function InventoryPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   const queryClient = useQueryClient();
+  const { data: colleges } = useColleges();
+
+  const getCollegeName = (collegeId: string) => {
+    const college = colleges?.find(c => c.CollegeID === parseInt(collegeId));
+    return college?.College || null;
+  };
+
+  useEffect(() => {
+    if (selectedCollege) {
+      const name = getCollegeName(selectedCollege);
+      setSelectedCollegeName(name);
+    } else {
+      setSelectedCollegeName(null);
+    }
+  }, [selectedCollege, colleges]);
+
+  const handleCollegeSelect = (collegeId: string | null) => {
+    setSelectedCollege(collegeId);
+  };
 
   const {
     data: articulations,
@@ -220,9 +240,6 @@ export default function InventoryPage() {
     [debouncedSearch]
   );
 
-  const handleCollegeSelect = (collegeId: string | null) => {
-    setSelectedCollege(collegeId);
-  };
   const handleLerningModeSelect = (learningModeId: string | null) => {
     setSelectedLearningMode(learningModeId);
   };
@@ -245,6 +262,7 @@ export default function InventoryPage() {
 
   const handleClearFilters = async () => {
     setSelectedCollege(null);
+    setSelectedCollegeName(null);
     setSelectedLearningMode(null);
     setSelectedCPLType(null);
     setSelectedCR(null);
@@ -254,8 +272,8 @@ export default function InventoryPage() {
     setSearchTerm("");
     searchBarRef.current?.clear();
     setSelectedCatalogYear(null);
-    setSelectedStatus(null);
-    setIsCCCChecked(true);
+    setSelectedStatus("Articulated");
+    setIsCCCChecked(false);
     await queryClient.resetQueries({ queryKey: ["collaborativeExhibits"] });
   };
 
@@ -457,8 +475,11 @@ export default function InventoryPage() {
               <CardContent className="flex flex-wrap gap-2">
                 {selectedCollege && (
                 <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                  {selectedCollege}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCollege(null)} />
+                  {selectedCollegeName || selectedCollege}
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => {
+                    setSelectedCollege(null);
+                    setSelectedCollegeName(null);
+                  }} />
                 </Badge>
                 )}
                 {selectedCatalogYear && (
@@ -585,7 +606,7 @@ export default function InventoryPage() {
                       <SelectContent>
                         <SelectItem value="all">All Statuses</SelectItem>
                         <SelectItem value="Articulated">Articulated</SelectItem>
-                        <SelectItem value="In Progress">In Progress and/or Not Articulated</SelectItem>
+                        <SelectItem value="In Progress">In Progress and/or Not Articulated</SelectItem>
                       </SelectContent>
                     </Select>
                   </>
