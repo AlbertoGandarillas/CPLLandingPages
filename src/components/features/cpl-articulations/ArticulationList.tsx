@@ -369,6 +369,7 @@ export default function ArticulationList({
                   {articulation.IndustryCertification}
                 </TableCell>
                 <TableCell
+                  align="center"
                   sx={{ fontSize: "12px", fontFamily: "var(--font-sans)" }}
                 >
                   {articulation.VersionNumber}

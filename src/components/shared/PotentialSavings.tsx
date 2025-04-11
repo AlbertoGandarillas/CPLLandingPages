@@ -63,11 +63,7 @@ function PotentialSavings({
         header: "CPL Units *",
         Cell: ({ cell }) => {
           const value = cell.getValue<number>();
-          return (
-            <div style={{ textAlign: 'center' }}>
-              {Math.round(value).toLocaleString()}
-            </div>
-          );
+          return Math.round(value).toLocaleString();
         },
       },
       {

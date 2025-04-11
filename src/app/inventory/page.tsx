@@ -581,7 +581,7 @@ export default function InventoryPage() {
              <div>
              </div>
             </CardTitle>
-            <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-3 mb-4">
+            <div className="flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-4 mb-4">
               {viewMode === "grid" && (
                 <div className="flex items-center justify-start gap-2 w-full">
                   <>
