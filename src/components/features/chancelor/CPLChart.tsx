@@ -6,12 +6,16 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   ReferenceLine,
   Cell,
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { HelpCircle } from "lucide-react";
+import { TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipContent } from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 
 type College = {
   College: string;
@@ -403,12 +407,32 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
           </div>
         )}
         <div className="mt-4 space-y-4">
-          <div className="text-sm text-gray-600 space-y-2 text-xs">
-            <p>• Average Units Score: Calculated based on total units, weighted by credit type. Course-to-course articulations receive a 20% bonus, while area credits (-10%) and elective credits (-60%) are reduced to encourage structured articulations.</p>
-            <p>• Total Students Score: Based on the number of JSTs uploaded in MAP for your college.</p>
-            <p>• Total CPL Units Score: Calculated from the total number of CPL units offered to students.</p>
-            <p>• Economic Impact Score: Derived from your school&apos;s total economic impact.</p>
+          <div className="flex justify-end w-full">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px]">
+              <div className="text-sm text-gray-600 space-y-2 text-xs">
+                <p>• Average Units Score: Calculated based on total units, weighted by credit type. Course-to-course articulations receive a 20% bonus, while area credits (-10%) and elective credits (-60%) are reduced to encourage structured articulations.</p>
+                <p>• Total Students Score: Based on the number of JSTs uploaded in MAP for your college.</p>
+                <p>• Total CPL Units Score: Calculated from the total number of CPL units offered to students.</p>
+                <p>• Economic Impact Score: Derived from your school&apos;s total economic impact.</p>
+              </div>                
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           </div>
+          <p className="mt-4 text-sm text-gray-600 inline-flex">
+            A college successfully scaling CPL should demonstrate high efficiency
+            (6+ units per CPL student) while serving a meaningful student
+            population (100+ students). The ideal implementation balances
+            efficiency (high average CPL units per student) with impact (reaching
+            many students), indicating robust processes and broad adoption of CPL
+            opportunities. Scores are calculated taking these principles into
+            consideration.
+          </p>
         </div>
       </CardContent>
     </Card>
