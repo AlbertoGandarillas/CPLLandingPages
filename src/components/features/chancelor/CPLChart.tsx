@@ -21,6 +21,9 @@ type College = {
   Students: number;
   AvgUnits: number;
   Units: number;
+  ElectiveCredits: number;
+  AreaCredits: number;
+  CourseCredits: number;
 };
 
 type TransformedCollege = {
@@ -35,7 +38,8 @@ type TransformedCollege = {
     studentScore: number;
     unitsScore: number;
     impactScore: number;
-    penalties: string;
+    reductions: string;
+    creditTypeMultiplier: number;
   };
 };
 
@@ -49,62 +53,76 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isChartHovered, setIsChartHovered] = useState(false);
 
+  const calculateCreditTypeMultiplier = (college: College): number => {
+    const totalUnits = college.Units;
+    if (totalUnits === 0) return 1;
+
+    const coursePercent = (college.CourseCredits / totalUnits);
+    const areaPercent = (college.AreaCredits / totalUnits);
+    const electivePercent = (college.ElectiveCredits / totalUnits);
+
+    return 1 + (coursePercent * 0.2) - (areaPercent * 0.1) - (electivePercent * 0.6);
+  };
+
   const calculateImpactScore = (college: College): number => {
-    const avgUnitScore = Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5);
+    const creditTypeMultiplier = calculateCreditTypeMultiplier(college);
+    const avgUnitScore = Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5) * creditTypeMultiplier;
     const studentScore = Math.log10(college.Students + 1) / Math.log10(1000);
     const unitsScore = Math.pow(college.Units / 5585, 0.5);
     const impactScore = Math.pow(college.Combined / 24153809, 0.3);
 
-    const highVolumeLowAvgPenalty =
+    const highVolumeLowAvgReduction =
       college.Students > 500 && college.AvgUnits < 5 ? 0.9 : 1;
-    const lowAvgPenalty =
+    const lowAvgReduction =
       college.Students <= 500 && college.AvgUnits <= 4 ? 0.7 : 1;
-    const lowVolumePenalty = college.Students < 40 ? 0.4 : 1;
+    const lowVolumeReduction = college.Students < 40 ? 0.4 : 1;
 
     const rawScore =
       (avgUnitScore * 0.35 +
         studentScore * 0.25 +
         unitsScore * 0.25 +
         impactScore * 0.15) *
-      highVolumeLowAvgPenalty *
-      lowVolumePenalty *
-      lowAvgPenalty;
+      highVolumeLowAvgReduction *
+      lowVolumeReduction *
+      lowAvgReduction;
 
     return Math.round(rawScore * 100);
   };
 
   const calculateComponentScores = (college: College) => {
+    const creditTypeMultiplier = calculateCreditTypeMultiplier(college);
     const avgUnitScore =
-      Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5) * 35;
+      Math.pow(Math.min(college.AvgUnits / 6, 1.5), 1.5) * creditTypeMultiplier * 35;
     const studentScore =
       (Math.log10(college.Students + 1) / Math.log10(1000)) * 25;
     const unitsScore = Math.pow(college.Units / 5585, 0.5) * 25;
     const impactScore = Math.pow(college.Combined / 24153809, 0.3) * 15;
-    const highVolPenalty =
+    const highVolReduction =
       college.Students > 500 && college.AvgUnits < 4.5 ? "0.95" : "None";
-    const lowAvgPenalty =
+    const lowAvgReduction =
       college.Students <= 300 && college.AvgUnits <= 4 ? "0.7" : "None";
-    const lowVolPenalty = college.Students < 40 ? "0.4" : "None";
+    const lowVolReduction = college.Students < 40 ? "0.4" : "None";
 
     return {
       avgUnitScore: Math.round(avgUnitScore),
       studentScore: Math.round(studentScore),
       unitsScore: Math.round(unitsScore),
       impactScore: Math.round(impactScore),
-      penalties: (() => {
-        const penalties = [];
+      creditTypeMultiplier,
+      reductions: (() => {
+        const reductions = [];
 
         if (college.Students > 500 && college.AvgUnits < 4.5) {
-          penalties.push(`${highVolPenalty} (High Volume, Low Average)`);
+          reductions.push(`${highVolReduction} (High Volume, Low Average)`);
         }
         if (college.Students <= 300 && college.AvgUnits <= 4) {
-          penalties.push(`${lowAvgPenalty} (Low Average Units)`);
+          reductions.push(`${lowAvgReduction} (Low Average Units)`);
         }
         if (college.Students < 40) {
-          penalties.push(`${lowVolPenalty} (Low Volume)`);
+          reductions.push(`${lowVolReduction} (Low Volume)`);
         }
 
-        return penalties.length > 0 ? penalties.join(" & ") : "None";
+        return reductions.length > 0 ? reductions.join(" & ") : "None";
       })(),
     };
   };
@@ -115,7 +133,7 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
       units: college.Units,
       students: college.Students,
       impact: college.Combined,
-      avgUnits: college.AvgUnits,
+      avgUnits: Number(college.AvgUnits.toFixed(1)),
       impactScore: calculateImpactScore(college),
       componentScores: calculateComponentScores(college),
     }))
@@ -123,7 +141,6 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Check if mouse is within chart bounds
       const chartElement = document.querySelector('.chart-container');
       if (!chartElement) return;
       
@@ -142,7 +159,7 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
       }
 
       if (isChartHovered) {
-        setMousePosition({ x: e.clientX + 10, y: e.clientY + 10 });
+        setMousePosition({ x: e.clientX + 2, y: e.clientY + 2 });
       }
     };
 
@@ -191,13 +208,11 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
     setIsChartHovered(false);
   };
 
-  // Calculate system average using all colleges
   const systemAverage = Math.round(
     transformedData.reduce((acc, col) => acc + col.impactScore, 0) /
       transformedData.length
   );
 
-  // Create a new array with only top 10 colleges for display
   const displayData = transformedData.slice(0, 10);
   const maxScore = Math.max(...displayData.map((d) => d.impactScore));
   const axisMax = Math.ceil(maxScore / 20) * 20;
@@ -229,11 +244,12 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
           <div className="space-y-1 mt-2">
             <p>Average Units Score (35%): {scores.avgUnitScore} pts</p>
             <p>Total Students Score (25%): {scores.studentScore} pts</p>
-            <p>Total CPL Units Score(25%): {scores.unitsScore} pts</p>
+            <p>Total CPL Units Score (25%): {scores.unitsScore} pts</p>
             <p>Economic Impact Score (15%): {scores.impactScore} pts</p>
           </div>
           <hr className="my-2" />
-          <p className="font-medium">Penalties Applied: {scores.penalties}</p>
+          <p className="font-medium">Credit Type Multiplier: {scores.creditTypeMultiplier.toFixed(2)}x</p>
+          <p className="font-medium">Reductions Applied: {scores.reductions}</p>
           <hr className="my-2" />
           <div className="space-y-1 text-sm">
             <p>Average Units/Student: {college.avgUnits}</p>
@@ -258,7 +274,6 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="relative overflow-visible">
-        {/* Sticky header */}
         <div className="sticky top-0 bg-white z-10 h-12 border-b">
           <div style={{ marginLeft: "70px", width: "calc(100% - 100px)" }}>
             <ResponsiveContainer width="100%" height={48}>
@@ -292,7 +307,6 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
           </div>
         </div>
 
-        {/* Main chart */}
         <div className="chart-container h-[400px] overflow-y-auto">
           <div
             style={{
@@ -325,7 +339,6 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
                     const score = transformedData.find(
                       (d) => d.name === value
                     )?.impactScore ?? 0;
-                    // Truncate college name if too long
                     const truncatedName = value.length > 15 
                       ? value.substring(0, 15) + '...'
                       : value;
@@ -389,15 +402,14 @@ const CPLChart: React.FC<CPLChartProps> = ({ data }) => {
             })}
           </div>
         )}
-        <p className="mt-4 text-sm text-gray-600">
-          A college successfully scaling CPL should demonstrate high efficiency
-          (6+ units per CPL student) while serving a meaningful student
-          population (100+ students). The ideal implementation balances
-          efficiency (high average CPL units per student) with impact (reaching
-          many students), indicating robust processes and broad adoption of CPL
-          opportunities. Scores are calculated taking these principles into
-          consideration.
-        </p>
+        <div className="mt-4 space-y-4">
+          <div className="text-sm text-gray-600 space-y-2 text-xs">
+            <p>• Average Units Score: Calculated based on total units, weighted by credit type. Course-to-course articulations receive a 20% bonus, while area credits (-10%) and elective credits (-60%) are reduced to encourage structured articulations.</p>
+            <p>• Total Students Score: Based on the number of JSTs uploaded in MAP for your college.</p>
+            <p>• Total CPL Units Score: Calculated from the total number of CPL units offered to students.</p>
+            <p>• Economic Impact Score: Derived from your school&apos;s total economic impact.</p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

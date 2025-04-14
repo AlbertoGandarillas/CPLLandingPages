@@ -78,6 +78,10 @@ export const PotentialSavingsTable = ({
         Students: item.Students,
         AvgUnits: item.AverageUnits,
         Units: item.Units,
+        ElectiveCredits: item.ElectiveCredits,
+        AreaCredits: item.AreaCredits,
+        CourseCredits: item.CourseCredits,
+
       }));
   }, [data]);
 
