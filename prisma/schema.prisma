@@ -544,6 +544,9 @@ model PotentialCPLSavings {
   NonMilitaryCredits  Float
   MilitaryStudents    Int
   NonMilitaryStudents Int
+  ElectiveCredits     Float
+  AreaCredits         Float
+  CourseCredits       Float
    @@id([Sorder, CollegeID])
   @@map("_PotentialCPLSavings")
 }
