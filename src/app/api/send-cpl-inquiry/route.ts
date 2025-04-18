@@ -9,12 +9,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const validatedData = contactFormSchema.parse(body) as ContactFormData;
-    const attachments =
-      validatedData.files?.map((file) => ({
-        filename: file.name,
-        content: file.data.replace(/^data:.*?;base64,/, ""),
-        encoding: "base64",
-      })) || [];
+    const attachments = validatedData.files?.map((file) => ({
+      content: file.data.replace(/^data:.*?;base64,/, ""),
+      filename: file.name,
+      type: file.type || 'application/octet-stream',
+      disposition: 'attachment'
+    })) || [];
 
     const { firstName, lastName, email, message, CPLAssistantEmail, files } =
       validatedData;

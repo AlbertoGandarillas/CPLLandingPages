@@ -19,12 +19,12 @@ export async function POST(request: Request) {
       collegeId,
     } = validatedData;
 
-    const attachments =
-      files?.map((file) => ({
-        filename: file.name,
-        content: file.data.replace(/^data:.*?;base64,/, ""),
-        encoding: "base64",
-      })) || [];
+    const attachments = validatedData.files?.map((file) => ({
+      content: file.data.replace(/^data:.*?;base64,/, ""),
+      filename: file.name,
+      type: file.type || 'application/octet-stream',
+      disposition: 'attachment'
+    })) || [];
 
     const coursesHtml = selectedCourses
       .map(
