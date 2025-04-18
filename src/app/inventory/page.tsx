@@ -96,10 +96,10 @@ export default function InventoryPage() {
   const queryClient = useQueryClient();
   const { data: colleges } = useColleges();
 
-  const getCollegeName = (collegeId: string) => {
+  const getCollegeName = useCallback((collegeId: string) => {
     const college = colleges?.find(c => c.CollegeID === parseInt(collegeId));
     return college?.College || null;
-  };
+  }, [colleges]);
 
   useEffect(() => {
     if (selectedCollege) {
@@ -108,7 +108,7 @@ export default function InventoryPage() {
     } else {
       setSelectedCollegeName(null);
     }
-  }, [selectedCollege, colleges]);
+  }, [selectedCollege, getCollegeName]);
 
   const handleCollegeSelect = (collegeId: string | null) => {
     setSelectedCollege(collegeId);

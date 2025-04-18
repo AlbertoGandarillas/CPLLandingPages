@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendEmail } from "@/services/emailService";
+import { EmailService } from "@/services/emailService";
 import { cplRequestSchema, CPLRequestData } from "@/schemas/cplRequestSchema";
 
 export async function POST(request: Request) {
@@ -19,12 +19,12 @@ export async function POST(request: Request) {
       collegeId,
     } = validatedData;
 
-    const attachments =
-      files?.map((file) => ({
-        filename: file.name,
-        content: file.data.replace(/^data:.*?;base64,/, ""),
-        encoding: "base64",
-      })) || [];
+    const attachments = validatedData.files?.map((file) => ({
+      content: file.data.replace(/^data:.*?;base64,/, ""),
+      filename: file.name,
+      type: file.type || 'application/octet-stream',
+      disposition: 'attachment'
+    })) || [];
 
     const coursesHtml = selectedCourses
       .map(
@@ -86,9 +86,9 @@ export async function POST(request: Request) {
       unlistedQualifications,
     };
 
-    const info = await sendEmail(mailOptions);
+    const info = await EmailService.sendEmail(mailOptions);
 
-    return NextResponse.json({ success: true, messageId: info.messageId });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to process request:", error);
     if (error instanceof Error && "errors" in error) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/services/emailService";
+import { EmailService } from "@/services/emailService";
 import {
   contactFormSchema,
   ContactFormData,
@@ -9,12 +9,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const validatedData = contactFormSchema.parse(body) as ContactFormData;
-    const attachments =
-      validatedData.files?.map((file) => ({
-        filename: file.name,
-        content: file.data.replace(/^data:.*?;base64,/, ""),
-        encoding: "base64",
-      })) || [];
+    const attachments = validatedData.files?.map((file) => ({
+      content: file.data.replace(/^data:.*?;base64,/, ""),
+      filename: file.name,
+      type: file.type || 'application/octet-stream',
+      disposition: 'attachment'
+    })) || [];
 
     const { firstName, lastName, email, message, CPLAssistantEmail, files } =
       validatedData;
@@ -41,13 +41,13 @@ export async function POST(request: Request) {
       `,
     };
     console.log("Attempting to send email with options:", {
-      from: mailOptions.from,
+      from: mailOptions.from, 
       to: mailOptions.to,
       subject: mailOptions.subject,
     });
-    const info = await sendEmail(mailOptions);
+    const info = await EmailService.sendEmail(mailOptions);
 
-    return NextResponse.json({ success: true, messageId: info.messageId });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to process request:", error);
     if (error instanceof Error && "errors" in error) {

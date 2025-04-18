@@ -1,58 +1,76 @@
-import nodemailer from "nodemailer";
+import sgMail from '@sendgrid/mail';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT || "465"),
-  secure: process.env.EMAIL_SECURE === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  debug: true,
-});
+// Initialize SendGrid with API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
-interface EmailOptions extends Omit<nodemailer.SendMailOptions, "attachments"> {
+export interface EmailOptions {
+  to: string;
+  subject: string;
+  text?: string;
+  html?: string;
   attachments?: Array<{
+    content: string;
     filename: string;
-    content: Buffer | string;
-    contentType?: string;
+    type: string;
+    disposition: string;
   }>;
 }
 
-export async function sendEmail(options: EmailOptions) {
-  try {
-    if (!options.from) {
-      options.from = process.env.EMAIL_FROM;
+export class EmailService {
+  public static async sendEmail(options: EmailOptions): Promise<void> {
+    try {
+      const msg = {
+        to: options.to,
+        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@yourdomain.com',
+        subject: options.subject,
+        text: options.text || '',
+        html: options.html || '',
+        attachments: options.attachments?.map(attachment => ({
+          content: attachment.content,
+          filename: attachment.filename,
+          type: attachment.type,
+          disposition: attachment.disposition
+        }))
+      };
+
+      await sgMail.send(msg);
+      console.log('Email sent successfully via SendGrid');
+    } catch (error) {
+      console.error('Error sending email via SendGrid:', error);
+      throw error;
+    }
+  }
+
+  public static async sendCplRequestEmail(
+    to: string,
+    veteranName: string,
+    attachment?: Buffer
+  ): Promise<void> {
+    const subject = 'CPL Request Confirmation';
+    const text = `Dear ${veteranName},\n\nWe have received your CPL request. Our team will review it and get back to you shortly.\n\nThank you for your patience.`;
+    const html = `
+      <h2>CPL Request Received</h2>
+      <p>Dear ${veteranName},</p>
+      <p>We have received your CPL request. Our team will review it and get back to you shortly.</p>
+      <p>Thank you for your patience.</p>
+    `;
+
+    const emailOptions: EmailOptions = {
+      to,
+      subject,
+      text,
+      html,
+    };
+
+    if (attachment) {
+      emailOptions.attachments = [{
+        content: attachment.toString('base64'),
+        filename: 'processed_document.pdf',
+        type: 'application/pdf',
+        disposition: 'attachment'
+      }];
     }
 
-    console.log("Attempting to send email with options:", {
-      from: options.from,
-      to: options.to,
-      subject: options.subject,
-    });
-
-  const info = await transporter.sendMail({
-    ...options,
-    attachments: options.attachments?.map((attachment) => ({
-      ...attachment,
-      content:
-        typeof attachment.content === "string"
-          ? Buffer.from(attachment.content, "base64")
-          : attachment.content,
-    })),
-  });
-    console.log("Email sent:", info.messageId);
-    return info;
-  } catch (error) {
-    console.error("Failed to send email:", error);
-    if (error instanceof Error) {
-      console.error("Error name:", error.name);
-      console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
-    }
-    throw new Error("Failed to send email. Please try again later.");
+    await this.sendEmail(emailOptions);
   }
 }

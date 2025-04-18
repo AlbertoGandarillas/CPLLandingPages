@@ -292,6 +292,7 @@ export default function ArticulationsTable({
           isOpen={isInquiryModalOpen}
           onClose={() => setIsInquiryModalOpen(false)}
           CPLAssistantEmail={CPLAssistantEmail || ""}
+          CollegeID={CollegeID ? CollegeID.toString() : undefined}
         />
       </div>
     </>
