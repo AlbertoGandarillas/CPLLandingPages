@@ -558,9 +558,9 @@ model CPLRequest {
   firstName                 String
   lastName                  String
   email                     String
-  hasCCCApplyId             Boolean
+  hasCCCApplyId             Boolean?
   cccApplyId                String?
-  selectedCourses           String
+  selectedCourses           String?
   unlistedQualifications    String?
   createdAt                 DateTime @default(now())
   CollegeID                 Int?
