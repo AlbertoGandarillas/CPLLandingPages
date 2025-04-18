@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/services/emailService";
+import { EmailService } from "@/services/emailService";
 import {
   contactFormSchema,
   ContactFormData,
@@ -41,11 +41,11 @@ export async function POST(request: Request) {
       `,
     };
     console.log("Attempting to send email with options:", {
-      from: mailOptions.from,
+      from: mailOptions.from, 
       to: mailOptions.to,
       subject: mailOptions.subject,
     });
-    const info = await sendEmail(mailOptions);
+    const info = await EmailService.sendEmail(mailOptions);
 
     return NextResponse.json({ success: true, messageId: info.messageId });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendEmail } from "@/services/emailService";
+import { EmailService } from "@/services/emailService";
 import { cplRequestSchema, CPLRequestData } from "@/schemas/cplRequestSchema";
 
 export async function POST(request: Request) {
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       unlistedQualifications,
     };
 
-    const info = await sendEmail(mailOptions);
+    const info = await EmailService.sendEmail(mailOptions);
 
     return NextResponse.json({ success: true, messageId: info.messageId });
   } catch (error) {
