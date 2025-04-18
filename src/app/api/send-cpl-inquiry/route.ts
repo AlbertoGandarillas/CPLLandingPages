@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     });
     const info = await EmailService.sendEmail(mailOptions);
 
-    return NextResponse.json({ success: true, messageId: info.messageId });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to process request:", error);
     if (error instanceof Error && "errors" in error) {
